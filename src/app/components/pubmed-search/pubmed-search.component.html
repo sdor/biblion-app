@@ -1,0 +1,267 @@
+<div class="search-container">
+  
+  <!-- Live Cursor Reference Banner (when in Word and cursor is on a citation) -->
+  @if (isWord && cursorTracker.cursorRefCount() > 0) {
+    <div class="cursor-live-banner">
+      <div class="banner-info">
+        <span class="pulse-indicator"></span>
+        <span class="banner-title">
+          <strong>{{ cursorTracker.cursorRefCount() }} reference(s)</strong> detected at current cursor in Word
+        </span>
+      </div>
+      <a routerLink="/cursor-references" class="view-live-btn">
+        <span>View in Pane</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </a>
+    </div>
+  }
+
+  <!-- Search Form Box -->
+  <div class="search-box-wrapper">
+    <div class="search-box-header">
+      <div class="header-title-group">
+        <div class="search-icon-circle">
+          <svg class="search-main-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+        </div>
+        <div>
+          <h2 class="search-title">PubMed / MEDLINE Search</h2>
+          <p class="search-subtitle">Query millions of biomedical and life sciences citations from NCBI</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search Form -->
+    <form id="pubmed-search-form" class="search-form" (ngSubmit)="onSearchSubmit()">
+      <div class="input-group">
+        <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+
+        <input
+          id="terms"
+          type="text"
+          class="search-input"
+          placeholder="Search by keywords, PMID, author (e.g. Doudna J[Author]), or topic..."
+          [ngModel]="searchTerm()"
+          (ngModelChange)="searchTerm.set($event)"
+          name="term"
+          autocomplete="off"
+          required />
+
+        @if (searchTerm()) {
+          <button
+            type="button"
+            class="clear-btn"
+            (click)="clearSearch()"
+            title="Clear search"
+            aria-label="Clear search input">
+            <svg class="clear-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        }
+
+        <button
+          type="submit"
+          class="submit-search-btn"
+          [disabled]="!searchTerm().trim() || pubmedService.isLoading()">
+          @if (pubmedService.isLoading()) {
+            <span class="btn-spinner"></span>
+            <span>Searching...</span>
+          } @else {
+            <svg class="search-btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <span>Search</span>
+          }
+        </button>
+      </div>
+
+      <!-- Quick sample queries -->
+      <div class="sample-queries">
+        <span class="sample-label">Examples:</span>
+        <div class="query-chips">
+          @for (query of sampleQueries; track query) {
+            <button
+              type="button"
+              class="chip-btn"
+              (click)="setSampleQuery(query)">
+              {{ query }}
+            </button>
+          }
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Search Results Section -->
+  <div class="results-section">
+
+    <!-- Loading Skeletons -->
+    @if (pubmedService.isLoading()) {
+      <div class="loading-state">
+        <div class="loading-spinner"></div>
+        <p class="loading-text">Fetching PubMed citations and abstracts from NCBI E-utilities...</p>
+
+        <!-- Skeleton cards -->
+        <div class="skeleton-list">
+          @for (i of [1, 2, 3]; track i) {
+            <div class="skeleton-card">
+              <div class="skeleton-line skeleton-badge"></div>
+              <div class="skeleton-line skeleton-title"></div>
+              <div class="skeleton-line skeleton-title-sub"></div>
+              <div class="skeleton-line skeleton-author"></div>
+              <div class="skeleton-line skeleton-source"></div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- Error Banner -->
+    @if (pubmedService.errorMessage() && !pubmedService.isLoading()) {
+      <div class="error-banner">
+        <svg class="error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <div class="error-content">
+          <h4 class="error-title">Search Request Failed</h4>
+          <p class="error-desc">{{ pubmedService.errorMessage() }}</p>
+        </div>
+        <button type="button" class="btn btn-secondary" (click)="onSearchSubmit()">Retry</button>
+      </div>
+    }
+
+    <!-- Results Toolbar & Cards -->
+    @if (!pubmedService.isLoading() && pubmedService.hasSearched() && !pubmedService.errorMessage()) {
+      
+      @if (pubmedService.articles().length > 0) {
+        <!-- Results Stats & Controls -->
+        <div class="results-toolbar">
+          <div class="stats-info">
+            <span class="found-count">{{ totalFound() | number }}</span>
+            <span class="stats-text">
+              citations found &bull; Showing
+              <strong>{{ currentRange().start }}–{{ currentRange().end }}</strong>
+            </span>
+          </div>
+
+          <div class="toolbar-controls">
+            <div class="page-size-selector">
+              <label for="pageSizeSelect">Per page:</label>
+              <select
+                id="pageSizeSelect"
+                class="custom-select"
+                [value]="selectedPageSize()"
+                (change)="onPageSizeChange($event)">
+                @for (size of pageSizeOptions; track size) {
+                  <option [value]="size">{{ size }}</option>
+                }
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cards List -->
+        <div class="cards-list">
+          @for (article of pubmedService.articles(); track article.pmid) {
+            <app-pubmed-card [article]="article"></app-pubmed-card>
+          }
+        </div>
+
+        <!-- Pagination Controls -->
+        @if (totalPages() > 1) {
+          <div class="pagination-bar">
+            <button
+              type="button"
+              class="page-btn nav-btn"
+              [disabled]="pubmedService.pageIndex() === 0"
+              (click)="previousPage()">
+              <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+              Previous
+            </button>
+
+            <div class="page-indicator">
+              Page <strong>{{ pubmedService.pageIndex() + 1 }}</strong> of <strong>{{ totalPages() | number }}</strong>
+            </div>
+
+            <button
+              type="button"
+              class="page-btn nav-btn"
+              [disabled]="pubmedService.pageIndex() >= totalPages() - 1"
+              (click)="nextPage()">
+              Next
+              <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </button>
+          </div>
+        }
+      } @else {
+        <!-- No results found -->
+        <div class="no-results-state">
+          <svg class="no-results-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            <line x1="8" y1="11" x2="14" y2="11"></line>
+          </svg>
+          <h3>No PubMed records found</h3>
+          <p>No matching citations were returned for "<em>{{ pubmedService.currentTerm() }}</em>". Try refining your keywords or checking spelling.</p>
+        </div>
+      }
+
+    }
+
+    <!-- Initial Welcome State (Before search) -->
+    @if (!pubmedService.hasSearched() && !pubmedService.isLoading()) {
+      <div class="welcome-guide">
+        <div class="guide-cards-grid">
+          <div class="guide-card">
+            <div class="guide-icon-box">🔍</div>
+            <h4>E-utilities Integration</h4>
+            <p>Live querying of NCBI Entrez E-utilities (<code>esearch</code> and <code>efetch</code>) with JSON and XML parsing.</p>
+          </div>
+
+          @if (isWord) {
+            <div class="guide-card">
+              <div class="guide-icon-box">📝</div>
+              <h4>Word In-Text Citation</h4>
+              <p>Click <strong>Insert Citation</strong> to insert an in-text citation at your cursor and automatically append the full reference to the end of the Word document.</p>
+            </div>
+
+            <div class="guide-card">
+              <div class="guide-icon-box">📑</div>
+              <h4>Automatic Bibliography</h4>
+              <p>Maintains a designated <strong>References</strong> section at the end of the document without duplicate entries.</p>
+            </div>
+          } @else {
+            <div class="guide-card">
+              <div class="guide-icon-box">📋</div>
+              <h4>Copy Citation</h4>
+              <p>Click <strong>Copy Citation</strong> to quickly copy formatted citation text directly to your clipboard.</p>
+            </div>
+
+            <div class="guide-card">
+              <div class="guide-icon-box">📖</div>
+              <h4>Abstract & Details</h4>
+              <p>Click <strong>Read Abstract</strong> or the info icon to inspect structured abstracts and full publication details.</p>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+  </div>
+</div>

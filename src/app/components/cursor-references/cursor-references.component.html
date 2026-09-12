@@ -1,0 +1,294 @@
+<div class="cursor-references-container">
+  
+  <!-- Non-Word Fallback Notice -->
+  @if (!isWord) {
+    <div class="non-word-notice">
+      <div class="notice-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+      </div>
+      <div class="notice-content">
+        <h3>Microsoft Word Host Required</h3>
+        <p>
+          Live cursor reference extraction automatically tracks and inspects citations at sentence granularity as you navigate through text in Microsoft Word documents.
+        </p>
+        <a routerLink="/" class="btn btn-primary">Go to PubMed Search</a>
+      </div>
+    </div>
+  } @else {
+
+    <!-- Removal Status Alert Banner -->
+    @if (removalStatus(); as status) {
+      <div class="removal-banner" [class.success]="status.success" [class.error]="!status.success">
+        <svg class="status-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          @if (status.success) {
+            <polyline points="20 6 9 17 4 12"></polyline>
+          } @else {
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          }
+        </svg>
+        <span>{{ status.text }}</span>
+      </div>
+    }
+
+    <!-- Inspector Top Controls Bar -->
+    <div class="inspector-header">
+      <div class="header-left">
+        <div class="tracking-status-badge" [class.paused]="!tracker.isActive()">
+          <span class="status-dot"></span>
+          <span class="status-label">
+            {{ tracker.isActive() ? 'Tracking Cursor' : 'Tracking Paused' }}
+          </span>
+        </div>
+
+        <!-- Granularity Mode Selector -->
+        <div class="granularity-switch">
+          <button
+            type="button"
+            class="granularity-btn"
+            [class.selected]="granularityMode === 'sentence'"
+            (click)="setGranularityMode('sentence')"
+            title="Inspect references by sentence granularity">
+            <svg class="granularity-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+            Sentence
+          </button>
+          <button
+            type="button"
+            class="granularity-btn"
+            [class.selected]="granularityMode === 'paragraph'"
+            (click)="setGranularityMode('paragraph')"
+            title="Inspect all references across current paragraph">
+            <svg class="granularity-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+            </svg>
+            Paragraph
+          </button>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <span class="count-badge" [class.highlight]="displayedReferences.length > 0">
+          {{ displayedReferences.length }} {{ displayedReferences.length === 1 ? 'Reference' : 'References' }}
+        </span>
+
+        <button
+          type="button"
+          class="action-btn"
+          [class.active]="tracker.isActive()"
+          (click)="toggleTracking()"
+          [title]="tracker.isActive() ? 'Pause live tracking' : 'Resume live tracking'">
+          @if (tracker.isActive()) {
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="6" y="4" width="4" height="16"></rect>
+              <rect x="14" y="4" width="4" height="16"></rect>
+            </svg>
+          } @else {
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+          }
+        </button>
+
+        <button
+          type="button"
+          class="action-btn icon-only"
+          (click)="rescan()"
+          [disabled]="tracker.isScanning()"
+          title="Rescan cursor position">
+          <svg class="refresh-icon" [class.spin]="tracker.isScanning()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="23 4 23 10 17 10"></polyline>
+            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Sentence Carousel / Navigator (when paragraph has multiple sentences) -->
+    @if (sentences.length > 1) {
+      <div class="sentence-navigator">
+        <span class="nav-title">Sentences in Current Paragraph:</span>
+        <div class="sentence-chips-scroll">
+          @for (s of sentences; track s.sentenceIndex) {
+            <button
+              type="button"
+              class="sentence-chip"
+              [class.active]="s.isActive"
+              [class.has-citations]="s.references.length > 0"
+              (click)="selectSentence(s.sentenceIndex)">
+              @if (s.isActive) {
+                <span class="active-dot"></span>
+              }
+              <span class="chip-label">S{{ s.sentenceIndex + 1 }}</span>
+              @if (s.references.length > 0) {
+                <span class="chip-badge">{{ s.references.length }}</span>
+              }
+            </button>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- Active Text Context Card -->
+    @if (granularityMode === 'sentence' && activeSentence) {
+      <div class="context-card sentence-focus-card">
+        <div class="context-header">
+          <div class="context-title-group">
+            <span class="target-icon">🎯</span>
+            <span class="context-label">
+              Active Sentence (Sentence {{ activeSentenceIndex + 1 }} of {{ sentences.length }})
+            </span>
+          </div>
+
+          <span class="granularity-indicator-badge">Sentence Granularity</span>
+        </div>
+
+        <p class="context-snippet active-sentence-snippet">
+          &ldquo;{{ activeSentence.text }}&rdquo;
+        </p>
+      </div>
+    } @else if (tracker.paragraphText()) {
+      <div class="context-card paragraph-focus-card">
+        <div class="context-header">
+          <div class="context-title-group">
+            <svg class="context-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+            </svg>
+            <span class="context-label">Entire Paragraph</span>
+          </div>
+
+          <span class="granularity-indicator-badge">Paragraph Granularity</span>
+        </div>
+
+        <p class="context-snippet">
+          &ldquo;{{ tracker.paragraphText() }}&rdquo;
+        </p>
+      </div>
+    }
+
+    <!-- Scanning Spinner -->
+    @if (tracker.isScanning()) {
+      <div class="scanning-bar">
+        <span class="spinner-icon"></span>
+        <span>Scanning text and resolving PubMed references at cursor...</span>
+      </div>
+    }
+
+    <!-- References List -->
+    @if (displayedReferences.length > 0) {
+      <div class="references-stream">
+        @for (ref of displayedReferences; track ref.article.pmid) {
+          <div class="reference-item-container" [class.direct-focus]="ref.isDirectMatch">
+            
+            <div class="item-meta-bar">
+              <div class="meta-badges">
+                @if (ref.isDirectMatch) {
+                  <span class="badge direct-badge">
+                    <span class="bullet-glow"></span>
+                    Direct Cursor Citation
+                  </span>
+                }
+                
+                @if (ref.sourceType === 'biblion-control') {
+                  <span class="badge biblion-tag-badge">Biblion In-Text Citation</span>
+                } @else {
+                  <span class="badge text-extract-badge">Detected in Text</span>
+                }
+
+                @if (granularityMode === 'sentence' && activeSentence) {
+                  <span class="badge sentence-tag-badge">Sentence {{ activeSentenceIndex + 1 }}</span>
+                }
+              </div>
+
+              <div class="item-actions-group">
+                <span class="pmid-tag">PMID: {{ ref.article.pmid }}</span>
+                <button
+                  type="button"
+                  class="quick-remove-btn"
+                  [disabled]="isRemovingRef() === ref.article.pmid"
+                  (click)="removeReference(ref.article)"
+                  title="Remove this reference from Word document">
+                  @if (isRemovingRef() === ref.article.pmid) {
+                    <span class="mini-spinner"></span>
+                  } @else {
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="3 6 5 6 21 6"></polyline>
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                  }
+                  <span>Remove</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- PubMed Abstract & Citation Card -->
+            <app-pubmed-card
+              [article]="ref.article"
+              [showInsert]="false"
+              [showRemove]="true"
+              (removeClicked)="removeReference($event)">
+            </app-pubmed-card>
+          </div>
+        }
+      </div>
+    } @else if (!tracker.isScanning()) {
+      <!-- Empty State for Current Sentence/Paragraph -->
+      <div class="empty-inspector-state">
+        <div class="empty-icon-circle">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            <line x1="11" y1="8" x2="11" y2="14"></line>
+            <line x1="8" y1="11" x2="14" y2="11"></line>
+          </svg>
+        </div>
+
+        @if (granularityMode === 'sentence' && tracker.extractedReferences().length > 0) {
+          <h3>No Citations in this Sentence</h3>
+          <p>
+            The active sentence has no references, but <strong>{{ tracker.extractedReferences().length }} reference(s)</strong> are cited in other sentences of this paragraph.
+          </p>
+          <div class="empty-actions">
+            <button type="button" class="btn btn-secondary" (click)="setGranularityMode('paragraph')">
+              View All {{ tracker.extractedReferences().length }} Paragraph Citations
+            </button>
+          </div>
+        } @else {
+          <h3>No References at Current Cursor</h3>
+          <p>
+            Move your cursor or click on any sentence or citation in your Word document. Biblion automatically extracts and presents references specifically for each sentence.
+          </p>
+          <div class="empty-actions">
+            <button
+              type="button"
+              class="btn btn-outline"
+              (click)="scanEntireDocument()">
+              <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="12" y1="18" x2="12" y2="12"></line>
+                <line x1="9" y1="15" x2="15" y2="15"></line>
+              </svg>
+              Scan All Document Citations
+            </button>
+          </div>
+        }
+      </div>
+    }
+
+  }
+
+</div>

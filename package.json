@@ -1,0 +1,43 @@
+{
+  "name": "biblion-app",
+  "version": "0.0.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "start:ssl": "node scripts/start-ssl.js",
+    "sideload": "./scripts/sideload.sh install word",
+    "sideload:word": "./scripts/sideload.sh install word",
+    "sideload:win": "powershell -ExecutionPolicy Bypass -File ./scripts/sideload.ps1 install",
+    "sideload:excel": "./scripts/sideload.sh install excel",
+    "sideload:cli": "office-addin-debugging start manifest.xml desktop --app word",
+    "unsideload": "./scripts/sideload.sh remove word",
+    "unsideload:win": "powershell -ExecutionPolicy Bypass -File ./scripts/sideload.ps1 remove",
+    "unsideload:cli": "office-addin-debugging stop manifest.xml desktop --app word",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng test"
+  },
+  "private": true,
+  "license": "PolyForm-Noncommercial-1.0.0",
+  "packageManager": "npm@11.17.0",
+  "dependencies": {
+    "@angular/common": "^22.1.0",
+    "@angular/compiler": "^22.1.0",
+    "@angular/core": "^22.1.0",
+    "@angular/forms": "^22.1.0",
+    "@angular/platform-browser": "^22.1.0",
+    "@angular/router": "^22.1.0",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0"
+  },
+  "devDependencies": {
+    "@angular/build": "^22.1.4",
+    "@angular/cli": "^22.1.4",
+    "@angular/compiler-cli": "^22.1.0",
+    "@types/office-js": "^1.0.40",
+    "jsdom": "^28.0.0",
+    "prettier": "^3.8.1",
+    "typescript": "~6.0.2",
+    "vitest": "^4.0.8"
+  }
+}

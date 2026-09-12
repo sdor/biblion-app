@@ -1,0 +1,124 @@
+@if (isWordHost) {
+<div class="style-selector-container">
+  <!-- Trigger Pill Button -->
+  <button
+    type="button"
+    class="style-trigger-btn"
+    [class.active]="isOpen()"
+    (click)="toggleDropdown($event)"
+    title="Change Citation Style"
+    aria-label="Select Citation Style">
+    <div class="style-icon-box">
+      <span class="style-active-circle" title="Active citation style"></span>
+      <svg class="style-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+        <path d="M9 7h6M9 11h6"></path>
+      </svg>
+    </div>
+    <div class="style-text-content">
+      <span class="style-label">Style</span>
+      <span class="style-name">{{ currentStyle.shortName }}</span>
+    </div>
+    <svg class="chevron-icon" [class.rotated]="isOpen()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <polyline points="6 9 12 15 18 9"></polyline>
+    </svg>
+  </button>
+
+  <!-- Dropdown Panel -->
+  @if (isOpen()) {
+    <div class="style-dropdown-panel" (click)="$event.stopPropagation()">
+      <div class="dropdown-header">
+        <div class="header-title">
+          <h4>Citation Representation Style</h4>
+          <p>Choose how in-text citations and document references are formatted</p>
+        </div>
+        <button type="button" class="close-btn" (click)="closeDropdown()" title="Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Styles Grid -->
+      <div class="styles-list">
+        @for (style of availableStyles; track style.id) {
+          <div
+            class="style-item"
+            [class.selected]="style.id === currentStyle.id"
+            (click)="selectStyle(style.id)">
+            <div class="item-header">
+              <div class="radio-indicator" [class.is-applied]="style.id === currentStyle.id">
+                <span class="radio-dot"></span>
+              </div>
+              <span class="item-name">{{ style.name }}</span>
+              <span class="category-badge" [attr.data-cat]="style.category">
+                {{ style.category }}
+              </span>
+            </div>
+            <p class="item-desc">{{ style.description }}</p>
+          </div>
+        }
+      </div>
+
+      <!-- Active Style Live Preview Box -->
+      <div class="style-preview-box">
+        <h5 class="preview-title">Live Style Preview ({{ currentStyle.name }})</h5>
+        
+        <div class="preview-row">
+          <span class="preview-label">Single In-Text:</span>
+          <code class="preview-code">{{ currentStyle.exampleInTextSingle }}</code>
+        </div>
+
+        <div class="preview-row">
+          <span class="preview-label">Grouped In-Text:</span>
+          <code class="preview-code">{{ currentStyle.exampleInTextGroup }}</code>
+        </div>
+
+        <div class="preview-row bib-row">
+          <span class="preview-label">Bibliography Entry:</span>
+          <p class="preview-bib">{{ currentStyle.exampleBibliography }}</p>
+        </div>
+      </div>
+
+      <!-- Status banner if reformatting occurred -->
+      @if (reformatStatus(); as status) {
+        <div class="reformat-banner" [class.success]="status.success" [class.error]="!status.success">
+          <svg class="banner-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            @if (status.success) {
+              <polyline points="20 6 9 17 4 12"></polyline>
+            } @else {
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            }
+          </svg>
+          <span>{{ status.text }}</span>
+        </div>
+      }
+
+      <!-- Word Host Actions -->
+      @if (isWordHost) {
+        <div class="dropdown-footer">
+          <button
+            type="button"
+            class="reformat-doc-btn"
+            [disabled]="isReformatting"
+            (click)="reformatDocument($event)">
+            @if (isReformatting) {
+              <span class="btn-spinner"></span>
+              <span>Reformatting Document...</span>
+            } @else {
+              <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+              </svg>
+              <span>Reformat All Citations in Word Document</span>
+            }
+          </button>
+        </div>
+      }
+    </div>
+  }
+</div>
+}
