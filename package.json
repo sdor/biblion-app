@@ -5,6 +5,7 @@
     "ng": "ng",
     "start": "ng serve",
     "start:ssl": "node scripts/start-ssl.js",
+    "generate-ssl": "node scripts/generate-ssl.js",
     "sideload": "./scripts/sideload.sh install word",
     "sideload:word": "./scripts/sideload.sh install word",
     "sideload:win": "powershell -ExecutionPolicy Bypass -File ./scripts/sideload.ps1 install",

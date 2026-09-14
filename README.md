@@ -27,6 +27,10 @@
     - [Step 3: Sideload Manifest into Word (Windows)](#step-3-sideload-manifest-into-word-windows)
     - [Step 4: Launch and Use Add-in in Word (Windows)](#step-4-launch-and-use-add-in-in-word-windows)
     - [Step 5: Unsideload / Clean Up (Windows)](#step-5-unsideload--clean-up-windows)
+  - [D. Local Network Testing & Remote Machine SSL Setup](#d-local-network-testing--remote-machine-ssl-setup)
+    - [Step 1: Generate Network SSL Certificate](#step-1-generate-network-ssl-certificate)
+    - [Step 2: Start Dev Server with Network SSL](#step-2-start-dev-server-with-network-ssl)
+    - [Step 3: Mark Certificate as Trusted on Remote Machines](#step-3-mark-certificate-as-trusted-on-remote-machines)
 - [Troubleshooting Local Word Deployment](#troubleshooting-local-word-deployment)
   - [macOS Troubleshooting](#macos-troubleshooting)
   - [Windows Troubleshooting](#windows-troubleshooting)
@@ -289,6 +293,71 @@ npm run unsideload:cli
 
 ---
 
+### D. Local Network Testing & Remote Machine SSL Setup
+
+When testing the add-in in Microsoft Word running on another device on your local network (e.g. testing from a Windows PC, Mac, or iPad connected to your dev machine's local IP address like `192.168.1.239`), Word requires a valid SSL certificate with **Subject Alternative Names (SAN)** for your local IP address.
+
+#### Step 1: Generate Network SSL Certificate
+
+On your host machine, run:
+
+```bash
+npm run generate-ssl
+```
+
+This automatically detects your active local IPv4 addresses (e.g., `192.168.1.239`) and generates `server.crt` and `server.key` inside `biblion-app/certs/` containing proper SAN entries for `localhost`, `127.0.0.1`, and your local network IP.
+
+*(Note: If `mkcert` is installed via Homebrew (`brew install mkcert`), the script will automatically use `mkcert` for zero-warning local trust).*
+
+#### Step 2: Start Dev Server with Network SSL
+
+```bash
+npm run start:ssl
+```
+
+This starts the dev server listening on `0.0.0.0:4200` using `biblion-app/certs/server.crt`. Verify that opening `https://<YOUR_LOCAL_IP>:4200` from another device loads the web app.
+
+#### Step 3: Mark Certificate as Trusted on Remote Machines
+
+Transfer `biblion-app/certs/server.crt` (or `$(mkcert -CAROOT)/rootCA.pem` if using `mkcert`) to the remote machine, then follow the instructions for the remote operating system:
+
+##### 🪟 Windows Remote Machine (Word Desktop / Edge)
+1. Double-click `server.crt` > click **Install Certificate...**.
+2. Select **Local Machine** > click **Next** (confirm UAC prompt if shown).
+3. Select **Place all certificates in the following store** > click **Browse...**.
+4. Choose **Trusted Root Certification Authorities** > click **OK** > **Next** > **Finish**.
+5. Click **Yes** on the security warning dialog.
+6. Restart Microsoft Word.
+
+##### 🍏 macOS Remote Machine (Word Desktop / Safari)
+1. Double-click `server.crt` to open in **Keychain Access**.
+2. Add to **System** keychain.
+3. Double-click the certificate in Keychain Access > expand **Trust**.
+4. Change **When using this certificate** to **Always Trust**.
+5. Close and save with your admin password.
+6. Quit Word (`Cmd + Q`) and restart it.
+
+##### 📱 iOS / iPadOS Remote Machine (Word for iPad / Safari)
+1. AirDrop or email `server.crt` to the device.
+2. Tap the file > tap **Allow** to download profile.
+3. Open **Settings** > tap **Profile Downloaded** (or **Settings > General > VPN & Device Management**).
+4. Tap **Install** > enter passcode > tap **Install**.
+5. Go to **Settings > General > About > Certificate Trust Settings**.
+6. Under **Enable Full Trust for Root Certificates**, toggle the switch **ON** for your certificate.
+
+##### 🐧 Linux Remote Machine
+```bash
+# Ubuntu / Debian
+sudo cp server.crt /usr/local/share/ca-certificates/biblion-dev.crt
+sudo update-ca-certificates
+
+# Fedora / RHEL
+sudo cp server.crt /etc/pki/ca-trust/source/anchors/biblion-dev.crt
+sudo update-ca-trust
+```
+
+---
+
 ## Troubleshooting Local Word Deployment
 
 ### macOS Troubleshooting
@@ -368,6 +437,7 @@ Since Word on Windows uses the Microsoft Edge WebView2 control:
 |---|---|---|
 | `npm start` | All | Starts local development server on `http://localhost:4200` (standalone browser mode) |
 | `npm run start:ssl` | All | Starts local HTTPS dev server on `https://localhost:4200` (resolves certificates cross-platform) |
+| `npm run generate-ssl` | All | Generates SAN SSL certificate (`server.crt` & `server.key`) for local IP & localhost for local network testing |
 | `npm run sideload` | macOS | Sideloads `manifest.xml` into Microsoft Word for Mac (`wef/` directory) |
 | `npm run sideload:word` | macOS | Alias for `npm run sideload` |
 | `npm run sideload:win` | Windows | Sideloads manifest into Windows Office Developer Registry via PowerShell |

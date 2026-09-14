@@ -4,9 +4,17 @@ const os = require('os');
 const path = require('path');
 const { spawn } = require('child_process');
 
-const certDir = path.join(os.homedir(), '.office-addin-dev-certs');
-const certPath = path.join(certDir, 'localhost.crt');
-const keyPath = path.join(certDir, 'localhost.key');
+const fs = require('fs');
+
+const localCertPath = path.join(__dirname, '..', 'certs', 'server.crt');
+const localKeyPath = path.join(__dirname, '..', 'certs', 'server.key');
+
+const devCertDir = path.join(os.homedir(), '.office-addin-dev-certs');
+const devCertPath = path.join(devCertDir, 'localhost.crt');
+const devKeyPath = path.join(devCertDir, 'localhost.key');
+
+const certPath = fs.existsSync(localCertPath) ? localCertPath : devCertPath;
+const keyPath = fs.existsSync(localKeyPath) ? localKeyPath : devKeyPath;
 
 const isWindows = process.platform === 'win32';
 const npxCmd = isWindows ? 'npx.cmd' : 'npx';
