@@ -28,6 +28,20 @@
     </div>
 
     <div class="header-actions">
+      @if (authService.isAuthenticated()) {
+        <button
+          type="button"
+          class="btn btn-sync"
+          [disabled]="cloudSync.isSyncing()"
+          (click)="cloudSync.syncWithCloud()"
+          title="Synchronize with Biblion Cloud API">
+          <svg class="btn-icon" [class.spinning]="cloudSync.isSyncing()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+          </svg>
+          {{ cloudSync.isSyncing() ? 'Syncing...' : 'Sync Cloud' }}
+        </button>
+      }
+
       <button type="button" class="btn btn-export" (click)="openExportModal('bibtex')">
         <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -63,9 +77,9 @@
           class="search-input"
           placeholder="Filter saved articles by title, author, PMID, journal, or notes..."
           [ngModel]="searchQuery()"
-          (ngModelChange)="searchQuery.set($event)" />
+          (ngModelChange)="onSearchChange($event)" />
         @if (searchQuery()) {
-          <button type="button" class="clear-search-btn" (click)="searchQuery.set('')" title="Clear search">
+          <button type="button" class="clear-search-btn" (click)="onSearchChange('')" title="Clear search">
             &times;
           </button>
         }
@@ -74,7 +88,7 @@
       <!-- Sorting Selector -->
       <div class="sort-wrapper">
         <label class="sort-label">Sort by:</label>
-        <select class="sort-select" [ngModel]="sortBy()" (ngModelChange)="sortBy.set($event)">
+        <select class="sort-select" [ngModel]="sortBy()" (ngModelChange)="onSortChange($event)">
           <option value="dateSaved">Date Saved</option>
           <option value="title">Title</option>
           <option value="year">Publication Year</option>
@@ -84,7 +98,7 @@
         <button
           type="button"
           class="sort-order-btn"
-          (click)="sortOrder.set(sortOrder() === 'asc' ? 'desc' : 'asc')"
+          (click)="toggleSortOrder()"
           [title]="sortOrder() === 'asc' ? 'Ascending (click for Descending)' : 'Descending (click for Ascending)'">
           @if (sortOrder() === 'asc') { &#8593; } @else { &#8595; }
         </button>
@@ -182,8 +196,56 @@
         }
       </div>
     } @else {
+      <!-- Pagination Top Bar -->
+      <div class="pagination-bar top-pagination-bar">
+        <div class="pagination-info">
+          Showing <strong>{{ currentRange().start }}–{{ currentRange().end }}</strong> of <strong>{{ totalRecords() }}</strong> saved articles
+        </div>
+
+        <div class="pagination-controls">
+          <div class="page-size-selector">
+            <label class="page-size-label">Per page:</label>
+            <select class="page-size-select" [value]="selectedPageSize()" (change)="onPageSizeChange($event)">
+              @for (size of pageSizeOptions; track size) {
+                <option [value]="size">{{ size }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="pagination-nav-group">
+            <button
+              type="button"
+              class="page-nav-btn"
+              [disabled]="pageIndex() === 0"
+              (click)="previousPage()"
+              title="Previous page">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="nav-icon">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+              Prev
+            </button>
+
+            <span class="page-nav-text">
+              Page <strong>{{ pageIndex() + 1 }}</strong> of <strong>{{ totalPages() }}</strong>
+            </span>
+
+            <button
+              type="button"
+              class="page-nav-btn"
+              [disabled]="pageIndex() >= totalPages() - 1"
+              (click)="nextPage()"
+              title="Next page">
+              Next
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="nav-icon">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
       <div class="records-grid">
-        @for (record of filteredRecords(); track record.pmid) {
+        @for (record of paginatedRecords(); track record.pmid) {
           <div class="record-wrapper-card">
             <!-- Top Record Ribbon (Favorites & Tags Header) -->
             <div class="record-top-ribbon">
@@ -295,6 +357,41 @@
             }
           </div>
         }
+      </div>
+
+      <!-- Bottom Pagination Bar -->
+      <div class="pagination-bar bottom-pagination-bar">
+        <div class="pagination-info">
+          Showing <strong>{{ currentRange().start }}–{{ currentRange().end }}</strong> of <strong>{{ totalRecords() }}</strong> saved articles
+        </div>
+
+        <div class="pagination-nav-group">
+          <button
+            type="button"
+            class="page-nav-btn"
+            [disabled]="pageIndex() === 0"
+            (click)="previousPage()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="nav-icon">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+            Previous
+          </button>
+
+          <span class="page-nav-text">
+            Page <strong>{{ pageIndex() + 1 }}</strong> of <strong>{{ totalPages() }}</strong>
+          </span>
+
+          <button
+            type="button"
+            class="page-nav-btn"
+            [disabled]="pageIndex() >= totalPages() - 1"
+            (click)="nextPage()">
+            Next
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="nav-icon">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </button>
+        </div>
       </div>
     }
   </main>

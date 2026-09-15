@@ -86,6 +86,11 @@
                 <span class="user-display-name">
                   {{ authService.currentUser()?.name || authService.currentUser()?.email_address }}
                 </span>
+                @if (cloudSync.isSyncing()) {
+                  <span class="sync-indicator-spinner" title="Syncing with Cloud..."></span>
+                } @else if (cloudSync.lastSyncedAt()) {
+                  <span class="sync-indicator-dot" title="Synced with Cloud"></span>
+                }
                 <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <polyline points="6 9 12 15 18 9"></polyline>
                 </svg>
@@ -105,6 +110,18 @@
                   </div>
 
                   <div class="dropdown-divider"></div>
+
+                  <button
+                    type="button"
+                    class="dropdown-item sync-item"
+                    role="menuitem"
+                    [disabled]="cloudSync.isSyncing()"
+                    (click)="triggerSync()">
+                    <svg class="item-icon" [class.spinning]="cloudSync.isSyncing()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+                    </svg>
+                    <span>{{ cloudSync.isSyncing() ? 'Syncing Library...' : 'Sync Cloud Library Now' }}</span>
+                  </button>
 
                   <button
                     type="button"

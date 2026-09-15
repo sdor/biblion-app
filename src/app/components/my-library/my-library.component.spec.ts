@@ -28,12 +28,22 @@ describe('MyLibraryComponent', () => {
     expect(component.selectedCollectionId()).toBeNull();
   });
 
-  it('should clear all filters', () => {
+  it('should clear all filters and reset pageIndex', () => {
     component.searchQuery.set('CRISPR');
     component.setFilterTag('genomics');
+    component.pageIndex.set(2);
     component.clearAllFilters();
     expect(component.searchQuery()).toBe('');
     expect(component.selectedTag()).toBeNull();
     expect(component.selectedCollectionId()).toBeNull();
+    expect(component.pageIndex()).toBe(0);
+  });
+
+  it('should compute pagination metrics correctly', () => {
+    component.selectedPageSize.set(5);
+    expect(component.pageIndex()).toBe(0);
+    component.nextPage();
+    // with 0 items, totalPages is 1, pageIndex stays 0
+    expect(component.pageIndex()).toBe(0);
   });
 });

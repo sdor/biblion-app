@@ -2,6 +2,8 @@ import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LocalBibliographyService } from '../../services/local-bibliography.service';
+import { CloudSyncService } from '../../services/cloud-sync.service';
+import { AuthService } from '../../services/auth.service';
 import { PubmedCardComponent } from '../pubmed-card/pubmed-card.component';
 import { SavedArticleRecord, BibliographyCollection, LibraryFilterOptions } from '../../models/library.model';
 
@@ -14,6 +16,8 @@ import { SavedArticleRecord, BibliographyCollection, LibraryFilterOptions } from
 })
 export class MyLibraryComponent implements OnInit {
   readonly bibService = inject(LocalBibliographyService);
+  readonly cloudSync = inject(CloudSyncService);
+  readonly authService = inject(AuthService);
 
   readonly searchQuery = signal<string>('');
   readonly selectedTag = signal<string | null>(null);
@@ -36,6 +40,11 @@ export class MyLibraryComponent implements OnInit {
   readonly exportText = signal<string>('');
   readonly copySuccess = signal<boolean>(false);
 
+  // Pagination state
+  readonly pageIndex = signal<number>(0);
+  readonly selectedPageSize = signal<number>(5);
+  readonly pageSizeOptions = [3, 5, 10, 25, 50];
+
   readonly filteredRecords = computed(() => {
     const opts: LibraryFilterOptions = {
       searchQuery: this.searchQuery(),
@@ -48,22 +57,88 @@ export class MyLibraryComponent implements OnInit {
     return this.bibService.filterArticles(opts);
   });
 
+  readonly totalRecords = computed(() => this.filteredRecords().length);
+
+  readonly totalPages = computed(() => {
+    const total = this.totalRecords();
+    const size = this.selectedPageSize();
+    if (total === 0 || size === 0) return 1;
+    return Math.ceil(total / size);
+  });
+
+  readonly currentRange = computed(() => {
+    const total = this.totalRecords();
+    if (total === 0) return { start: 0, end: 0 };
+    const pageIndex = this.pageIndex();
+    const pageSize = this.selectedPageSize();
+    const start = pageIndex * pageSize + 1;
+    const end = Math.min((pageIndex + 1) * pageSize, total);
+    return { start, end };
+  });
+
+  readonly paginatedRecords = computed(() => {
+    const records = this.filteredRecords();
+    const pageIndex = this.pageIndex();
+    const pageSize = this.selectedPageSize();
+    const start = pageIndex * pageSize;
+    return records.slice(start, start + pageSize);
+  });
+
   ngOnInit() {
     this.bibService.loadLibrary();
+  }
+
+  onSearchChange(val: string) {
+    this.searchQuery.set(val);
+    this.pageIndex.set(0);
+  }
+
+  onSortChange(val: 'dateSaved' | 'title' | 'year' | 'author') {
+    this.sortBy.set(val);
+    this.pageIndex.set(0);
+  }
+
+  toggleSortOrder() {
+    this.sortOrder.set(this.sortOrder() === 'asc' ? 'desc' : 'asc');
+    this.pageIndex.set(0);
+  }
+
+  onPageSizeChange(event: Event) {
+    const target = event.target as HTMLSelectElement;
+    const newSize = parseInt(target.value, 10);
+    this.selectedPageSize.set(newSize);
+    this.pageIndex.set(0);
+  }
+
+  goToPage(index: number) {
+    if (index < 0 || index >= this.totalPages()) return;
+    this.pageIndex.set(index);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  nextPage() {
+    this.goToPage(this.pageIndex() + 1);
+  }
+
+  previousPage() {
+    this.goToPage(this.pageIndex() - 1);
   }
 
   setFilterTag(tag: string | null) {
     this.selectedTag.set(tag);
     if (tag) this.selectedCollectionId.set(null);
+    this.pageIndex.set(0);
   }
 
   setFilterCollection(colId: string | null) {
     this.selectedCollectionId.set(colId);
     if (colId) this.selectedTag.set(null);
+    this.pageIndex.set(0);
   }
 
   toggleFavoritesOnly() {
     this.favoritesOnly.update((v) => !v);
+    this.pageIndex.set(0);
   }
 
   clearAllFilters() {
@@ -71,6 +146,7 @@ export class MyLibraryComponent implements OnInit {
     this.selectedTag.set(null);
     this.selectedCollectionId.set(null);
     this.favoritesOnly.set(false);
+    this.pageIndex.set(0);
   }
 
   // --- Favorites & Delete ---

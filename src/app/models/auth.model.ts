@@ -1,7 +1,7 @@
 export interface User {
   id: number;
   email_address: string;
-  name?: string | null;
+  name?: string;
   created_at?: string;
   updated_at?: string;
 }
@@ -11,19 +11,18 @@ export interface AuthResponse {
   user: User;
 }
 
-export interface LoginCredentials {
-  email_address: string;
-  password: string;
+export interface MeResponse {
+  user: User;
 }
 
-export interface RegisterData {
-  email_address: string;
-  password: string;
-  password_confirmation?: string;
-  name?: string;
+export interface SyncPayload {
+  articles?: any[];
+  collections?: any[];
+  deleted_pmids?: string[];
+  deleted_collection_ids?: string[];
 }
 
-export interface ApiErrorResponse {
-  error?: string;
-  errors?: string[];
+export interface SyncResponse {
+  articles: any[];
+  collections: any[];
 }

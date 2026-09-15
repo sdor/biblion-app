@@ -1,5 +1,6 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { IndexedDbService, STORES } from './indexed-db.service';
+import { CloudSyncService } from './cloud-sync.service';
 import { PubmedArticle } from '../models/pubmed.model';
 import { SavedArticleRecord, BibliographyCollection, LibraryFilterOptions } from '../models/library.model';
 
@@ -8,6 +9,7 @@ import { SavedArticleRecord, BibliographyCollection, LibraryFilterOptions } from
 })
 export class LocalBibliographyService {
   private dbService = inject(IndexedDbService);
+  private cloudSync = inject(CloudSyncService);
 
   readonly savedArticles = signal<SavedArticleRecord[]>([]);
   readonly collections = signal<BibliographyCollection[]>([]);
@@ -32,7 +34,24 @@ export class LocalBibliographyService {
   });
 
   constructor() {
+    this.cloudSync.registerRefreshHook(async () => {
+      await this.loadLibraryInternal();
+    });
     this.loadLibrary();
+  }
+
+  private async loadLibraryInternal(): Promise<void> {
+    if (!this.dbService.isSupported()) return;
+    try {
+      const articles = await this.dbService.getAll<SavedArticleRecord>(STORES.ARTICLES);
+      articles.sort((a, b) => b.dateSaved - a.dateSaved);
+      this.savedArticles.set(articles);
+
+      const collections = await this.dbService.getAll<BibliographyCollection>(STORES.COLLECTIONS);
+      this.collections.set(collections);
+    } catch (err: any) {
+      console.error('Failed to reload local bibliography from IndexedDB:', err);
+    }
   }
 
   async loadLibrary(): Promise<void> {
@@ -72,6 +91,7 @@ export class LocalBibliographyService {
 
     await this.dbService.put<SavedArticleRecord>(STORES.ARTICLES, record);
     await this.loadLibrary();
+    this.cloudSync.syncWithCloud();
   }
 
   async removeArticle(pmid: string): Promise<void> {
@@ -91,6 +111,7 @@ export class LocalBibliographyService {
     }
 
     await this.loadLibrary();
+    this.cloudSync.syncWithCloud([pmid]);
   }
 
   async toggleFavorite(pmid: string): Promise<void> {
@@ -104,6 +125,7 @@ export class LocalBibliographyService {
 
     await this.dbService.put<SavedArticleRecord>(STORES.ARTICLES, updated);
     await this.loadLibrary();
+    this.cloudSync.syncWithCloud();
   }
 
   async updateArticleNotes(pmid: string, notes: string): Promise<void> {
@@ -117,6 +139,7 @@ export class LocalBibliographyService {
 
     await this.dbService.put<SavedArticleRecord>(STORES.ARTICLES, updated);
     await this.loadLibrary();
+    this.cloudSync.syncWithCloud();
   }
 
   async updateArticleTags(pmid: string, tags: string[]): Promise<void> {
@@ -130,6 +153,7 @@ export class LocalBibliographyService {
 
     await this.dbService.put<SavedArticleRecord>(STORES.ARTICLES, updated);
     await this.loadLibrary();
+    this.cloudSync.syncWithCloud();
   }
 
   // --- Collection Operations ---
@@ -146,12 +170,14 @@ export class LocalBibliographyService {
     };
     await this.dbService.put<BibliographyCollection>(STORES.COLLECTIONS, col);
     await this.loadLibrary();
+    this.cloudSync.syncWithCloud();
     return id;
   }
 
   async deleteCollection(id: string): Promise<void> {
     await this.dbService.delete(STORES.COLLECTIONS, id);
     await this.loadLibrary();
+    this.cloudSync.syncWithCloud([], [id]);
   }
 
   async addArticleToCollection(collectionId: string, pmid: string): Promise<void> {
@@ -165,6 +191,7 @@ export class LocalBibliographyService {
     };
     await this.dbService.put<BibliographyCollection>(STORES.COLLECTIONS, updated);
     await this.loadLibrary();
+    this.cloudSync.syncWithCloud();
   }
 
   async removeArticleFromCollection(collectionId: string, pmid: string): Promise<void> {
@@ -178,6 +205,7 @@ export class LocalBibliographyService {
     };
     await this.dbService.put<BibliographyCollection>(STORES.COLLECTIONS, updated);
     await this.loadLibrary();
+    this.cloudSync.syncWithCloud();
   }
 
   // --- Filter Helper ---

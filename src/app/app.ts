@@ -7,6 +7,7 @@ import { WordCitationService } from './services/word-citation.service';
 import { WordCursorTrackerService } from './services/word-cursor-tracker.service';
 import { LocalBibliographyService } from './services/local-bibliography.service';
 import { AuthService } from './services/auth.service';
+import { CloudSyncService } from './services/cloud-sync.service';
 
 @Component({
   selector: 'app-root',
@@ -27,6 +28,7 @@ export class App {
   readonly cursorTracker = inject(WordCursorTrackerService);
   readonly bibService = inject(LocalBibliographyService);
   readonly authService = inject(AuthService);
+  readonly cloudSync = inject(CloudSyncService);
   readonly title = signal('Biblion');
 
   readonly isAuthModalOpen = signal<boolean>(false);
@@ -34,6 +36,10 @@ export class App {
 
   get isWordHost(): boolean {
     return this.wordService.isWord();
+  }
+
+  triggerSync(): void {
+    this.cloudSync.syncWithCloud();
   }
 
   openAuthModal(): void {

@@ -321,6 +321,27 @@
     background-color: #f8fafc;
   }
 
+  &.sync-item {
+    color: #0284c7;
+
+    .item-icon {
+      color: #0284c7;
+
+      &.spinning {
+        animation: spin 1s linear infinite;
+      }
+    }
+
+    &:hover:not(:disabled) {
+      background-color: #f0f9ff;
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
   &.signout-item {
     color: #dc2626;
 
@@ -332,6 +353,27 @@
       background-color: #fef2f2;
     }
   }
+}
+
+.sync-indicator-spinner {
+  width: 10px;
+  height: 10px;
+  border: 2px solid #cbd5e1;
+  border-top-color: #0284c7;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.sync-indicator-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #10b981;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 /* Main */
