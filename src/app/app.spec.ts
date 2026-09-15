@@ -65,4 +65,33 @@ describe('App', () => {
     expect(compiled.querySelector('.cursor-nav-item')).toBeTruthy();
     expect(compiled.querySelector('.cursor-nav-item')?.textContent).toContain('Live References');
   });
+
+  it('should display Sign In button when user is not authenticated', async () => {
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('.btn-auth-signin')).toBeTruthy();
+    expect(compiled.querySelector('.btn-auth-signin')?.textContent).toContain('Sign In');
+  });
+
+  it('should toggle auth modal when openAuthModal / closeAuthModal are called', async () => {
+    const fixture = TestBed.createComponent(App);
+    const app = fixture.componentInstance;
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(app.isAuthModalOpen()).toBe(false);
+    app.openAuthModal();
+    fixture.detectChanges();
+    expect(app.isAuthModalOpen()).toBe(true);
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('app-auth-modal')).toBeTruthy();
+
+    app.closeAuthModal();
+    fixture.detectChanges();
+    expect(app.isAuthModalOpen()).toBe(false);
+    expect(compiled.querySelector('app-auth-modal')).toBeNull();
+  });
 });

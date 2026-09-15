@@ -16,6 +16,14 @@
           @if (article.doi) {
             <span class="badge doi-badge">DOI: {{ article.doi }}</span>
           }
+          @if (isSaved) {
+            <span class="badge saved-badge">
+              <svg viewBox="0 0 24 24" fill="currentColor" stroke="none" style="width:12px;height:12px;margin-right:3px;">
+                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+              </svg>
+              In Library
+            </span>
+          }
           @if (wordService.isWord()) {
             <span class="badge word-badge">Word Ready</span>
           }
@@ -92,6 +100,18 @@
               }
             </button>
           }
+
+          <button
+            type="button"
+            class="btn btn-save"
+            [class.is-saved]="isSaved"
+            (click)="toggleSaveLibrary($event)"
+            [title]="isSaved ? 'Remove from your local IndexedDB library' : 'Save to your local IndexedDB library'">
+            <svg class="btn-icon" viewBox="0 0 24 24" [attr.fill]="isSaved ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+            </svg>
+            <span>{{ isSaved ? 'Saved in Library' : 'Save to Library' }}</span>
+          </button>
 
           <button type="button" class="btn btn-outline" (click)="copyCitation($event)">
             <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -230,6 +250,18 @@
               }
             </button>
           }
+
+          <button
+            type="button"
+            class="btn btn-save"
+            [class.is-saved]="isSaved"
+            (click)="toggleSaveLibrary($event)"
+            [title]="isSaved ? 'Remove from your local IndexedDB library' : 'Save to your local IndexedDB library'">
+            <svg class="btn-icon" viewBox="0 0 24 24" [attr.fill]="isSaved ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+            </svg>
+            <span>{{ isSaved ? 'Saved in Library' : 'Save to Library' }}</span>
+          </button>
 
           <button type="button" class="btn btn-secondary" (click)="openPubMed($event)">
             <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

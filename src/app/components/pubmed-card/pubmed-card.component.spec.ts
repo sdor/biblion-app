@@ -115,7 +115,7 @@ describe('PubmedCardComponent', () => {
   });
 
   it('should not render Insert Citation button when showInsert is false', () => {
-    component.showInsert = false;
+    fixture.componentRef.setInput('showInsert', false);
     fixture.detectChanges();
 
     const el = fixture.nativeElement as HTMLElement;
@@ -124,7 +124,7 @@ describe('PubmedCardComponent', () => {
 
   it('should not render Insert Citation button when opened in browser (!isWord)', () => {
     wordService.isWord.set(false);
-    component.showInsert = true;
+    fixture.componentRef.setInput('showInsert', true);
     fixture.detectChanges();
 
     const el = fixture.nativeElement as HTMLElement;
@@ -133,7 +133,7 @@ describe('PubmedCardComponent', () => {
 
   it('should render Insert Citation button when running inside Word and showInsert is true', () => {
     wordService.isWord.set(true);
-    component.showInsert = true;
+    fixture.componentRef.setInput('showInsert', true);
     fixture.detectChanges();
 
     const el = fixture.nativeElement as HTMLElement;
@@ -141,7 +141,7 @@ describe('PubmedCardComponent', () => {
   });
 
   it('should render remove citation button when showRemove is true', async () => {
-    component.showRemove = true;
+    fixture.componentRef.setInput('showRemove', true);
     fixture.detectChanges();
 
     const el = fixture.nativeElement as HTMLElement;
@@ -164,7 +164,7 @@ describe('PubmedCardComponent', () => {
   });
 
   it('should emit removeClicked when remove button is clicked and removeClicked is listened to', async () => {
-    component.showRemove = true;
+    fixture.componentRef.setInput('showRemove', true);
     let emittedArticle: PubmedArticle | null = null;
     component.removeClicked.subscribe((art) => {
       emittedArticle = art;

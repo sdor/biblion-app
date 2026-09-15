@@ -29,6 +29,8 @@ const args = [
   certPath,
   '--ssl-key',
   keyPath,
+  '--proxy-config',
+  'proxy.conf.json',
   ...process.argv.slice(2)
 ];
 

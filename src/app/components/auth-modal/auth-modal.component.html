@@ -1,0 +1,272 @@
+<div class="modal-backdrop" (click)="onBackdropClick($event)" role="dialog" aria-modal="true" aria-labelledby="authModalTitle">
+  <div class="modal-card">
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <div class="modal-title-group">
+        <div class="modal-badge-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+        </div>
+        <div>
+          <h2 id="authModalTitle" class="modal-title">
+            {{ activeTab() === 'login' ? 'Sign In to Biblion' : 'Create Biblion Account' }}
+          </h2>
+          <p class="modal-subtitle">
+            {{ activeTab() === 'login' ? 'Access your synced references, library, and settings' : 'Start saving citations and syncing your bibliography' }}
+          </p>
+        </div>
+      </div>
+      <button type="button" class="btn-close" (click)="close()" aria-label="Close modal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Tab Switcher -->
+    <div class="tab-switcher" role="tablist">
+      <button
+        type="button"
+        role="tab"
+        class="tab-btn"
+        [class.active]="activeTab() === 'login'"
+        [attr.aria-selected]="activeTab() === 'login'"
+        (click)="setTab('login')">
+        Sign In
+      </button>
+      <button
+        type="button"
+        role="tab"
+        class="tab-btn"
+        [class.active]="activeTab() === 'register'"
+        [attr.aria-selected]="activeTab() === 'register'"
+        (click)="setTab('register')">
+        Create Account
+      </button>
+    </div>
+
+    <!-- Alert / Status Notifications -->
+    @if (validationError() || authService.error()) {
+      <div class="alert alert-danger" role="alert">
+        <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <span>{{ validationError() || authService.error() }}</span>
+      </div>
+    }
+
+    @if (successMessage()) {
+      <div class="alert alert-success" role="status">
+        <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        <span>{{ successMessage() }}</span>
+      </div>
+    }
+
+    <!-- Modal Form Body -->
+    <div class="modal-body">
+      @if (activeTab() === 'login') {
+        <!-- SIGN IN FORM -->
+        <form (ngSubmit)="submitLogin()" class="auth-form" novalidate>
+          <div class="form-group">
+            <label for="login-email" class="form-label">Email Address</label>
+            <div class="input-wrapper">
+              <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                <polyline points="22,6 12,13 2,6"></polyline>
+              </svg>
+              <input
+                id="login-email"
+                type="email"
+                class="form-control"
+                placeholder="name@institution.edu"
+                [ngModel]="email()"
+                (ngModelChange)="email.set($event)"
+                name="email"
+                autocomplete="email"
+                required />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="label-row">
+              <label for="login-password" class="form-label">Password</label>
+            </div>
+            <div class="input-wrapper">
+              <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+              <input
+                id="login-password"
+                [type]="showPassword() ? 'text' : 'password'"
+                class="form-control password-input"
+                placeholder="Enter your password"
+                [ngModel]="password()"
+                (ngModelChange)="password.set($event)"
+                name="password"
+                autocomplete="current-password"
+                required />
+              <button
+                type="button"
+                class="btn-toggle-password"
+                (click)="togglePasswordVisibility()"
+                [title]="showPassword() ? 'Hide password' : 'Show password'"
+                aria-label="Toggle password visibility">
+                @if (showPassword()) {
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                  </svg>
+                } @else {
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                }
+              </button>
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            class="btn-submit"
+            [disabled]="authService.isLoading()">
+            @if (authService.isLoading()) {
+              <span class="btn-spinner"></span>
+              <span>Signing in...</span>
+            } @else {
+              <span>Sign In</span>
+            }
+          </button>
+        </form>
+      } @else {
+        <!-- REGISTER / SIGN UP FORM -->
+        <form (ngSubmit)="submitRegister()" class="auth-form" novalidate>
+          <div class="form-group">
+            <label for="reg-name" class="form-label">Full Name <span class="text-muted">(optional)</span></label>
+            <div class="input-wrapper">
+              <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+              <input
+                id="reg-name"
+                type="text"
+                class="form-control"
+                placeholder="e.g. Dr. Jane Smith"
+                [ngModel]="name()"
+                (ngModelChange)="name.set($event)"
+                name="name"
+                autocomplete="name" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="reg-email" class="form-label">Email Address</label>
+            <div class="input-wrapper">
+              <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                <polyline points="22,6 12,13 2,6"></polyline>
+              </svg>
+              <input
+                id="reg-email"
+                type="email"
+                class="form-control"
+                placeholder="name@institution.edu"
+                [ngModel]="email()"
+                (ngModelChange)="email.set($event)"
+                name="email"
+                autocomplete="email"
+                required />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="reg-password" class="form-label">Password <span class="text-muted">(min. 8 characters)</span></label>
+            <div class="input-wrapper">
+              <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+              <input
+                id="reg-password"
+                [type]="showPassword() ? 'text' : 'password'"
+                class="form-control password-input"
+                placeholder="Choose a strong password"
+                [ngModel]="password()"
+                (ngModelChange)="password.set($event)"
+                name="password"
+                autocomplete="new-password"
+                required />
+              <button
+                type="button"
+                class="btn-toggle-password"
+                (click)="togglePasswordVisibility()"
+                title="Toggle password visibility">
+                @if (showPassword()) {
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                  </svg>
+                } @else {
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                }
+              </button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="reg-confirm-password" class="form-label">Confirm Password</label>
+            <div class="input-wrapper">
+              <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+              <input
+                id="reg-confirm-password"
+                [type]="showPassword() ? 'text' : 'password'"
+                class="form-control password-input"
+                placeholder="Repeat your password"
+                [ngModel]="passwordConfirmation()"
+                (ngModelChange)="passwordConfirmation.set($event)"
+                name="passwordConfirmation"
+                autocomplete="new-password"
+                required />
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            class="btn-submit"
+            [disabled]="authService.isLoading()">
+            @if (authService.isLoading()) {
+              <span class="btn-spinner"></span>
+              <span>Creating account...</span>
+            } @else {
+              <span>Create Account</span>
+            }
+          </button>
+        </form>
+      }
+    </div>
+
+    <!-- Modal Footer Switch Tab Note -->
+    <div class="modal-footer">
+      @if (activeTab() === 'login') {
+        <p>Don't have an account? <button type="button" class="link-btn" (click)="setTab('register')">Register here</button></p>
+      } @else {
+        <p>Already have an account? <button type="button" class="link-btn" (click)="setTab('login')">Sign in</button></p>
+      }
+    </div>
+  </div>
+</div>

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { PubmedArticle } from '../../models/pubmed.model';
 import { PubmedAbstractComponent } from '../pubmed-abstract/pubmed-abstract.component';
 import { WordCitationService } from '../../services/word-citation.service';
+import { LocalBibliographyService } from '../../services/local-bibliography.service';
 
 @Component({
   selector: 'app-pubmed-card',
@@ -18,6 +19,7 @@ export class PubmedCardComponent {
   @Output() removeClicked = new EventEmitter<PubmedArticle>();
 
   readonly wordService = inject(WordCitationService);
+  readonly bibService = inject(LocalBibliographyService);
 
   readonly isFlipped = signal<boolean>(false);
   readonly copied = signal<boolean>(false);
@@ -29,8 +31,27 @@ export class PubmedCardComponent {
     return this.wordService.isArticleCited(this.article?.pmid);
   }
 
+  get isSaved(): boolean {
+    return this.bibService.isArticleSaved(this.article?.pmid);
+  }
+
   get canInsert(): boolean {
     return this.showInsert && this.wordService.isWord();
+  }
+
+  async toggleSaveLibrary(event: Event) {
+    event.stopPropagation();
+    try {
+      if (this.isSaved) {
+        await this.bibService.removeArticle(this.article.pmid);
+        this.showStatus('Removed from your local library.', true);
+      } else {
+        await this.bibService.saveArticle(this.article);
+        this.showStatus('Saved to your local library!', true);
+      }
+    } catch (err) {
+      this.showStatus(`Failed to update library: ${err instanceof Error ? err.message : String(err)}`, false);
+    }
   }
 
   toggleFlip(event?: Event) {

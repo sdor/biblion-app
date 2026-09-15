@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { of } from 'rxjs';
-import { WordCursorTrackerService } from './word-cursor-tracker.service';
+import { WordCursorTrackerService, splitIntoSentences } from './word-cursor-tracker.service';
 import { WordCitationService } from './word-citation.service';
 import { PubmedService } from './pubmed.service';
 import { PubmedArticle } from '../models/pubmed.model';
@@ -70,7 +70,7 @@ describe('WordCursorTrackerService', () => {
   });
 
   it('should process extracted data from content controls and plain text PMIDs', async () => {
-    spyOn(pubmedService, 'fetch').and.returnValue(of([sampleArticle]));
+    vi.spyOn(pubmedService, 'fetch').mockReturnValue(of([sampleArticle]));
 
     const tagData = JSON.stringify({
       type: 'biblion-citation',
@@ -112,7 +112,6 @@ describe('WordCursorTrackerService', () => {
     const result = (service as any).constructor.name; // Service exists
 
     // Test the exported splitIntoSentences function directly
-    const { splitIntoSentences } = require('./word-cursor-tracker.service');
     const splits = splitIntoSentences(text);
     expect(splits.length).toBe(3);
     expect(splits[0].text).toContain('Wu et al.');
@@ -121,7 +120,7 @@ describe('WordCursorTrackerService', () => {
   });
 
   it('should assign references to respective sentences by cursor position', async () => {
-    spyOn(pubmedService, 'fetch').and.returnValue(of([sampleArticle]));
+    vi.spyOn(pubmedService, 'fetch').mockReturnValue(of([sampleArticle]));
 
     const text = 'Sentence one discusses discovery (PMID: 32015508). Sentence two has no citations. Sentence three concludes.';
     // Cursor offset in sentence one (e.g. index 15)

@@ -1,0 +1,362 @@
+<div class="library-container">
+
+  <!-- Header Banner -->
+  <header class="library-header">
+    <div class="header-main">
+      <div class="header-title-row">
+        <h1 class="library-title">
+          <svg class="title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+          </svg>
+          My Local Bibliography
+        </h1>
+        <span class="count-badge">{{ bibService.savedCount() }} Saved Articles</span>
+        <span class="db-badge" title="Stored safely in your browser IndexedDB">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;margin-right:4px;">
+            <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+            <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+            <path d="M21 19c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+            <path d="M3 5v14"></path>
+            <path d="M21 5v14"></path>
+          </svg>
+          IndexedDB
+        </span>
+      </div>
+      <p class="library-subtitle">
+        Your personal offline reference database. Access saved PubMed articles, add tags and personal notes, organize collections, and export to BibTeX or RIS.
+      </p>
+    </div>
+
+    <div class="header-actions">
+      <button type="button" class="btn btn-export" (click)="openExportModal('bibtex')">
+        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        Export Bibliography
+      </button>
+
+      <label class="btn btn-import-label" title="Import JSON backup into local IndexedDB">
+        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="17 8 12 3 7 8"></polyline>
+          <line x1="12" y1="3" x2="12" y2="15"></line>
+        </svg>
+        Import JSON
+        <input type="file" accept=".json" (change)="onImportFileSelected($event)" style="display:none;" />
+      </label>
+    </div>
+  </header>
+
+  <!-- Filter & Controls Toolbar -->
+  <div class="controls-card">
+    <div class="search-row">
+      <!-- Search input -->
+      <div class="search-input-wrapper">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Filter saved articles by title, author, PMID, journal, or notes..."
+          [ngModel]="searchQuery()"
+          (ngModelChange)="searchQuery.set($event)" />
+        @if (searchQuery()) {
+          <button type="button" class="clear-search-btn" (click)="searchQuery.set('')" title="Clear search">
+            &times;
+          </button>
+        }
+      </div>
+
+      <!-- Sorting Selector -->
+      <div class="sort-wrapper">
+        <label class="sort-label">Sort by:</label>
+        <select class="sort-select" [ngModel]="sortBy()" (ngModelChange)="sortBy.set($event)">
+          <option value="dateSaved">Date Saved</option>
+          <option value="title">Title</option>
+          <option value="year">Publication Year</option>
+          <option value="author">First Author</option>
+        </select>
+
+        <button
+          type="button"
+          class="sort-order-btn"
+          (click)="sortOrder.set(sortOrder() === 'asc' ? 'desc' : 'asc')"
+          [title]="sortOrder() === 'asc' ? 'Ascending (click for Descending)' : 'Descending (click for Ascending)'">
+          @if (sortOrder() === 'asc') { &#8593; } @else { &#8595; }
+        </button>
+      </div>
+    </div>
+
+    <!-- Quick Filter Chips (Favorites, Collections, Tags) -->
+    <div class="filter-chips-row">
+      <button
+        type="button"
+        class="chip-btn"
+        [class.active]="!selectedTag() && !selectedCollectionId() && !favoritesOnly()"
+        (click)="clearAllFilters()">
+        All Items ({{ bibService.savedCount() }})
+      </button>
+
+      <button
+        type="button"
+        class="chip-btn fav-chip"
+        [class.active]="favoritesOnly()"
+        (click)="toggleFavoritesOnly()">
+        &#9733; Favorites ({{ bibService.favoritesCount() }})
+      </button>
+
+      <!-- Collections -->
+      @for (col of bibService.collections(); track col.id) {
+        <button
+          type="button"
+          class="chip-btn col-chip"
+          [class.active]="selectedCollectionId() === col.id"
+          (click)="setFilterCollection(col.id)">
+          📁 {{ col.name }} ({{ col.articlePmids.length }})
+        </button>
+      }
+
+      <button
+        type="button"
+        class="chip-btn new-col-btn"
+        (click)="showNewCollectionInput.set(!showNewCollectionInput())">
+        + New Collection
+      </button>
+
+      <!-- Tags -->
+      @for (tag of bibService.allTags(); track tag) {
+        <button
+          type="button"
+          class="chip-btn tag-chip"
+          [class.active]="selectedTag() === tag"
+          (click)="setFilterTag(selectedTag() === tag ? null : tag)">
+          #{{ tag }}
+        </button>
+      }
+    </div>
+
+    <!-- New Collection Form Inline -->
+    @if (showNewCollectionInput()) {
+      <div class="new-col-inline-form">
+        <input
+          type="text"
+          class="new-col-input"
+          placeholder="Collection name (e.g. Oncology, Thesis Chapter 1)..."
+          [ngModel]="newCollectionName()"
+          (ngModelChange)="newCollectionName.set($event)"
+          (keyup.enter)="createCollection()" />
+        <button type="button" class="btn btn-primary btn-sm" (click)="createCollection()">Save Collection</button>
+        <button type="button" class="btn btn-outline btn-sm" (click)="showNewCollectionInput.set(false)">Cancel</button>
+      </div>
+    }
+  </div>
+
+  <!-- Articles List Area -->
+  <main class="library-content">
+    @if (filteredRecords().length === 0) {
+      <div class="empty-library-state">
+        @if (bibService.savedCount() === 0) {
+          <div class="empty-icon-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+            </svg>
+          </div>
+          <h3>Your Local Bibliography is Empty</h3>
+          <p>
+            When searching PubMed records on the main search tab, click the <strong>"Save to Library"</strong> button on any article to store it locally in your IndexedDB library for instant offline access.
+          </p>
+        } @else {
+          <div class="empty-icon-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </div>
+          <h3>No matching records found</h3>
+          <p>Try clearing your active filters or adjusting your search query.</p>
+          <button type="button" class="btn btn-primary" (click)="clearAllFilters()">Reset All Filters</button>
+        }
+      </div>
+    } @else {
+      <div class="records-grid">
+        @for (record of filteredRecords(); track record.pmid) {
+          <div class="record-wrapper-card">
+            <!-- Top Record Ribbon (Favorites & Tags Header) -->
+            <div class="record-top-ribbon">
+              <button
+                type="button"
+                class="star-fav-btn"
+                [class.is-fav]="record.favorite"
+                (click)="toggleFavorite(record.pmid)"
+                [title]="record.favorite ? 'Unstar favorite' : 'Star as favorite'">
+                {{ record.favorite ? '★ Favorite' : '☆ Favorite' }}
+              </button>
+
+              <!-- Tags list on top ribbon -->
+              <div class="tags-badge-list">
+                @for (tag of record.tags; track tag) {
+                  <span class="record-tag-badge">#{{ tag }}</span>
+                }
+                <button
+                  type="button"
+                  class="edit-tags-btn"
+                  (click)="openTagsEditor(record)"
+                  title="Edit tags">
+                  🏷️ Edit Tags
+                </button>
+              </div>
+
+              <!-- Date Saved -->
+              <span class="date-saved-badge">
+                Saved {{ record.dateSaved | date:'mediumDate' }}
+              </span>
+            </div>
+
+            <!-- Tags Inline Editor -->
+            @if (activeTagsPmid() === record.pmid) {
+              <div class="inline-editor-box">
+                <label class="editor-label">Tags (comma-separated):</label>
+                <input
+                  type="text"
+                  class="editor-input"
+                  [ngModel]="tagsText()"
+                  (ngModelChange)="tagsText.set($event)"
+                  placeholder="e.g. genomics, oncology, trial" />
+                <div class="editor-btn-row">
+                  <button type="button" class="btn btn-primary btn-xs" (click)="saveTags(record.pmid)">Save Tags</button>
+                  <button type="button" class="btn btn-outline btn-xs" (click)="cancelTags()">Cancel</button>
+                </div>
+              </div>
+            }
+
+            <!-- Render Main Article Card Component -->
+            <app-pubmed-card
+              [article]="record.article"
+              [showInsert]="true"
+              [showRemove]="true"
+              (removeClicked)="removeArticle(record.pmid)">
+            </app-pubmed-card>
+
+            <!-- Personal Notes Section -->
+            <div class="record-notes-section">
+              @if (activeNotesPmid() === record.pmid) {
+                <div class="inline-editor-box">
+                  <label class="editor-label">Personal Notes & Annotations:</label>
+                  <textarea
+                    class="editor-textarea"
+                    rows="3"
+                    [ngModel]="notesText()"
+                    (ngModelChange)="notesText.set($event)"
+                    placeholder="Write key findings, hypotheses, or citation notes..."></textarea>
+                  <div class="editor-btn-row">
+                    <button type="button" class="btn btn-primary btn-xs" (click)="saveNotes(record.pmid)">Save Notes</button>
+                    <button type="button" class="btn btn-outline btn-xs" (click)="cancelNotes()">Cancel</button>
+                  </div>
+                </div>
+              } @else {
+                <div class="notes-display-box" (click)="openNotesEditor(record)">
+                  <div class="notes-header">
+                    <span class="notes-title">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;margin-right:4px;">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                      </svg>
+                      Personal Notes
+                    </span>
+                    <span class="notes-edit-hint">{{ record.userNotes ? 'Click to edit' : '+ Add Notes' }}</span>
+                  </div>
+                  @if (record.userNotes) {
+                    <p class="notes-text">{{ record.userNotes }}</p>
+                  } @else {
+                    <p class="notes-placeholder">No personal notes added yet. Click to add study notes or annotations.</p>
+                  }
+                </div>
+              }
+            </div>
+
+            <!-- Collections Membership Selector -->
+            @if (bibService.collections().length > 0) {
+              <div class="collections-assign-row">
+                <span class="assign-label">Collections:</span>
+                @for (col of bibService.collections(); track col.id) {
+                  <label class="col-checkbox-label">
+                    <input
+                      type="checkbox"
+                      [checked]="isArticleInCollection(col.id, record.pmid)"
+                      (change)="toggleArticleInCollection(col.id, record.pmid)" />
+                    {{ col.name }}
+                  </label>
+                }
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+  </main>
+
+  <!-- Export Modal -->
+  @if (showExportModal()) {
+    <div class="modal-backdrop" (click)="closeExportModal()">
+      <div class="modal-dialog" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3>Export Local Bibliography</h3>
+          <button type="button" class="close-modal-btn" (click)="closeExportModal()">&times;</button>
+        </div>
+
+        <div class="modal-body">
+          <div class="format-selector-row">
+            <label class="format-label">Select Export Format:</label>
+            <div class="format-btn-group">
+              <button
+                type="button"
+                class="format-tab-btn"
+                [class.active]="exportFormat() === 'bibtex'"
+                (click)="setExportFormat('bibtex')">
+                BibTeX (.bib)
+              </button>
+              <button
+                type="button"
+                class="format-tab-btn"
+                [class.active]="exportFormat() === 'ris'"
+                (click)="setExportFormat('ris')">
+                RIS / EndNote (.ris)
+              </button>
+              <button
+                type="button"
+                class="format-tab-btn"
+                [class.active]="exportFormat() === 'json'"
+                (click)="setExportFormat('json')">
+                JSON Backup (.json)
+              </button>
+            </div>
+          </div>
+
+          <div class="export-preview-box">
+            <textarea class="export-textarea" readonly [value]="exportText()"></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" (click)="copyExportText()">
+            {{ copySuccess() ? '✓ Copied to Clipboard!' : 'Copy to Clipboard' }}
+          </button>
+
+          <button type="button" class="btn btn-primary" (click)="downloadExportFile()">
+            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            Download File
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+</div>

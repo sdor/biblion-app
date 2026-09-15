@@ -142,14 +142,12 @@ describe('CursorReferencesComponent', () => {
   });
 
   it('should call wordService.removeCitation and update tracker when removeReference is clicked', async () => {
-    spyOn(wordService, 'removeCitation').and.returnValue(
-      Promise.resolve({
-        success: true,
-        message: 'Citation removed',
-        inWord: true
-      })
-    );
-    const scanSpy = spyOn(tracker, 'scanCurrentSelection').and.returnValue(Promise.resolve());
+    vi.spyOn(wordService, 'removeCitation').mockResolvedValue({
+      success: true,
+      message: 'Citation removed',
+      inWord: true
+    });
+    const scanSpy = vi.spyOn(tracker, 'scanCurrentSelection').mockResolvedValue();
 
     await component.removeReference(mockArticle);
 
