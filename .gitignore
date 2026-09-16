@@ -39,6 +39,7 @@ testem.log
 /typings
 __screenshots__
 manifest.xml
+manifest.prod.xml
 /certs/**
 # System files
 .DS_Store
