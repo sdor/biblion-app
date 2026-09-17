@@ -155,7 +155,11 @@
 
   <!-- Auth Modal Dialog -->
   @if (isAuthModalOpen()) {
-    <app-auth-modal (closed)="closeAuthModal()"></app-auth-modal>
+    <app-auth-modal
+      (closed)="closeAuthModal()"
+      (close)="closeAuthModal()"
+      (authenticated)="closeAuthModal()">
+    </app-auth-modal>
   }
 
   <!-- Main Content Area -->

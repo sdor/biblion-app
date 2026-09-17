@@ -8,6 +8,7 @@ export interface SavedArticleRecord {
   userNotes?: string;
   favorite: boolean;
   citeCount?: number;
+  updatedAt?: number;
 }
 
 export interface BibliographyCollection {

@@ -39,4 +39,12 @@ describe('CloudSyncService', () => {
     const result = await service.syncWithCloud();
     expect(result).toBe(false);
   });
+
+  it('should call syncWithCloud when syncIfStale is triggered and user is authenticated', async () => {
+    auth.currentUser.set({ id: 1, email_address: 'test@example.com' });
+    const spy = vi.spyOn(service, 'syncWithCloud').mockResolvedValue(true);
+
+    service.syncIfStale();
+    expect(spy).toHaveBeenCalled();
+  });
 });

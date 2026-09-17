@@ -54,6 +54,18 @@ export class LocalBibliographyService {
     }
   }
 
+  async clearLocalLibrary(): Promise<void> {
+    if (!this.dbService.isSupported()) return;
+    try {
+      await this.dbService.clear(STORES.ARTICLES);
+      await this.dbService.clear(STORES.COLLECTIONS);
+      this.savedArticles.set([]);
+      this.collections.set([]);
+    } catch (err) {
+      console.error('Failed to clear local library:', err);
+    }
+  }
+
   async loadLibrary(): Promise<void> {
     if (!this.dbService.isSupported()) return;
     this.isLoading.set(true);
@@ -77,16 +89,19 @@ export class LocalBibliographyService {
     return this.savedPmidsSet().has(pmid);
   }
 
-  async saveArticle(article: PubmedArticle, tags: string[] = [], userNotes = ''): Promise<void> {
+  async saveArticle(article: PubmedArticle, tags: string[] = [], userNotes?: string): Promise<void> {
     const existing = this.savedArticles().find((a) => a.pmid === article.pmid);
+    const now = Date.now();
+    const resolvedNotes = userNotes !== undefined ? userNotes : (existing?.userNotes || '');
     const record: SavedArticleRecord = {
       pmid: article.pmid,
       article,
-      dateSaved: existing ? existing.dateSaved : Date.now(),
+      dateSaved: existing ? existing.dateSaved : now,
       tags: tags.length ? tags : existing?.tags || [],
-      userNotes: userNotes !== undefined ? userNotes : existing?.userNotes || '',
+      userNotes: resolvedNotes,
       favorite: existing?.favorite || false,
-      citeCount: existing?.citeCount || 0
+      citeCount: existing?.citeCount || 0,
+      updatedAt: now
     };
 
     await this.dbService.put<SavedArticleRecord>(STORES.ARTICLES, record);
@@ -120,7 +135,8 @@ export class LocalBibliographyService {
 
     const updated: SavedArticleRecord = {
       ...record,
-      favorite: !record.favorite
+      favorite: !record.favorite,
+      updatedAt: Date.now()
     };
 
     await this.dbService.put<SavedArticleRecord>(STORES.ARTICLES, updated);
@@ -134,7 +150,8 @@ export class LocalBibliographyService {
 
     const updated: SavedArticleRecord = {
       ...record,
-      userNotes: notes
+      userNotes: notes,
+      updatedAt: Date.now()
     };
 
     await this.dbService.put<SavedArticleRecord>(STORES.ARTICLES, updated);
@@ -148,7 +165,8 @@ export class LocalBibliographyService {
 
     const updated: SavedArticleRecord = {
       ...record,
-      tags
+      tags,
+      updatedAt: Date.now()
     };
 
     await this.dbService.put<SavedArticleRecord>(STORES.ARTICLES, updated);

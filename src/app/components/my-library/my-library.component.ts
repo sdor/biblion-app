@@ -86,6 +86,7 @@ export class MyLibraryComponent implements OnInit {
 
   ngOnInit() {
     this.bibService.loadLibrary();
+    this.cloudSync.syncIfStale();
   }
 
   onSearchChange(val: string) {

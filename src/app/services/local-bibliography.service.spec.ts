@@ -1,9 +1,11 @@
 import { TestBed } from '@angular/core/testing';
 import { LocalBibliographyService } from './local-bibliography.service';
+import { IndexedDbService } from './indexed-db.service';
 import { PubmedArticle } from '../models/pubmed.model';
 
 describe('LocalBibliographyService', () => {
   let service: LocalBibliographyService;
+  let inMemoryArticles: Map<string, any>;
 
   const mockArticle: PubmedArticle = {
     pmid: '12345678',
@@ -22,7 +24,22 @@ describe('LocalBibliographyService', () => {
   };
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    inMemoryArticles = new Map();
+    const mockIdb = {
+      isSupported: () => true,
+      getAll: async () => Array.from(inMemoryArticles.values()),
+      get: async (store: string, key: string) => inMemoryArticles.get(key),
+      put: async (store: string, item: any) => { inMemoryArticles.set(item.pmid || item.id, item); },
+      delete: async (store: string, key: string) => { inMemoryArticles.delete(key); },
+      clear: async () => { inMemoryArticles.clear(); }
+    };
+
+    TestBed.configureTestingModule({
+      providers: [
+        LocalBibliographyService,
+        { provide: IndexedDbService, useValue: mockIdb }
+      ]
+    });
     service = TestBed.inject(LocalBibliographyService);
   });
 
@@ -83,5 +100,26 @@ describe('LocalBibliographyService', () => {
 
     const noResults = service.filterArticles({ searchQuery: 'Nonexistent' });
     expect(noResults.length).toBe(0);
+  });
+
+  it('should preserve existing userNotes when re-saving an article without notes argument', async () => {
+    // Initial save with notes
+    await service.saveArticle(mockArticle, ['genomics'], 'Crucial cancer study');
+    expect(service.savedArticles()[0].userNotes).toBe('Crucial cancer study');
+
+    // Re-saving without providing userNotes argument must not wipe out notes
+    await service.saveArticle(mockArticle);
+    const updated = service.savedArticles().find((a) => a.pmid === mockArticle.pmid);
+    expect(updated?.userNotes).toBe('Crucial cancer study');
+    expect(updated?.updatedAt).toBeDefined();
+  });
+
+  it('should update article notes and record updatedAt', async () => {
+    await service.saveArticle(mockArticle);
+    await service.updateArticleNotes(mockArticle.pmid, 'New clinical review notes');
+
+    const updated = service.savedArticles().find((a) => a.pmid === mockArticle.pmid);
+    expect(updated?.userNotes).toBe('New clinical review notes');
+    expect(updated?.updatedAt).toBeGreaterThan(0);
   });
 });

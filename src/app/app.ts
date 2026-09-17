@@ -60,7 +60,11 @@ export class App {
   }
 
   signOut(): void {
-    this.authService.logout().subscribe();
+    this.authService.logout().subscribe({
+      next: () => {
+        this.bibService.clearLocalLibrary();
+      }
+    });
     this.isUserMenuOpen.set(false);
   }
 }

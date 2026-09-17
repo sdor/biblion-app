@@ -50,6 +50,8 @@ export class AuthModalComponent {
           this.cloudSync.syncWithCloud();
           this.authenticated.emit();
           this.close.emit();
+          this.closed.emit();
+          this.resetForm();
         },
         error: (err) => {
           this.isSubmitting.set(false);
@@ -64,6 +66,7 @@ export class AuthModalComponent {
           this.authenticated.emit();
           this.close.emit();
           this.closed.emit();
+          this.resetForm();
         },
         error: (err) => {
           this.isSubmitting.set(false);
@@ -73,7 +76,13 @@ export class AuthModalComponent {
     }
   }
 
+  resetForm() {
+    this.password.set('');
+    this.errorMessage.set(null);
+  }
+
   onClose() {
+    this.resetForm();
     this.close.emit();
     this.closed.emit();
   }

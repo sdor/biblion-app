@@ -19,13 +19,47 @@ export class AuthService {
   readonly isLoading = signal<boolean>(false);
   readonly error = signal<string | null>(null);
 
+  private memoryStorage = new Map<string, string>();
+
   constructor() {
     this.initAuth();
   }
 
+  private getStoredToken(): string | null {
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        return window.localStorage.getItem(TOKEN_KEY);
+      }
+    } catch {
+      // In restricted iframes (e.g. Word add-in), localStorage may throw SecurityError
+    }
+    return this.memoryStorage.get(TOKEN_KEY) || null;
+  }
+
+  private saveStoredToken(token: string): void {
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        window.localStorage.setItem(TOKEN_KEY, token);
+      }
+    } catch {
+      // Quota exceeded or restricted context
+    }
+    this.memoryStorage.set(TOKEN_KEY, token);
+  }
+
+  private removeStoredToken(): void {
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        window.localStorage.removeItem(TOKEN_KEY);
+      }
+    } catch {
+      // Ignore
+    }
+    this.memoryStorage.delete(TOKEN_KEY);
+  }
+
   private initAuth(): void {
-    if (typeof window === 'undefined') return;
-    const savedToken = localStorage.getItem(TOKEN_KEY);
+    const savedToken = this.getStoredToken();
     if (savedToken) {
       this.token.set(savedToken);
       this.checkMe().subscribe({
@@ -67,7 +101,7 @@ export class AuthService {
         this.isLoading.set(false);
         this.token.set(res.token);
         this.currentUser.set(res.user);
-        localStorage.setItem(TOKEN_KEY, res.token);
+        this.saveStoredToken(res.token);
       }),
       catchError((err) => {
         this.isLoading.set(false);
@@ -91,7 +125,7 @@ export class AuthService {
         this.isLoading.set(false);
         this.token.set(res.token);
         this.currentUser.set(res.user);
-        localStorage.setItem(TOKEN_KEY, res.token);
+        this.saveStoredToken(res.token);
       }),
       catchError((err) => {
         this.isLoading.set(false);
@@ -116,8 +150,6 @@ export class AuthService {
   clearSession(): void {
     this.currentUser.set(null);
     this.token.set(null);
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem(TOKEN_KEY);
-    }
+    this.removeStoredToken();
   }
 }
