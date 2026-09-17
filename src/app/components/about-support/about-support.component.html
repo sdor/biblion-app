@@ -174,7 +174,7 @@
         <div class="step-num">5</div>
         <h3>Live Cursor Tracking</h3>
         <p>
-          As you write and move your cursor across your document, the <strong>Live References</strong> tab automatically detects citations at your cursor position in real time.
+          As you write and move your cursor across your document, the <strong>Live References</strong> tab automatically detects citations at your cursor position in real time. <strong>Live Cursor Tracking is available exclusively for signed-in users.</strong>
         </p>
       </div>
 
@@ -202,7 +202,37 @@
         <div class="faq-answer">
           <p>
             No. Biblion is completely free for literature discovery, PubMed abstract viewing, in-text citation inserting, and bibliography generation. 
-            Account registration is optional and is required for cloud library synchronization across your devices and sessions. <strong>Synchronization is supported only when you are signed in on your account.</strong>
+            Account registration is free and unlocks advanced workflow capabilities: <strong>Live Cursor Tracking</strong> (real-time sentence-level citation inspection and one-click citation removal in Microsoft Word) and <strong>cloud library synchronization</strong> across all your devices and sessions. <strong>Live Cursor Tracking and cloud synchronization are supported only when you are signed in on your account.</strong>
+          </p>
+        </div>
+      </details>
+
+      <details class="faq-item" open>
+        <summary class="faq-question">
+          <span>How do I remove a citation or remove a particular citation from text?</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="chevron-icon">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </summary>
+        <div class="faq-answer">
+          <p>
+            The easiest, most reliable way to remove or edit citations is using Biblion's <strong>Live Cursor Tracking</strong> in the <strong>Live References</strong> tab:
+          </p>
+          <ol style="margin: 0.5rem 0 1rem 1.25rem; padding: 0; line-height: 1.6; color: #334155;">
+            <li><strong>Position Your Cursor:</strong> Click anywhere inside or adjacent to the sentence or citation you want to remove in Microsoft Word.</li>
+            <li><strong>Open Live References:</strong> The <strong>Live References</strong> tab in the Biblion sidepane immediately detects and displays all references cited at that sentence or paragraph in real time.</li>
+            <li><strong>Click Remove:</strong> Each detected reference card displays a red <strong>Remove</strong> button. Clicking it removes that specific citation from your document text immediately.</li>
+          </ol>
+          <p>
+            <strong>Why Live Cursor Tracking is vital for citations management:</strong>
+          </p>
+          <ul style="margin: 0.5rem 0 1rem 1.25rem; padding: 0; line-height: 1.6; color: #334155;">
+            <li><strong>Precision with Multi-Citation Groups:</strong> When multiple papers are cited together (for example, <code>(Wu et al., 2020; Doudna, 2012)</code> or <code>[1-3]</code>), manually deleting text inside Word can corrupt the underlying Word Content Control or delete all citations at once. Live Cursor Tracking allows you to selectively remove a single reference while keeping all other citations in the group intact and properly formatted.</li>
+            <li><strong>Automatic Document Re-Indexing:</strong> When you remove a citation via Live Cursor Tracking, Biblion instantly recalculates citation order and numbering across the entire document (in numbered styles like Nature, AMA, Vancouver, and IEEE) and updates the structured <strong>References</strong> bibliography list at the end of the document.</li>
+            <li><strong>Contextual Verification:</strong> You can read the full PubMed abstract, author lists, and publication details in the Live References pane before confirming removal, ensuring you never remove the wrong reference by accident.</li>
+          </ul>
+          <p>
+            <em>Note:</em> If you manually highlight and delete the entire citation content control in Word with your keyboard (Backspace/Delete), Biblion will synchronize the document the next time you insert or format citations. However, using <strong>Live Cursor Tracking</strong> is strongly recommended to guarantee document XML integrity and prevent citation desynchronization. <strong>Live Cursor Tracking is available exclusively for signed-in users.</strong>
           </p>
         </div>
       </details>

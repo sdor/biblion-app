@@ -1,9 +1,10 @@
 /// <reference types="office-js" />
-import { Injectable, inject, signal, computed, OnDestroy } from '@angular/core';
+import { Injectable, inject, signal, computed, effect, OnDestroy } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { PubmedArticle } from '../models/pubmed.model';
 import { WordCitationService } from './word-citation.service';
 import { PubmedService } from './pubmed.service';
+import { AuthService } from './auth.service';
 
 export interface ExtractedReference {
   article: PubmedArticle;
@@ -109,6 +110,7 @@ export function splitIntoSentences(text: string): SentenceSpan[] {
 export class WordCursorTrackerService implements OnDestroy {
   private wordService = inject(WordCitationService);
   private pubmedService = inject(PubmedService);
+  private authService = inject(AuthService);
 
   readonly isActive = signal<boolean>(true);
   readonly isScanning = signal<boolean>(false);
@@ -151,17 +153,43 @@ export class WordCursorTrackerService implements OnDestroy {
   };
 
   constructor() {
-    this.initTracking();
+    effect(() => {
+      const isAuth = this.authService.isAuthenticated();
+      if (isAuth) {
+        this.initTracking();
+        if (this.wordService.isWord()) {
+          this.scheduleScan(100);
+        }
+      } else {
+        this.stopTracking();
+        this.clearTrackingData();
+      }
+    });
+  }
+
+  clearTrackingData(): void {
+    if (this.debounceTimer) {
+      clearTimeout(this.debounceTimer);
+      this.debounceTimer = null;
+    }
+    this.paragraphText.set('');
+    this.selectedText.set('');
+    this.cursorOffset.set(0);
+    this.extractedReferences.set([]);
+    this.sentences.set([]);
+    this.lastScannedAt.set(null);
   }
 
   initTracking(): void {
+    if (!this.authService.isAuthenticated()) return;
+
     if (this.wordService.isWord()) {
       this.startTracking();
     }
 
     if (typeof Office !== 'undefined' && typeof Office.onReady === 'function') {
       Office.onReady((info) => {
-        if (info?.host === Office.HostType?.Word) {
+        if (info?.host === Office.HostType?.Word && this.authService.isAuthenticated()) {
           this.startTracking();
         }
       });
@@ -169,7 +197,7 @@ export class WordCursorTrackerService implements OnDestroy {
   }
 
   startTracking(): void {
-    if (this.isTrackingRegistered) return;
+    if (this.isTrackingRegistered || !this.authService.isAuthenticated()) return;
 
     if (typeof Office !== 'undefined' && Office.context?.document) {
       Office.context.document.addHandlerAsync(
@@ -201,7 +229,7 @@ export class WordCursorTrackerService implements OnDestroy {
 
   toggleTracking(): void {
     this.isActive.update((v) => !v);
-    if (this.isActive()) {
+    if (this.isActive() && this.authService.isAuthenticated()) {
       this.rescan();
     }
   }
@@ -223,7 +251,7 @@ export class WordCursorTrackerService implements OnDestroy {
   }
 
   scheduleScan(delayMs = 250): void {
-    if (!this.isActive()) return;
+    if (!this.isActive() || !this.authService.isAuthenticated()) return;
 
     if (this.debounceTimer) {
       clearTimeout(this.debounceTimer);
@@ -235,7 +263,7 @@ export class WordCursorTrackerService implements OnDestroy {
   }
 
   async scanCurrentSelection(): Promise<void> {
-    if (!this.wordService.checkWordHost() || !this.isActive() || this.isProcessing) {
+    if (!this.wordService.checkWordHost() || !this.isActive() || !this.authService.isAuthenticated() || this.isProcessing) {
       return;
     }
 
@@ -493,7 +521,7 @@ export class WordCursorTrackerService implements OnDestroy {
   }
 
   async scanEntireDocument(): Promise<void> {
-    if (!this.wordService.checkWordHost()) return;
+    if (!this.wordService.checkWordHost() || !this.authService.isAuthenticated()) return;
 
     this.isScanning.set(true);
     try {

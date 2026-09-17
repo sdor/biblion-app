@@ -1,4 +1,4 @@
-import { Component, signal, inject } from '@angular/core';
+import { Component, signal, computed, inject } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { CitationStyleSelectorComponent } from './components/citation-style-selector/citation-style-selector.component';
@@ -31,7 +31,7 @@ export class App {
   readonly cloudSync = inject(CloudSyncService);
   readonly title = signal('Biblion');
 
-  readonly isAuthModalOpen = signal<boolean>(false);
+  readonly isAuthModalOpen = computed(() => this.authService.isAuthModalOpen());
   readonly isUserMenuOpen = signal<boolean>(false);
 
   get isWordHost(): boolean {
@@ -43,12 +43,12 @@ export class App {
   }
 
   openAuthModal(): void {
-    this.isAuthModalOpen.set(true);
+    this.authService.openAuthModal();
     this.isUserMenuOpen.set(false);
   }
 
   closeAuthModal(): void {
-    this.isAuthModalOpen.set(false);
+    this.authService.closeAuthModal();
   }
 
   toggleUserMenu(): void {

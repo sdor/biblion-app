@@ -4,6 +4,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { CursorReferencesComponent } from './cursor-references.component';
 import { WordCursorTrackerService } from '../../services/word-cursor-tracker.service';
 import { WordCitationService } from '../../services/word-citation.service';
+import { AuthService } from '../../services/auth.service';
 import { PubmedArticle } from '../../models/pubmed.model';
 
 describe('CursorReferencesComponent', () => {
@@ -11,6 +12,7 @@ describe('CursorReferencesComponent', () => {
   let fixture: ComponentFixture<CursorReferencesComponent>;
   let tracker: WordCursorTrackerService;
   let wordService: WordCitationService;
+  let authService: AuthService;
 
   const mockArticle: PubmedArticle = {
     pmid: '32015508',
@@ -32,6 +34,7 @@ describe('CursorReferencesComponent', () => {
       providers: [
         WordCursorTrackerService,
         WordCitationService,
+        AuthService,
         provideRouter([]),
         provideHttpClient()
       ]
@@ -41,6 +44,8 @@ describe('CursorReferencesComponent', () => {
     component = fixture.componentInstance;
     tracker = TestBed.inject(WordCursorTrackerService);
     wordService = TestBed.inject(WordCitationService);
+    authService = TestBed.inject(AuthService);
+    authService.currentUser.set({ id: 1, email_address: 'scientist@nih.gov', name: 'Dr. Scientist' });
     wordService.isWord.set(true);
     fixture.detectChanges();
   });
@@ -55,6 +60,29 @@ describe('CursorReferencesComponent', () => {
 
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('.non-word-notice')).toBeTruthy();
+  });
+
+  it('should show auth gate card when running in Word but user is not authenticated', () => {
+    authService.clearSession();
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('.auth-gate-card')).toBeTruthy();
+    expect(compiled.querySelector('.auth-gate-card h3')?.textContent).toContain(
+      'Sign In Required for Live Cursor Tracking'
+    );
+  });
+
+  it('should open auth modal when clicking sign in button in auth gate', () => {
+    authService.clearSession();
+    fixture.detectChanges();
+
+    const openModalSpy = vi.spyOn(authService, 'openAuthModal');
+    const compiled = fixture.nativeElement as HTMLElement;
+    const signInBtn = compiled.querySelector('.btn-sign-in') as HTMLButtonElement;
+    expect(signInBtn).toBeTruthy();
+    signInBtn.click();
+    expect(openModalSpy).toHaveBeenCalled();
   });
 
   it('should show empty state when in Word but no references at cursor', () => {

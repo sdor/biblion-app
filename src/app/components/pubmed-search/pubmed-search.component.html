@@ -1,7 +1,7 @@
 <div class="search-container">
   
-  <!-- Live Cursor Reference Banner (when in Word and cursor is on a citation) -->
-  @if (isWord && cursorTracker.cursorRefCount() > 0) {
+  <!-- Live Cursor Reference Banner (when in Word, signed in, and cursor is on a citation) -->
+  @if (isWord && authService.isAuthenticated() && cursorTracker.cursorRefCount() > 0) {
     <div class="cursor-live-banner">
       <div class="banner-info">
         <span class="pulse-indicator"></span>

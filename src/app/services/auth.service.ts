@@ -18,8 +18,17 @@ export class AuthService {
   readonly isAuthenticated = computed(() => !!this.currentUser());
   readonly isLoading = signal<boolean>(false);
   readonly error = signal<string | null>(null);
+  readonly isAuthModalOpen = signal<boolean>(false);
 
   private memoryStorage = new Map<string, string>();
+
+  openAuthModal(): void {
+    this.isAuthModalOpen.set(true);
+  }
+
+  closeAuthModal(): void {
+    this.isAuthModalOpen.set(false);
+  }
 
   constructor() {
     this.initAuth();

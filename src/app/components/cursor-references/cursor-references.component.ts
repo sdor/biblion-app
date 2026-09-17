@@ -7,6 +7,7 @@ import {
   SentenceBlock
 } from '../../services/word-cursor-tracker.service';
 import { WordCitationService } from '../../services/word-citation.service';
+import { AuthService } from '../../services/auth.service';
 import { PubmedCardComponent } from '../pubmed-card/pubmed-card.component';
 import { PubmedArticle } from '../../models/pubmed.model';
 
@@ -20,9 +21,14 @@ import { PubmedArticle } from '../../models/pubmed.model';
 export class CursorReferencesComponent {
   readonly tracker = inject(WordCursorTrackerService);
   readonly wordService = inject(WordCitationService);
+  readonly authService = inject(AuthService);
 
   readonly isRemovingRef = signal<string | null>(null);
   readonly removalStatus = signal<{ text: string; success: boolean } | null>(null);
+
+  openAuthModal(): void {
+    this.authService.openAuthModal();
+  }
 
   get isWord(): boolean {
     return this.wordService.isWord();

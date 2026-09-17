@@ -4,12 +4,14 @@ import { of } from 'rxjs';
 import { WordCursorTrackerService, splitIntoSentences } from './word-cursor-tracker.service';
 import { WordCitationService } from './word-citation.service';
 import { PubmedService } from './pubmed.service';
+import { AuthService } from './auth.service';
 import { PubmedArticle } from '../models/pubmed.model';
 
 describe('WordCursorTrackerService', () => {
   let service: WordCursorTrackerService;
   let wordService: WordCitationService;
   let pubmedService: PubmedService;
+  let authService: AuthService;
 
   const sampleArticle: PubmedArticle = {
     pmid: '32015508',
@@ -31,6 +33,7 @@ describe('WordCursorTrackerService', () => {
         WordCursorTrackerService,
         WordCitationService,
         PubmedService,
+        AuthService,
         provideHttpClient()
       ]
     });
@@ -38,12 +41,24 @@ describe('WordCursorTrackerService', () => {
     service = TestBed.inject(WordCursorTrackerService);
     wordService = TestBed.inject(WordCitationService);
     pubmedService = TestBed.inject(PubmedService);
+    authService = TestBed.inject(AuthService);
+    authService.currentUser.set({ id: 1, email_address: 'scientist@nih.gov', name: 'Dr. Scientist' });
+    TestBed.flushEffects();
   });
 
-  it('should be created and default to active tracking', () => {
+  it('should be created and default to active tracking when authenticated', () => {
     expect(service).toBeTruthy();
     expect(service.isActive()).toBe(true);
     expect(service.cursorRefCount()).toBe(0);
+  });
+
+  it('should not track or scan if user is not authenticated', () => {
+    authService.clearSession();
+    TestBed.flushEffects();
+
+    const scanSpy = vi.spyOn(service, 'scanCurrentSelection');
+    service.scheduleScan(0);
+    expect(scanSpy).not.toHaveBeenCalled();
   });
 
   it('should extract PMIDs from various plain text patterns', () => {

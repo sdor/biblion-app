@@ -6,6 +6,7 @@ import { PubmedService, DEFAULT_RETMAX } from '../../services/pubmed.service';
 import { PubmedCardComponent } from '../pubmed-card/pubmed-card.component';
 import { WordCitationService } from '../../services/word-citation.service';
 import { WordCursorTrackerService } from '../../services/word-cursor-tracker.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-pubmed-search',
@@ -18,6 +19,7 @@ export class PubmedSearchComponent implements OnInit {
   protected pubmedService = inject(PubmedService);
   protected wordService = inject(WordCitationService);
   readonly cursorTracker = inject(WordCursorTrackerService);
+  readonly authService = inject(AuthService);
 
   get isWord(): boolean {
     return this.wordService.isWord();

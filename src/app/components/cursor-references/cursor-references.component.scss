@@ -54,6 +54,164 @@
   }
 }
 
+/* Auth Gate Card (when in Word but not signed in) */
+.auth-gate-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 2rem 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+
+  .auth-gate-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: #f0fdfa;
+    border: 2px solid #ccfbf1;
+    color: #0d9488;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    svg {
+      width: 26px;
+      height: 26px;
+    }
+  }
+
+  .auth-gate-content {
+    width: 100%;
+    max-width: 620px;
+    text-align: center;
+
+    h3 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin: 0 0 0.5rem 0;
+    }
+
+    .auth-gate-intro {
+      color: #64748b;
+      font-size: 0.925rem;
+      line-height: 1.5;
+      margin: 0 0 1.5rem 0;
+    }
+  }
+
+  .feature-highlights-card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 1.25rem 1.25rem;
+    text-align: left;
+    margin-bottom: 1.5rem;
+
+    h4 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #334155;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin: 0 0 0.85rem 0;
+    }
+
+    .feature-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+
+      li {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+
+        .feature-bullet {
+          font-size: 1.1rem;
+          line-height: 1.3;
+          flex-shrink: 0;
+        }
+
+        .feature-info {
+          font-size: 0.875rem;
+          line-height: 1.45;
+          color: #475569;
+
+          strong {
+            color: #0f172a;
+            display: inline;
+            margin-right: 0.35rem;
+          }
+
+          code {
+            background: #e2e8f0;
+            padding: 0.1rem 0.3rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+          }
+        }
+      }
+    }
+  }
+
+  .auth-gate-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.65rem 1.25rem;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.15s ease;
+      border: 1px solid transparent;
+
+      .btn-icon {
+        width: 16px;
+        height: 16px;
+      }
+
+      &.btn-primary {
+        background: #0d9488;
+        color: #ffffff;
+        border-color: #0d9488;
+
+        &:hover {
+          background: #0f766e;
+          border-color: #0f766e;
+          box-shadow: 0 2px 6px rgba(13, 148, 136, 0.25);
+        }
+      }
+
+      &.btn-secondary {
+        background: #f1f5f9;
+        color: #475569;
+        border-color: #cbd5e1;
+
+        &:hover {
+          background: #e2e8f0;
+          color: #1e293b;
+        }
+      }
+    }
+  }
+}
+
 /* Inspector Header Bar */
 .inspector-header {
   background: #ffffff;
