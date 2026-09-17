@@ -1,8 +1,23 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { IndexedDbService, STORES } from './indexed-db.service';
 import { CloudSyncService } from './cloud-sync.service';
+import { AuthService } from './auth.service';
 import { PubmedArticle } from '../models/pubmed.model';
 import { SavedArticleRecord, BibliographyCollection, LibraryFilterOptions } from '../models/library.model';
+
+export const SESSION_ACTIVE_KEY = 'biblion_session_active';
+
+export interface BibliographyBackup {
+  version: number;
+  exportedAt: number;
+  articles: SavedArticleRecord[];
+  collections: BibliographyCollection[];
+}
+
+export interface ImportResult {
+  articleCount: number;
+  collectionCount: number;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -10,6 +25,7 @@ import { SavedArticleRecord, BibliographyCollection, LibraryFilterOptions } from
 export class LocalBibliographyService {
   private dbService = inject(IndexedDbService);
   private cloudSync = inject(CloudSyncService);
+  private auth = inject(AuthService);
 
   readonly savedArticles = signal<SavedArticleRecord[]>([]);
   readonly collections = signal<BibliographyCollection[]>([]);
@@ -34,10 +50,44 @@ export class LocalBibliographyService {
   });
 
   constructor() {
-    this.cloudSync.registerRefreshHook(async () => {
+    this.cloudSync?.registerRefreshHook(async () => {
       await this.loadLibraryInternal();
     });
-    this.loadLibrary();
+    this.initSessionLifecycle();
+  }
+
+  private initSessionLifecycle(): void {
+    if (typeof window === 'undefined') {
+      this.loadLibrary();
+      return;
+    }
+
+    let isExistingSession = false;
+    try {
+      if (window.sessionStorage) {
+        isExistingSession = !!window.sessionStorage.getItem(SESSION_ACTIVE_KEY);
+        window.sessionStorage.setItem(SESSION_ACTIVE_KEY, 'true');
+      }
+    } catch {
+      // In restricted iframes or strict sandbox modes
+    }
+
+    // Best-effort cleanup on tab / window close if user is not signed in
+    window.addEventListener('pagehide', () => {
+      const isAuth = this.auth?.isAuthenticated() || !!this.auth?.token();
+      if (!isAuth) {
+        this.clearLocalLibrary();
+      }
+    });
+
+    if (!isExistingSession) {
+      // New window/tab session detected: wipe previous session's local storage
+      this.clearLocalLibrary().then(() => {
+        this.loadLibrary();
+      });
+    } else {
+      this.loadLibrary();
+    }
   }
 
   private async loadLibraryInternal(): Promise<void> {
@@ -350,28 +400,61 @@ export class LocalBibliographyService {
     const list = pmids
       ? this.savedArticles().filter((a) => pmids.includes(a.pmid))
       : this.savedArticles();
-    return JSON.stringify(list, null, 2);
+
+    const backup: BibliographyBackup = {
+      version: 1,
+      exportedAt: Date.now(),
+      articles: list,
+      collections: this.collections()
+    };
+    return JSON.stringify(backup, null, 2);
   }
 
-  async importJSON(jsonData: string): Promise<number> {
+  async importJSON(jsonData: string): Promise<ImportResult> {
     try {
-      const records: SavedArticleRecord[] = JSON.parse(jsonData);
-      if (!Array.isArray(records)) {
-        throw new Error('Invalid JSON format. Expected an array of records.');
+      const parsed = JSON.parse(jsonData);
+      let articleList: SavedArticleRecord[] = [];
+      let collectionList: BibliographyCollection[] = [];
+
+      if (Array.isArray(parsed)) {
+        // Legacy format (flat array of SavedArticleRecord)
+        articleList = parsed;
+      } else if (parsed && typeof parsed === 'object') {
+        if (Array.isArray(parsed.articles)) {
+          articleList = parsed.articles;
+        }
+        if (Array.isArray(parsed.collections)) {
+          collectionList = parsed.collections;
+        }
+      } else {
+        throw new Error('Invalid JSON format. Expected an array of records or a bibliography backup object.');
       }
 
-      let count = 0;
-      for (const rec of records) {
+      let articleCount = 0;
+      for (const rec of articleList) {
         if (rec.pmid && rec.article) {
           await this.dbService.put<SavedArticleRecord>(STORES.ARTICLES, {
             ...rec,
             dateSaved: rec.dateSaved || Date.now()
           });
-          count++;
+          articleCount++;
         }
       }
+
+      let collectionCount = 0;
+      for (const col of collectionList) {
+        if (col.id && col.name) {
+          await this.dbService.put<BibliographyCollection>(STORES.COLLECTIONS, {
+            ...col,
+            createdAt: col.createdAt || Date.now(),
+            updatedAt: col.updatedAt || Date.now()
+          });
+          collectionCount++;
+        }
+      }
+
       await this.loadLibrary();
-      return count;
+      return { articleCount, collectionCount };
     } catch (err: any) {
       console.error('Import JSON error:', err);
       throw err;

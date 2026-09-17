@@ -19,6 +19,38 @@ export class MyLibraryComponent implements OnInit {
   readonly cloudSync = inject(CloudSyncService);
   readonly authService = inject(AuthService);
 
+  readonly localStatus = computed<{ status: 'ok' | 'error'; label: string; tooltip: string }>(() => {
+    const error = this.bibService.error();
+    if (error) {
+      return { status: 'error', label: 'Local: Error', tooltip: error };
+    }
+    return { status: 'ok', label: 'Local: OK', tooltip: 'Local storage is operational.' };
+  });
+
+  readonly cloudStatus = computed<{ status: 'ok' | 'warning' | 'error'; label: string; tooltip: string }>(() => {
+    const isAuth = this.authService.isAuthenticated();
+    if (!isAuth) {
+      return {
+        status: 'error',
+        label: 'Cloud: Sync Off',
+        tooltip: 'Not logged in. Cloud synchronization is not on.'
+      };
+    }
+    const syncError = this.cloudSync.syncError();
+    if (syncError) {
+      return {
+        status: 'warning',
+        label: 'Cloud: Connection Issue',
+        tooltip: `Problem with connection: ${syncError}`
+      };
+    }
+    return {
+      status: 'ok',
+      label: 'Cloud: OK',
+      tooltip: `Logged in as ${this.authService.currentUser()?.email_address}. Cloud synchronization is active.`
+    };
+  });
+
   readonly searchQuery = signal<string>('');
   readonly selectedTag = signal<string | null>(null);
   readonly selectedCollectionId = signal<string | null>(null);
@@ -288,7 +320,7 @@ export class MyLibraryComponent implements OnInit {
     this.showExportModal.set(false);
   }
 
-  onImportFileSelected(event: Event) {
+  onLoadBibliographyFileSelected(event: Event) {
     const target = event.target as HTMLInputElement;
     const file = target.files?.[0];
     if (!file) return;
@@ -297,12 +329,19 @@ export class MyLibraryComponent implements OnInit {
     reader.onload = async (e) => {
       try {
         const text = e.target?.result as string;
-        const count = await this.bibService.importJSON(text);
-        alert(`Successfully imported ${count} articles into your local library!`);
+        const result = await this.bibService.importJSON(text);
+        const colMsg = result.collectionCount > 0 ? ` and ${result.collectionCount} collection(s)` : '';
+        alert(`Successfully restored ${result.articleCount} article(s)${colMsg} to your library!`);
       } catch (err: any) {
-        alert(`Failed to import JSON file: ${err.message}`);
+        alert(`Failed to load bibliography file: ${err.message}`);
+      } finally {
+        target.value = '';
       }
     };
     reader.readAsText(file);
+  }
+
+  onImportFileSelected(event: Event) {
+    this.onLoadBibliographyFileSelected(event);
   }
 }

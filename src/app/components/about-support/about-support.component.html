@@ -89,9 +89,9 @@
         </div>
 
         <div class="contact-item">
-          <span class="contact-label">Authentication Requirement</span>
+          <span class="contact-label">Authentication & Synchronization Requirement</span>
           <span class="contact-value highlight-note">
-            No account is required to access support or use core Biblion features.
+            No account is required to access support, search PubMed, or insert citations. However, <strong>synchronization is supported only when signed in to your account</strong>. For guest users, My Library is session-scoped and its contents are erased from local storage when the window or tab is closed. Guests can preserve and restore their library at any time by exporting their bibliography and loading it again.
           </span>
         </div>
       </div>
@@ -182,7 +182,7 @@
         <div class="step-num">6</div>
         <h3>Personal Library & Sync</h3>
         <p>
-          Save important articles to your local bibliography library. Optionally sign in with an email to sync your saved collections with the cloud.
+          Save important articles to your session library. Because local storage is erased when you close your window or tab, you can use <strong>Export Bibliography</strong> and <strong>Load Bibliography</strong> to save and restore your references. <strong>Synchronization is supported only when you are signed in on your account.</strong>
         </p>
       </div>
     </div>
@@ -202,7 +202,27 @@
         <div class="faq-answer">
           <p>
             No. Biblion is completely free for literature discovery, PubMed abstract viewing, in-text citation inserting, and bibliography generation. 
-            Account registration is 100% optional and only used if you wish to sync your saved library between multiple computers.
+            Account registration is optional and is required for cloud library synchronization across your devices and sessions. <strong>Synchronization is supported only when you are signed in on your account.</strong>
+          </p>
+        </div>
+      </details>
+
+      <details class="faq-item" open>
+        <summary class="faq-question">
+          <span>Why is My Library erased when I close my window/tab, and how do I restore it?</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="chevron-icon">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </summary>
+        <div class="faq-answer">
+          <p>
+            When using Biblion without signing in, <strong>My Library</strong> operates as a privacy-friendly, session-based workspace in local storage. Whenever you close the window or tab, the contents of My Library are automatically erased.
+          </p>
+          <p>
+            The way to restore the content of My Library across sessions as a guest is to click <strong>Export Bibliography</strong> (JSON format) before closing your window or tab, and click <strong>Load Bibliography</strong> to load it again when you return.
+          </p>
+          <p>
+            <strong>Synchronization is supported only when you are signed in on your account.</strong> When signed in, all saved references, personal notes, tags, and collections are automatically synchronized to the cloud and restored seamlessly whenever you open Biblion.
           </p>
         </div>
       </details>

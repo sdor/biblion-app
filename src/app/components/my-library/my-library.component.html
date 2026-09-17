@@ -11,15 +11,25 @@
           My Local Bibliography
         </h1>
         <span class="count-badge">{{ bibService.savedCount() }} Saved Articles</span>
-        <span class="db-badge" title="Stored safely in your browser IndexedDB">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;margin-right:4px;">
-            <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
-            <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
-            <path d="M21 19c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
-            <path d="M3 5v14"></path>
-            <path d="M21 5v14"></path>
-          </svg>
-          IndexedDB
+        <!-- Local Indicator -->
+        <span
+          class="status-indicator-badge"
+          [class.is-ok]="localStatus().status === 'ok'"
+          [class.is-error]="localStatus().status === 'error'"
+          [title]="localStatus().tooltip">
+          <span class="status-dot"></span>
+          {{ localStatus().label }}
+        </span>
+
+        <!-- Cloud Indicator -->
+        <span
+          class="status-indicator-badge"
+          [class.is-ok]="cloudStatus().status === 'ok'"
+          [class.is-warning]="cloudStatus().status === 'warning'"
+          [class.is-error]="cloudStatus().status === 'error'"
+          [title]="cloudStatus().tooltip">
+          <span class="status-dot"></span>
+          {{ cloudStatus().label }}
         </span>
       </div>
       <p class="library-subtitle">
@@ -51,17 +61,35 @@
         Export Bibliography
       </button>
 
-      <label class="btn btn-import-label" title="Import JSON backup into local IndexedDB">
+      <label class="btn btn-import-label" title="Load and restore previously exported bibliography (.json)">
         <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
           <polyline points="17 8 12 3 7 8"></polyline>
           <line x1="12" y1="3" x2="12" y2="15"></line>
         </svg>
-        Import JSON
-        <input type="file" accept=".json" (change)="onImportFileSelected($event)" style="display:none;" />
+        Load Bibliography
+        <input type="file" accept=".json" (change)="onLoadBibliographyFileSelected($event)" style="display:none;" />
       </label>
     </div>
   </header>
+
+  <!-- Session Warning Banner for Guests -->
+  @if (!authService.isAuthenticated()) {
+    <div class="session-warning-banner">
+      <div class="banner-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+      </div>
+      <div class="banner-text">
+        <span>
+          <strong>Session Storage:</strong> Contents of My Library are erased when you close this window or tab. To restore your library across sessions, <strong>Export Bibliography</strong> before closing and use <strong>Load Bibliography</strong> when you return. <em>Cloud synchronization is supported only when signed in on your account.</em>
+        </span>
+      </div>
+    </div>
+  }
 
   <!-- Filter & Controls Toolbar -->
   <div class="controls-card">
@@ -179,10 +207,24 @@
               <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
             </svg>
           </div>
-          <h3>Your Local Bibliography is Empty</h3>
+          <h3>Your Library is Empty</h3>
           <p>
-            When searching PubMed records on the main search tab, click the <strong>"Save to Library"</strong> button on any article to store it locally in your IndexedDB library for instant offline access.
+            When searching PubMed records on the main search tab, click the <strong>"Save to Library"</strong> button on any article to add it to your session library.
           </p>
+          <div class="empty-state-session-box">
+            <p class="session-hint">
+              <strong>Tip:</strong> If you closed your window or tab in a previous session, your local storage was cleared. You can restore your references by loading your exported bibliography file.
+            </p>
+            <label class="btn btn-outline btn-sm empty-load-btn">
+              <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+              Load Bibliography
+              <input type="file" accept=".json" (change)="onLoadBibliographyFileSelected($event)" style="display:none;" />
+            </label>
+          </div>
         } @else {
           <div class="empty-icon-box">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -431,6 +473,17 @@
                 JSON Backup (.json)
               </button>
             </div>
+          </div>
+
+          <div class="modal-export-tip">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="tip-icon">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="16" x2="12" y2="12"></line>
+              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+            <span>
+              <strong>Restoring Your Library:</strong> Download the <strong>JSON Backup</strong> before closing your window or tab. You can use <strong>Load Bibliography</strong> at any time to fully restore your saved articles, notes, tags, and collections.
+            </span>
           </div>
 
           <div class="export-preview-box">

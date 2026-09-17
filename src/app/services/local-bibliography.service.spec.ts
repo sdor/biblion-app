@@ -23,15 +23,22 @@ describe('LocalBibliographyService', () => {
     rawPmidUrl: 'https://pubmed.ncbi.nlm.nih.gov/12345678/'
   };
 
+  let storeData: Map<string, Map<string, any>>;
+
   beforeEach(() => {
-    inMemoryArticles = new Map();
+    storeData = new Map();
+    const getStoreMap = (store: string) => {
+      if (!storeData.has(store)) storeData.set(store, new Map());
+      return storeData.get(store)!;
+    };
+
     const mockIdb = {
       isSupported: () => true,
-      getAll: async () => Array.from(inMemoryArticles.values()),
-      get: async (store: string, key: string) => inMemoryArticles.get(key),
-      put: async (store: string, item: any) => { inMemoryArticles.set(item.pmid || item.id, item); },
-      delete: async (store: string, key: string) => { inMemoryArticles.delete(key); },
-      clear: async () => { inMemoryArticles.clear(); }
+      getAll: async (store: string) => Array.from(getStoreMap(store).values()),
+      get: async (store: string, key: string) => getStoreMap(store).get(key),
+      put: async (store: string, item: any) => { getStoreMap(store).set(item.pmid || item.id, item); },
+      delete: async (store: string, key: string) => { getStoreMap(store).delete(key); },
+      clear: async (store: string) => { getStoreMap(store).clear(); }
     };
 
     TestBed.configureTestingModule({
@@ -121,5 +128,89 @@ describe('LocalBibliographyService', () => {
     const updated = service.savedArticles().find((a) => a.pmid === mockArticle.pmid);
     expect(updated?.userNotes).toBe('New clinical review notes');
     expect(updated?.updatedAt).toBeGreaterThan(0);
+  });
+
+  it('should export full JSON backup including articles and collections', () => {
+    service.savedArticles.set([
+      {
+        pmid: mockArticle.pmid,
+        article: mockArticle,
+        dateSaved: Date.now(),
+        tags: ['genomics'],
+        favorite: true
+      }
+    ]);
+    service.collections.set([
+      {
+        id: 'col_123',
+        name: 'Genetics',
+        description: 'Key genetics papers',
+        color: '#3b82f6',
+        articlePmids: [mockArticle.pmid],
+        createdAt: 1000,
+        updatedAt: 1000
+      }
+    ]);
+
+    const jsonStr = service.exportJSON();
+    const parsed = JSON.parse(jsonStr);
+
+    expect(parsed.version).toBe(1);
+    expect(parsed.articles.length).toBe(1);
+    expect(parsed.articles[0].pmid).toBe(mockArticle.pmid);
+    expect(parsed.collections.length).toBe(1);
+    expect(parsed.collections[0].name).toBe('Genetics');
+  });
+
+  it('should import structured JSON backup and restore articles and collections', async () => {
+    const backup = {
+      version: 1,
+      exportedAt: Date.now(),
+      articles: [
+        {
+          pmid: '99999999',
+          article: { ...mockArticle, pmid: '99999999', title: 'Restored Paper' },
+          dateSaved: 5000,
+          tags: ['restored'],
+          favorite: true
+        }
+      ],
+      collections: [
+        {
+          id: 'col_restored',
+          name: 'Restored Collection',
+          description: '',
+          color: '#10b981',
+          articlePmids: ['99999999'],
+          createdAt: 5000,
+          updatedAt: 5000
+        }
+      ]
+    };
+
+    const res = await service.importJSON(JSON.stringify(backup));
+    expect(res.articleCount).toBe(1);
+    expect(res.collectionCount).toBe(1);
+    expect(service.savedArticles().length).toBe(1);
+    expect(service.savedArticles()[0].pmid).toBe('99999999');
+    expect(service.collections().length).toBe(1);
+    expect(service.collections()[0].name).toBe('Restored Collection');
+  });
+
+  it('should import legacy array JSON backup', async () => {
+    const legacyArray = [
+      {
+        pmid: '88888888',
+        article: { ...mockArticle, pmid: '88888888', title: 'Legacy Paper' },
+        dateSaved: 4000,
+        tags: [],
+        favorite: false
+      }
+    ];
+
+    const res = await service.importJSON(JSON.stringify(legacyArray));
+    expect(res.articleCount).toBe(1);
+    expect(res.collectionCount).toBe(0);
+    expect(service.savedArticles().find((a) => a.pmid === '88888888')).toBeDefined();
   });
 });
