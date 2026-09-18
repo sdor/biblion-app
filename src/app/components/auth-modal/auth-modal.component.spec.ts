@@ -122,4 +122,44 @@ describe('AuthModalComponent', () => {
     expect(closeCalled).toBe(true);
     expect(authenticatedCalled).toBe(true);
   });
+
+  it('should switch to forgot mode and handle password reset request', () => {
+    vi.spyOn(authService, 'requestPasswordReset').mockReturnValue(
+      of({ message: 'Instructions sent' })
+    );
+
+    component.switchMode('forgot');
+    expect(component.mode()).toBe('forgot');
+
+    component.email.set('');
+    component.onSubmit();
+    expect(component.errorMessage()).toContain('Please provide your email address');
+
+    component.email.set('user@example.com');
+    component.onSubmit();
+
+    expect(authService.requestPasswordReset).toHaveBeenCalledWith('user@example.com');
+    expect(component.forgotSubmitted()).toBe(true);
+    expect(component.successMessage()).toBe('Instructions sent');
+  });
+
+  it('should switch to reset mode and submit new password', () => {
+    vi.spyOn(authService, 'resetPassword').mockReturnValue(
+      of({
+        token: 'new-token',
+        user: { id: 1, email_address: 'user@example.com' }
+      })
+    );
+    vi.spyOn(cloudSync, 'syncWithCloud').mockResolvedValue(true);
+
+    component.switchMode('reset');
+    component.resetToken.set('valid-token-123');
+    component.password.set('newSecretPassword');
+    component.passwordConfirmation.set('newSecretPassword');
+    component.onSubmit();
+
+    expect(authService.resetPassword).toHaveBeenCalledWith('valid-token-123', 'newSecretPassword', 'newSecretPassword');
+  });
 });
+
+

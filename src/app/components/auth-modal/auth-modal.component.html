@@ -3,20 +3,31 @@
     <!-- Header with Tabs -->
     <div class="modal-header">
       <div class="tabs-group">
-        <button
-          type="button"
-          class="tab-btn"
-          [class.active]="mode() === 'login'"
-          (click)="switchMode('login')">
-          Sign In
-        </button>
-        <button
-          type="button"
-          class="tab-btn"
-          [class.active]="mode() === 'register'"
-          (click)="switchMode('register')">
-          Create Account
-        </button>
+        @if (mode() === 'reset') {
+          <span class="tab-title-text">Reset Password</span>
+        } @else if (mode() === 'forgot') {
+          <button
+            type="button"
+            class="tab-btn active"
+            (click)="switchMode('forgot')">
+            Forgot Password
+          </button>
+        } @else {
+          <button
+            type="button"
+            class="tab-btn"
+            [class.active]="mode() === 'login'"
+            (click)="switchMode('login')">
+            Sign In
+          </button>
+          <button
+            type="button"
+            class="tab-btn"
+            [class.active]="mode() === 'register'"
+            (click)="switchMode('register')">
+            Create Account
+          </button>
+        }
       </div>
       <button type="button" class="close-btn" (click)="onClose()" aria-label="Close modal">&times;</button>
     </div>
@@ -24,9 +35,25 @@
     <!-- Body / Form -->
     <div class="modal-body">
       <div class="auth-intro">
-        <h4>{{ mode() === 'login' ? 'Sign in to Biblion Cloud' : 'Join Biblion Cloud' }}</h4>
+        <h4>
+          @if (mode() === 'login') {
+            Sign in to Biblion Cloud
+          } @else if (mode() === 'register') {
+            Join Biblion Cloud
+          } @else if (mode() === 'forgot') {
+            Forgot your password?
+          } @else {
+            Choose a new password
+          }
+        </h4>
         <p>
-          Sync your personal bibliography seamlessly between your web browser and Word Desktop Add-in.
+          @if (mode() === 'forgot') {
+            Enter your account email address and we'll send you instructions to reset your password.
+          } @else if (mode() === 'reset') {
+            Create a secure password with at least 8 characters for your Biblion account.
+          } @else {
+            Sync your personal bibliography seamlessly between your web browser and Word Desktop Add-in.
+          }
         </p>
       </div>
 
@@ -37,65 +64,173 @@
             <line x1="12" y1="8" x2="12" y2="12"></line>
             <line x1="12" y1="16" x2="12.01" y2="16"></line>
           </svg>
-          <span>{{ errorMessage() }}</span>
+          <div class="error-content">
+            <span>{{ errorMessage() }}</span>
+            @if (mode() === 'reset' && (errorMessage()?.includes('invalid') || errorMessage()?.includes('expired') || errorMessage()?.includes('Missing'))) {
+              <button
+                type="button"
+                class="link-in-error"
+                (click)="switchMode('forgot')">
+                Request a new password reset link &rarr;
+              </button>
+            }
+          </div>
         </div>
       }
 
-      <form (ngSubmit)="onSubmit()" class="auth-form">
-        @if (mode() === 'register') {
+      @if (successMessage()) {
+        <div class="success-banner">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="success-icon">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+          <span>{{ successMessage() }}</span>
+        </div>
+      }
+
+      @if (mode() === 'forgot' && forgotSubmitted()) {
+        <div class="forgot-success-state">
+          <p class="instruction-note">
+            Please check your inbox (and spam folder) for the password reset link. The link is valid for 20 minutes.
+          </p>
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="switchMode('login')">
+            Back to Sign In
+          </button>
+        </div>
+      } @else if (mode() === 'reset') {
+        <form (ngSubmit)="onSubmit()" class="auth-form">
           <div class="form-group">
-            <label class="form-label" for="auth-name">Your Name</label>
+            <label class="form-label" for="reset-password">New Password</label>
             <input
-              id="auth-name"
-              type="text"
+              id="reset-password"
+              type="password"
               class="form-input"
-              placeholder="e.g. Dr. Jane Smith"
-              [ngModel]="name()"
-              (ngModelChange)="name.set($event)"
-              name="name" />
+              placeholder="Minimum 8 characters"
+              [ngModel]="password()"
+              (ngModelChange)="password.set($event)"
+              name="password"
+              required
+              minlength="8"
+              autocomplete="new-password" />
           </div>
-        }
 
-        <div class="form-group">
-          <label class="form-label" for="auth-email">Email Address</label>
-          <input
-            id="auth-email"
-            type="email"
-            class="form-input"
-            placeholder="you@institution.edu"
-            [ngModel]="email()"
-            (ngModelChange)="email.set($event)"
-            name="email"
-            required
-            autocomplete="email" />
-        </div>
+          <div class="form-group">
+            <label class="form-label" for="reset-confirm">Confirm New Password</label>
+            <input
+              id="reset-confirm"
+              type="password"
+              class="form-input"
+              placeholder="Re-enter your new password"
+              [ngModel]="passwordConfirmation()"
+              (ngModelChange)="passwordConfirmation.set($event)"
+              name="passwordConfirmation"
+              required
+              autocomplete="new-password" />
+          </div>
 
-        <div class="form-group">
-          <label class="form-label" for="auth-password">Password</label>
-          <input
-            id="auth-password"
-            type="password"
-            class="form-input"
-            placeholder="Minimum 8 characters"
-            [ngModel]="password()"
-            (ngModelChange)="password.set($event)"
-            name="password"
-            required
-            autocomplete="current-password" />
-        </div>
-
-        <button
-          type="submit"
-          class="btn btn-submit"
-          [disabled]="isSubmitting()">
-          @if (isSubmitting()) {
-            <span class="spinner"></span>
-            <span>{{ mode() === 'login' ? 'Signing In...' : 'Creating Account...' }}</span>
-          } @else {
-            <span>{{ mode() === 'login' ? 'Sign In & Sync' : 'Register & Sync' }}</span>
+          <button
+            type="submit"
+            class="btn btn-submit"
+            [disabled]="isSubmitting() || !password() || !passwordConfirmation()">
+            @if (isSubmitting()) {
+              <span class="spinner"></span>
+              <span>Updating Password...</span>
+            } @else {
+              <span>Update Password &amp; Sign In</span>
+            }
+          </button>
+        </form>
+      } @else {
+        <form (ngSubmit)="onSubmit()" class="auth-form">
+          @if (mode() === 'register') {
+            <div class="form-group">
+              <label class="form-label" for="auth-name">Your Name</label>
+              <input
+                id="auth-name"
+                type="text"
+                class="form-input"
+                placeholder="e.g. Dr. Jane Smith"
+                [ngModel]="name()"
+                (ngModelChange)="name.set($event)"
+                name="name" />
+            </div>
           }
-        </button>
-      </form>
+
+          <div class="form-group">
+            <label class="form-label" for="auth-email">Email Address</label>
+            <input
+              id="auth-email"
+              type="email"
+              class="form-input"
+              placeholder="you@institution.edu"
+              [ngModel]="email()"
+              (ngModelChange)="email.set($event)"
+              name="email"
+              required
+              autocomplete="email" />
+          </div>
+
+          @if (mode() !== 'forgot') {
+            <div class="form-group">
+              <div class="label-row">
+                <label class="form-label" for="auth-password">Password</label>
+                @if (mode() === 'login') {
+                  <button
+                    type="button"
+                    class="btn-link"
+                    (click)="switchMode('forgot')">
+                    Forgot password?
+                  </button>
+                }
+              </div>
+              <input
+                id="auth-password"
+                type="password"
+                class="form-input"
+                placeholder="Minimum 8 characters"
+                [ngModel]="password()"
+                (ngModelChange)="password.set($event)"
+                name="password"
+                required
+                autocomplete="current-password" />
+            </div>
+          }
+
+          <button
+            type="submit"
+            class="btn btn-submit"
+            [disabled]="isSubmitting()">
+            @if (isSubmitting()) {
+              <span class="spinner"></span>
+              <span>
+                @if (mode() === 'login') { Signing In... }
+                @else if (mode() === 'register') { Creating Account... }
+                @else { Sending Reset Link... }
+              </span>
+            } @else {
+              <span>
+                @if (mode() === 'login') { Sign In & Sync }
+                @else if (mode() === 'register') { Register & Sync }
+                @else { Send Password Reset Link }
+              </span>
+            }
+          </button>
+
+          @if (mode() === 'forgot') {
+            <div class="form-extra-actions">
+              <button
+                type="button"
+                class="btn-link back-link"
+                (click)="switchMode('login')">
+                &larr; Back to Sign In
+              </button>
+            </div>
+          }
+        </form>
+      }
     </div>
 
     <!-- Footer note -->

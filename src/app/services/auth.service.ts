@@ -1,7 +1,8 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { Observable, tap, catchError, of, throwError } from 'rxjs';
-import { User, AuthResponse, MeResponse } from '../models/auth.model';
+import { User, AuthResponse, MeResponse, MessageResponse } from '../models/auth.model';
 import { environment } from '../../environments/environment';
 
 const TOKEN_KEY = 'biblion_auth_token';
@@ -11,6 +12,7 @@ const TOKEN_KEY = 'biblion_auth_token';
 })
 export class AuthService {
   private http = inject(HttpClient);
+  private router = inject(Router, { optional: true });
   readonly apiUrl = environment.apiUrl;
 
   readonly currentUser = signal<User | null>(null);
@@ -19,16 +21,21 @@ export class AuthService {
   readonly isLoading = signal<boolean>(false);
   readonly error = signal<string | null>(null);
   readonly isAuthModalOpen = signal<boolean>(false);
+  readonly authModalMode = signal<'login' | 'register' | 'forgot' | 'reset'>('login');
+  readonly resetToken = signal<string>('');
 
   private memoryStorage = new Map<string, string>();
 
-  openAuthModal(): void {
+  openAuthModal(mode: 'login' | 'register' | 'forgot' | 'reset' = 'login', token: string = ''): void {
+    this.authModalMode.set(mode);
+    this.resetToken.set(token);
     this.isAuthModalOpen.set(true);
   }
 
   closeAuthModal(): void {
     this.isAuthModalOpen.set(false);
   }
+
 
   constructor() {
     this.initAuth();
@@ -156,9 +163,61 @@ export class AuthService {
     );
   }
 
+  requestPasswordReset(email_address: string): Observable<MessageResponse> {
+    this.isLoading.set(true);
+    this.error.set(null);
+
+    return this.http.post<MessageResponse>('/api/v1/passwords', { email_address }).pipe(
+      tap(() => {
+        this.isLoading.set(false);
+      }),
+      catchError((err) => {
+        this.isLoading.set(false);
+        const msg = err.error?.error || err.error?.message || 'Failed to request password reset.';
+        this.error.set(msg);
+        return throwError(() => new Error(msg));
+      })
+    );
+  }
+
+  resetPassword(token: string, password: string, password_confirmation?: string): Observable<AuthResponse> {
+    this.isLoading.set(true);
+    this.error.set(null);
+
+    return this.http.put<AuthResponse>('/api/v1/passwords', {
+      token,
+      password,
+      password_confirmation: password_confirmation || password
+    }).pipe(
+      tap((res) => {
+        this.isLoading.set(false);
+        this.token.set(res.token);
+        this.currentUser.set(res.user);
+        this.saveStoredToken(res.token);
+        this.isAuthModalOpen.set(false);
+        this.resetToken.set('');
+        this.authModalMode.set('login');
+        if (typeof window !== 'undefined') {
+          window.history.replaceState(null, '', '/#/');
+        }
+        if (this.router) {
+          this.router.navigate(['/']);
+        }
+      }),
+
+      catchError((err) => {
+        this.isLoading.set(false);
+        const msg = err.error?.error || err.error?.errors?.join(', ') || 'Failed to reset password.';
+        this.error.set(msg);
+        return throwError(() => new Error(msg));
+      })
+    );
+  }
+
   clearSession(): void {
     this.currentUser.set(null);
     this.token.set(null);
     this.removeStoredToken();
   }
 }
+

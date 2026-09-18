@@ -26,3 +26,18 @@ export interface SyncResponse {
   articles: any[];
   collections: any[];
 }
+
+export interface PasswordResetRequestPayload {
+  email_address: string;
+}
+
+export interface PasswordResetPayload {
+  token: string;
+  password: string;
+  password_confirmation?: string;
+}
+
+export interface MessageResponse {
+  message: string;
+  error?: string;
+}

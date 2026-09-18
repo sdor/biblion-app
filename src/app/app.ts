@@ -1,4 +1,4 @@
-import { Component, signal, computed, inject } from '@angular/core';
+import { Component, OnInit, signal, computed, inject } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { CitationStyleSelectorComponent } from './components/citation-style-selector/citation-style-selector.component';
@@ -23,7 +23,7 @@ import { CloudSyncService } from './services/cloud-sync.service';
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
-export class App {
+export class App implements OnInit {
   protected wordService = inject(WordCitationService);
   readonly cursorTracker = inject(WordCursorTrackerService);
   readonly bibService = inject(LocalBibliographyService);
@@ -38,12 +38,44 @@ export class App {
     return this.wordService.isWord();
   }
 
+  ngOnInit(): void {
+    this.checkForResetToken();
+  }
+
+  private checkForResetToken(): void {
+    if (typeof window === 'undefined') return;
+
+    // Check URL search parameters (?token=XYZ)
+    const searchParams = new URLSearchParams(window.location.search);
+    let token = searchParams.get('token');
+
+    // Check hash parameters (#/reset-password?token=XYZ or #/?token=XYZ)
+    if (!token && window.location.hash.includes('?')) {
+      const hashQuery = window.location.hash.split('?')[1];
+      const hashParams = new URLSearchParams(hashQuery);
+      token = hashParams.get('token');
+    }
+
+    const isResetPath = window.location.pathname.includes('reset-password') ||
+                        window.location.hash.includes('reset-password');
+
+    if (token || isResetPath) {
+      this.authService.openAuthModal('reset', token || '');
+
+      // Normalize non-hash pathname to prevent 404s on browser reload
+      if (window.location.pathname.includes('reset-password')) {
+        const cleanHash = window.location.hash || '#/';
+        window.history.replaceState(null, '', '/' + cleanHash);
+      }
+    }
+  }
+
   triggerSync(): void {
     this.cloudSync.syncWithCloud();
   }
 
   openAuthModal(): void {
-    this.authService.openAuthModal();
+    this.authService.openAuthModal('login');
     this.isUserMenuOpen.set(false);
   }
 
