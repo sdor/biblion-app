@@ -1,4 +1,4 @@
-<div class="search-container">
+<div class="search-container" [class.word-pane]="isWord">
   
   <!-- Live Cursor Reference Banner (when in Word, signed in, and cursor is on a citation) -->
   @if (isWord && authService.isAuthenticated() && cursorTracker.cursorRefCount() > 0) {
@@ -47,7 +47,7 @@
           id="terms"
           type="text"
           class="search-input"
-          placeholder="Search by keywords, PMID, author (e.g. Doudna J[Author]), or topic..."
+          [placeholder]="isWord ? 'Search PubMed, PMID, author...' : 'Search by keywords, PMID, author (e.g. Doudna J[Author]), or topic...'"
           [ngModel]="searchTerm()"
           (ngModelChange)="searchTerm.set($event)"
           name="term"
@@ -71,16 +71,18 @@
         <button
           type="submit"
           class="submit-search-btn"
+          [title]="pubmedService.isLoading() ? 'Searching...' : 'Search PubMed'"
+          [attr.aria-label]="pubmedService.isLoading() ? 'Searching...' : 'Search PubMed'"
           [disabled]="!searchTerm().trim() || pubmedService.isLoading()">
           @if (pubmedService.isLoading()) {
             <span class="btn-spinner"></span>
-            <span>Searching...</span>
+            <span class="btn-text">Searching...</span>
           } @else {
             <svg class="search-btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="11" cy="11" r="8"></circle>
               <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
             </svg>
-            <span>Search</span>
+            <span class="btn-text">Search</span>
           }
         </button>
       </div>
