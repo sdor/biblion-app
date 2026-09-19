@@ -79,6 +79,11 @@ export class App implements OnInit {
     this.isUserMenuOpen.set(false);
   }
 
+  openEditAccount(): void {
+    this.authService.openEditAccount();
+    this.isUserMenuOpen.set(false);
+  }
+
   closeAuthModal(): void {
     this.authService.closeAuthModal();
   }

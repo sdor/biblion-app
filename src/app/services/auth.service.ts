@@ -2,7 +2,7 @@ import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap, catchError, of, throwError } from 'rxjs';
-import { User, AuthResponse, MeResponse, MessageResponse } from '../models/auth.model';
+import { User, AuthResponse, MeResponse, MessageResponse, UpdateAccountPayload, UpdateAccountResponse } from '../models/auth.model';
 import { environment } from '../../environments/environment';
 
 const TOKEN_KEY = 'biblion_auth_token';
@@ -21,15 +21,20 @@ export class AuthService {
   readonly isLoading = signal<boolean>(false);
   readonly error = signal<string | null>(null);
   readonly isAuthModalOpen = signal<boolean>(false);
-  readonly authModalMode = signal<'login' | 'register' | 'forgot' | 'reset'>('login');
+  readonly authModalMode = signal<'login' | 'register' | 'forgot' | 'reset' | 'edit'>('login');
   readonly resetToken = signal<string>('');
 
   private memoryStorage = new Map<string, string>();
 
-  openAuthModal(mode: 'login' | 'register' | 'forgot' | 'reset' = 'login', token: string = ''): void {
+  openAuthModal(mode: 'login' | 'register' | 'forgot' | 'reset' | 'edit' = 'login', token: string = ''): void {
     this.authModalMode.set(mode);
     this.resetToken.set(token);
     this.isAuthModalOpen.set(true);
+  }
+
+  openEditAccount(): void {
+    if (!this.isAuthenticated()) return;
+    this.openAuthModal('edit');
   }
 
   closeAuthModal(): void {
@@ -208,6 +213,27 @@ export class AuthService {
       catchError((err) => {
         this.isLoading.set(false);
         const msg = err.error?.error || err.error?.errors?.join(', ') || 'Failed to reset password.';
+        this.error.set(msg);
+        return throwError(() => new Error(msg));
+      })
+    );
+  }
+
+  updateAccount(payload: UpdateAccountPayload): Observable<UpdateAccountResponse> {
+    this.isLoading.set(true);
+    this.error.set(null);
+
+    const headers = this.getAuthHeaders();
+    return this.http.patch<UpdateAccountResponse>('/api/v1/me', payload, { headers }).pipe(
+      tap((res) => {
+        this.isLoading.set(false);
+        if (res && res.user) {
+          this.currentUser.set(res.user);
+        }
+      }),
+      catchError((err) => {
+        this.isLoading.set(false);
+        const msg = err.error?.errors?.join(', ') || err.error?.error || 'Failed to update account.';
         this.error.set(msg);
         return throwError(() => new Error(msg));
       })

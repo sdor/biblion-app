@@ -94,4 +94,20 @@ describe('App', () => {
     expect(app.isAuthModalOpen()).toBe(false);
     expect(compiled.querySelector('app-auth-modal')).toBeNull();
   });
+
+  it('should open edit account modal via openEditAccount when authenticated', async () => {
+    const fixture = TestBed.createComponent(App);
+    const app = fixture.componentInstance;
+    app.authService.token.set('valid-token');
+    app.authService.currentUser.set({ id: 1, email_address: 'test@example.com' });
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    app.openEditAccount();
+    fixture.detectChanges();
+
+    expect(app.isAuthModalOpen()).toBe(true);
+    expect(app.authService.authModalMode()).toBe('edit');
+    expect(app.isUserMenuOpen()).toBe(false);
+  });
 });

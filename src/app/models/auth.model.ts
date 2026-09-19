@@ -41,3 +41,18 @@ export interface MessageResponse {
   message: string;
   error?: string;
 }
+
+export interface UpdateAccountPayload {
+  email_address?: string;
+  password?: string;
+  password_confirmation?: string;
+  current_password?: string;
+  name?: string;
+}
+
+export interface UpdateAccountResponse {
+  user: User;
+  message?: string;
+  errors?: string[];
+}
+

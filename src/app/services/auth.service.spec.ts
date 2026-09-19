@@ -61,4 +61,42 @@ describe('AuthService', () => {
     expect(req.request.method).toBe('DELETE');
     req.flush({ message: 'Logged out' });
   });
+
+  it('should open modal in edit mode with openEditAccount when authenticated', () => {
+    service.token.set('test-token');
+    service.currentUser.set({ id: 1, email_address: 'scientist@test.com' });
+    service.openEditAccount();
+    expect(service.isAuthModalOpen()).toBe(true);
+    expect(service.authModalMode()).toBe('edit');
+  });
+
+  it('should not open modal in edit mode when unauthenticated', () => {
+    service.token.set(null);
+    service.currentUser.set(null);
+    service.openEditAccount();
+    expect(service.isAuthModalOpen()).toBe(false);
+  });
+
+  it('should update account details via updateAccount', () => {
+    service.currentUser.set({ id: 1, email_address: 'old@example.com', name: 'Old Name' });
+    service.token.set('token123');
+
+    service.updateAccount({
+      email_address: 'new@example.com',
+      name: 'New Name',
+      current_password: 'pass'
+    }).subscribe((res) => {
+      expect(res.user.email_address).toBe('new@example.com');
+      expect(res.user.name).toBe('New Name');
+      expect(service.currentUser()?.email_address).toBe('new@example.com');
+      expect(service.currentUser()?.name).toBe('New Name');
+    });
+
+    const req = httpMock.expectOne('/api/v1/me');
+    expect(req.request.method).toBe('PATCH');
+    req.flush({
+      user: { id: 1, email_address: 'new@example.com', name: 'New Name' },
+      message: 'Account updated successfully'
+    });
+  });
 });

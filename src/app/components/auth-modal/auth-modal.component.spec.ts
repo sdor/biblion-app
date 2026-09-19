@@ -160,6 +160,64 @@ describe('AuthModalComponent', () => {
 
     expect(authService.resetPassword).toHaveBeenCalledWith('valid-token-123', 'newSecretPassword', 'newSecretPassword');
   });
+
+  it('should initialize and populate user data in edit mode', () => {
+    authService.currentUser.set({ id: 1, email_address: 'doc@hospital.org', name: 'Dr. Gregory House' });
+    authService.authModalMode.set('edit');
+    component.ngOnInit();
+    fixture.detectChanges();
+
+    expect(component.mode()).toBe('edit');
+    expect(component.email()).toBe('doc@hospital.org');
+    expect(component.name()).toBe('Dr. Gregory House');
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.querySelector('.tab-title-text')?.textContent).toContain('Edit Account');
+  });
+
+  it('should validate current password and password confirmation in edit mode', () => {
+    authService.currentUser.set({ id: 1, email_address: 'doc@hospital.org', name: 'Dr. Gregory House' });
+    authService.authModalMode.set('edit');
+    component.ngOnInit();
+
+    // Passwords mismatch
+    component.password.set('newpass123');
+    component.passwordConfirmation.set('mismatchpass');
+    component.currentPassword.set('oldpass123');
+    component.onSubmit();
+    expect(component.errorMessage()).toContain('do not match');
+
+    // Missing current password when changing password
+    component.passwordConfirmation.set('newpass123');
+    component.currentPassword.set('');
+    component.onSubmit();
+    expect(component.errorMessage()).toContain('Current password is required');
+  });
+
+  it('should call authService.updateAccount and show success in edit mode', () => {
+    authService.currentUser.set({ id: 1, email_address: 'doc@hospital.org', name: 'Dr. Gregory House' });
+    authService.authModalMode.set('edit');
+    component.ngOnInit();
+
+    vi.spyOn(authService, 'updateAccount').mockReturnValue(
+      of({
+        user: { id: 1, email_address: 'updated@hospital.org', name: 'Dr. Gregory House' },
+        message: 'Account updated successfully'
+      })
+    );
+
+    component.email.set('updated@hospital.org');
+    component.currentPassword.set('oldpass123');
+    component.onSubmit();
+
+    expect(authService.updateAccount).toHaveBeenCalledWith({
+      name: 'Dr. Gregory House',
+      email_address: 'updated@hospital.org',
+      password: undefined,
+      password_confirmation: undefined,
+      current_password: 'oldpass123'
+    });
+    expect(component.successMessage()).toBe('Account updated successfully');
+  });
 });
 
 

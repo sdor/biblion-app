@@ -3,7 +3,9 @@
     <!-- Header with Tabs -->
     <div class="modal-header">
       <div class="tabs-group">
-        @if (mode() === 'reset') {
+        @if (mode() === 'edit') {
+          <span class="tab-title-text">Edit Account</span>
+        } @else if (mode() === 'reset') {
           <span class="tab-title-text">Reset Password</span>
         } @else if (mode() === 'forgot') {
           <button
@@ -36,7 +38,9 @@
     <div class="modal-body">
       <div class="auth-intro">
         <h4>
-          @if (mode() === 'login') {
+          @if (mode() === 'edit') {
+            Update Account Settings
+          } @else if (mode() === 'login') {
             Sign in to Biblion Cloud
           } @else if (mode() === 'register') {
             Join Biblion Cloud
@@ -47,7 +51,9 @@
           }
         </h4>
         <p>
-          @if (mode() === 'forgot') {
+          @if (mode() === 'edit') {
+            Update your email address, name, or password. Enter your current password to save changes.
+          } @else if (mode() === 'forgot') {
             Enter your account email address and we'll send you instructions to reset your password.
           } @else if (mode() === 'reset') {
             Create a secure password with at least 8 characters for your Biblion account.
@@ -100,6 +106,101 @@
             Back to Sign In
           </button>
         </div>
+      } @else if (mode() === 'edit') {
+        <form (ngSubmit)="onSubmit()" class="auth-form">
+          <div class="form-group">
+            <label class="form-label" for="edit-name">Name</label>
+            <input
+              id="edit-name"
+              type="text"
+              class="form-input"
+              placeholder="e.g. Dr. Jane Smith"
+              [ngModel]="name()"
+              (ngModelChange)="name.set($event)"
+              name="name"
+              autocomplete="name" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="edit-email">Email Address</label>
+            <input
+              id="edit-email"
+              type="email"
+              class="form-input"
+              placeholder="you@institution.edu"
+              [ngModel]="email()"
+              (ngModelChange)="email.set($event)"
+              name="email"
+              required
+              autocomplete="email" />
+          </div>
+
+          <div class="form-divider">
+            <span>Change Password (optional)</span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="edit-new-password">New Password</label>
+            <input
+              id="edit-new-password"
+              type="password"
+              class="form-input"
+              placeholder="Leave blank to keep current password"
+              [ngModel]="password()"
+              (ngModelChange)="password.set($event)"
+              name="password"
+              minlength="8"
+              autocomplete="new-password" />
+            <small class="form-hint">At least 8 characters if changing.</small>
+          </div>
+
+          @if (password()) {
+            <div class="form-group">
+              <label class="form-label" for="edit-confirm-password">Confirm New Password</label>
+              <input
+                id="edit-confirm-password"
+                type="password"
+                class="form-input"
+                placeholder="Re-enter your new password"
+                [ngModel]="passwordConfirmation()"
+                (ngModelChange)="passwordConfirmation.set($event)"
+                name="passwordConfirmation"
+                required
+                autocomplete="new-password" />
+            </div>
+          }
+
+          <div class="form-divider">
+            <span>Confirm Identity</span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="edit-current-password">Current Password</label>
+            <input
+              id="edit-current-password"
+              type="password"
+              class="form-input"
+              placeholder="Enter current password to confirm changes"
+              [ngModel]="currentPassword()"
+              (ngModelChange)="currentPassword.set($event)"
+              name="currentPassword"
+              required
+              autocomplete="current-password" />
+            <small class="form-hint">Required to update email or password.</small>
+          </div>
+
+          <button
+            type="submit"
+            class="btn btn-submit"
+            [disabled]="isSubmitting() || !email().trim() || !currentPassword()">
+            @if (isSubmitting()) {
+              <span class="spinner"></span>
+              <span>Saving Changes...</span>
+            } @else {
+              <span>Save Changes</span>
+            }
+          </button>
+        </form>
       } @else if (mode() === 'reset') {
         <form (ngSubmit)="onSubmit()" class="auth-form">
           <div class="form-group">
