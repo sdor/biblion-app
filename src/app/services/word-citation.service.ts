@@ -292,15 +292,28 @@ export class WordCitationService {
           let bibContainer: Word.ContentControl;
           if (bibControls.items.length > 0) {
             bibContainer = bibControls.items[0];
+            try {
+              bibContainer.font.bold = false;
+            } catch {
+              // Ignore if restricted
+            }
           } else {
             const heading = context.document.body.insertParagraph('References', Word.InsertLocation.end);
             heading.font.bold = true;
             heading.font.size = 14;
 
             const containerPara = context.document.body.insertParagraph('', Word.InsertLocation.end);
+            containerPara.font.bold = false;
+            containerPara.font.size = 10;
             bibContainer = containerPara.insertContentControl();
             bibContainer.tag = 'biblion-bibliography';
             bibContainer.title = 'Biblion References';
+            try {
+              bibContainer.font.bold = false;
+              bibContainer.font.size = 10;
+            } catch {
+              // Ignore if restricted
+            }
           }
 
           let counter = 1;
@@ -313,10 +326,17 @@ export class WordCitationService {
             if (existingEntries.items.length === 0) {
               const bibEntry = this.formatter.formatBibliographyEntry(article, style, counter++);
               const entryPara = bibContainer.insertParagraph(bibEntry, Word.InsertLocation.end);
+              entryPara.font.bold = false;
               entryPara.font.size = 10;
               const entryControl = entryPara.insertContentControl();
               entryControl.tag = entryTag;
               entryControl.title = `PMID ${article.pmid}`;
+              try {
+                entryControl.font.bold = false;
+                entryControl.font.size = 10;
+              } catch {
+                // Ignore if restricted
+              }
             }
           }
 
@@ -516,15 +536,28 @@ export class WordCitationService {
     if (bibControls.items.length > 0) {
       bibContainer = bibControls.items[0];
       bibContainer.clear();
+      try {
+        bibContainer.font.bold = false;
+      } catch {
+        // Ignore if restricted
+      }
     } else {
       const heading = context.document.body.insertParagraph('References', Word.InsertLocation.end);
       heading.font.bold = true;
       heading.font.size = 14;
 
       const containerPara = context.document.body.insertParagraph('', Word.InsertLocation.end);
+      containerPara.font.bold = false;
+      containerPara.font.size = 10;
       bibContainer = containerPara.insertContentControl();
       bibContainer.tag = 'biblion-bibliography';
       bibContainer.title = 'Biblion References';
+      try {
+        bibContainer.font.bold = false;
+        bibContainer.font.size = 10;
+      } catch {
+        // Ignore if restricted
+      }
     }
 
     // 7. Order bibliography references:
@@ -552,10 +585,17 @@ export class WordCitationService {
 
       const bibEntry = this.formatter.formatBibliographyEntry(pubmedArticle, style, assignedIndex);
       const entryPara = bibContainer.insertParagraph(bibEntry, Word.InsertLocation.end);
+      entryPara.font.bold = false;
       entryPara.font.size = 10;
       const entryControl = entryPara.insertContentControl();
       entryControl.tag = `biblion-ref-${pmid}`;
       entryControl.title = `PMID ${pmid}`;
+      try {
+        entryControl.font.bold = false;
+        entryControl.font.size = 10;
+      } catch {
+        // Ignore if restricted
+      }
     }
 
     await context.sync();
