@@ -284,6 +284,8 @@ export class WordCitationService {
         let stats: DocumentSyncStats = { citationCount: 0, uniqueReferenceCount: 0 };
 
         await Word.run(async (context: Word.RequestContext) => {
+          const defaultFont = await this.getDocumentDefaultFont(context);
+
           // Re-insert references at document end and reformat
           const bibControls = context.document.contentControls.getByTag('biblion-bibliography');
           bibControls.load('items');
@@ -292,28 +294,21 @@ export class WordCitationService {
           let bibContainer: Word.ContentControl;
           if (bibControls.items.length > 0) {
             bibContainer = bibControls.items[0];
-            try {
-              bibContainer.font.bold = false;
-            } catch {
-              // Ignore if restricted
-            }
+            this.applyReferenceControlFont(bibContainer, defaultFont);
           } else {
             const heading = context.document.body.insertParagraph('References', Word.InsertLocation.end);
             heading.font.bold = true;
-            heading.font.size = 14;
+            heading.font.size = defaultFont.size ? Math.max(13, Math.round(defaultFont.size * 1.25)) : 14;
+            if (defaultFont.name) {
+              heading.font.name = defaultFont.name;
+            }
 
             const containerPara = context.document.body.insertParagraph('', Word.InsertLocation.end);
-            containerPara.font.bold = false;
-            containerPara.font.size = 10;
+            this.applyReferenceFont(containerPara, defaultFont);
             bibContainer = containerPara.insertContentControl();
             bibContainer.tag = 'biblion-bibliography';
             bibContainer.title = 'Biblion References';
-            try {
-              bibContainer.font.bold = false;
-              bibContainer.font.size = 10;
-            } catch {
-              // Ignore if restricted
-            }
+            this.applyReferenceControlFont(bibContainer, defaultFont);
           }
 
           let counter = 1;
@@ -326,17 +321,11 @@ export class WordCitationService {
             if (existingEntries.items.length === 0) {
               const bibEntry = this.formatter.formatBibliographyEntry(article, style, counter++);
               const entryPara = bibContainer.insertParagraph(bibEntry, Word.InsertLocation.end);
-              entryPara.font.bold = false;
-              entryPara.font.size = 10;
+              this.applyReferenceFont(entryPara, defaultFont);
               const entryControl = entryPara.insertContentControl();
               entryControl.tag = entryTag;
               entryControl.title = `PMID ${article.pmid}`;
-              try {
-                entryControl.font.bold = false;
-                entryControl.font.size = 10;
-              } catch {
-                // Ignore if restricted
-              }
+              this.applyReferenceControlFont(entryControl, defaultFont);
             }
           }
 
@@ -527,6 +516,8 @@ export class WordCitationService {
       ctrl.insertText(formattedText, Word.InsertLocation.replace);
     }
 
+    const defaultFont = await this.getDocumentDefaultFont(context);
+
     // 6. Ensure References container exists at document end and rebuild it
     const bibControls = context.document.contentControls.getByTag('biblion-bibliography');
     bibControls.load('items');
@@ -536,28 +527,21 @@ export class WordCitationService {
     if (bibControls.items.length > 0) {
       bibContainer = bibControls.items[0];
       bibContainer.clear();
-      try {
-        bibContainer.font.bold = false;
-      } catch {
-        // Ignore if restricted
-      }
+      this.applyReferenceControlFont(bibContainer, defaultFont);
     } else {
       const heading = context.document.body.insertParagraph('References', Word.InsertLocation.end);
       heading.font.bold = true;
-      heading.font.size = 14;
+      heading.font.size = defaultFont.size ? Math.max(13, Math.round(defaultFont.size * 1.25)) : 14;
+      if (defaultFont.name) {
+        heading.font.name = defaultFont.name;
+      }
 
       const containerPara = context.document.body.insertParagraph('', Word.InsertLocation.end);
-      containerPara.font.bold = false;
-      containerPara.font.size = 10;
+      this.applyReferenceFont(containerPara, defaultFont);
       bibContainer = containerPara.insertContentControl();
       bibContainer.tag = 'biblion-bibliography';
       bibContainer.title = 'Biblion References';
-      try {
-        bibContainer.font.bold = false;
-        bibContainer.font.size = 10;
-      } catch {
-        // Ignore if restricted
-      }
+      this.applyReferenceControlFont(bibContainer, defaultFont);
     }
 
     // 7. Order bibliography references:
@@ -585,17 +569,11 @@ export class WordCitationService {
 
       const bibEntry = this.formatter.formatBibliographyEntry(pubmedArticle, style, assignedIndex);
       const entryPara = bibContainer.insertParagraph(bibEntry, Word.InsertLocation.end);
-      entryPara.font.bold = false;
-      entryPara.font.size = 10;
+      this.applyReferenceFont(entryPara, defaultFont);
       const entryControl = entryPara.insertContentControl();
       entryControl.tag = `biblion-ref-${pmid}`;
       entryControl.title = `PMID ${pmid}`;
-      try {
-        entryControl.font.bold = false;
-        entryControl.font.size = 10;
-      } catch {
-        // Ignore if restricted
-      }
+      this.applyReferenceControlFont(entryControl, defaultFont);
     }
 
     await context.sync();
@@ -682,6 +660,110 @@ export class WordCitationService {
         message: `Failed to remove citation: ${err instanceof Error ? err.message : String(err)}`,
         inWord: true
       };
+    }
+  }
+
+  /**
+   * Discovers the document's default font name and size from the Normal style, body paragraphs, or selection.
+   */
+  async getDocumentDefaultFont(context: Word.RequestContext): Promise<{ name?: string; size?: number }> {
+    const result: { name?: string; size?: number } = {};
+
+    // 1. Try reading from the document's Normal style
+    try {
+      if (typeof (context.document as any).getStyles === 'function') {
+        const styles = (context.document as any).getStyles();
+        const normalStyle = typeof styles.getByNameOrNullObject === 'function'
+          ? styles.getByNameOrNullObject('Normal')
+          : styles.getByName('Normal');
+
+        normalStyle.load('font/name, font/size, isNullObject');
+        await context.sync();
+
+        if (!normalStyle.isNullObject && normalStyle.font) {
+          if (normalStyle.font.name) result.name = normalStyle.font.name;
+          if (normalStyle.font.size) result.size = normalStyle.font.size;
+        }
+      }
+    } catch {
+      // getStyles or Normal style lookup may fail on non-English locales or restricted hosts
+    }
+
+    // 2. Fallback: inspect document body paragraphs (first non-References paragraph)
+    if (!result.name || !result.size) {
+      try {
+        const bodyParas = context.document.body.paragraphs;
+        bodyParas.load('items');
+        await context.sync();
+
+        for (let i = 0; i < Math.min(bodyParas.items.length, 5); i++) {
+          const p = bodyParas.items[i];
+          p.load('font/name, font/size, text');
+          await context.sync();
+          if (p.text && !p.text.trim().startsWith('References')) {
+            if (!result.name && p.font?.name) result.name = p.font.name;
+            if (!result.size && p.font?.size) result.size = p.font.size;
+            if (result.name && result.size) break;
+          }
+        }
+      } catch {
+        // Fallback if paragraphs load fails
+      }
+    }
+
+    // 3. Fallback: inspect current selection
+    if (!result.name || !result.size) {
+      try {
+        const selection = context.document.getSelection();
+        selection.load('font/name, font/size');
+        await context.sync();
+        if (!result.name && selection.font?.name) result.name = selection.font.name;
+        if (!result.size && selection.font?.size) result.size = selection.font.size;
+      } catch {
+        // Fallback
+      }
+    }
+
+    return result;
+  }
+
+  /**
+   * Applies the document's default font and size (Normal style, not bold) to a paragraph.
+   */
+  applyReferenceFont(para: Word.Paragraph, defaultFont: { name?: string; size?: number }): void {
+    try {
+      para.styleBuiltIn = Word.BuiltInStyleName.normal;
+    } catch {
+      // Fallback
+    }
+    para.font.bold = false;
+    if (defaultFont.name) {
+      para.font.name = defaultFont.name;
+    }
+    if (defaultFont.size) {
+      para.font.size = defaultFont.size;
+    }
+  }
+
+  /**
+   * Applies the document's default font and size (Normal style, not bold) to a content control.
+   */
+  applyReferenceControlFont(ctrl: Word.ContentControl, defaultFont: { name?: string; size?: number }): void {
+    try {
+      (ctrl as any).styleBuiltIn = Word.BuiltInStyleName.normal;
+    } catch {
+      // Fallback
+    }
+    try {
+      ctrl.font.bold = false;
+      if (defaultFont.name) {
+        ctrl.font.name = defaultFont.name;
+      }
+      if (defaultFont.size) {
+        ctrl.font.size = defaultFont.size;
+      }
+    } catch {
+      // Fallback
     }
   }
 }

@@ -63,7 +63,7 @@ export interface CitationTagData {
 ### 3.2 Document Bibliography Container
 The Bibliography section is anchored at the end of the Word document body using a dedicated Content Control tagged `biblion-bibliography`:
 * Preceded by a **References** heading paragraph (`Word.BuiltInStyleName.heading1` or bold 14pt).
-* Each individual reference entry inside the container is formatted with regular weight (`font.bold = false`, 10pt) and wrapped in a sub-control tagged `biblion-ref-<pmid>`.
+* Each individual reference entry inside the container is formatted with the document's default font and font size (`Word.BuiltInStyleName.normal`, `font.bold = false`) and wrapped in a sub-control tagged `biblion-ref-<pmid>`.
 
 ---
 

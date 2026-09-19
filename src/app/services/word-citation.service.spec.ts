@@ -134,4 +134,64 @@ describe('WordCitationService', () => {
       expect(service.isArticleCited('12345678')).toBe(false);
     });
   });
+
+  describe('default font application for references', () => {
+    it('should apply Normal style, font name, and font size with bold = false to paragraph', () => {
+      const mockPara: any = {
+        font: { bold: true, name: '', size: 0 },
+        styleBuiltIn: ''
+      };
+
+      service.applyReferenceFont(mockPara, { name: 'Times New Roman', size: 12 });
+
+      expect(mockPara.font.bold).toBe(false);
+      expect(mockPara.font.name).toBe('Times New Roman');
+      expect(mockPara.font.size).toBe(12);
+    });
+
+    it('should apply Normal style, font name, and font size with bold = false to content control', () => {
+      const mockCtrl: any = {
+        font: { bold: true, name: '', size: 0 },
+        styleBuiltIn: ''
+      };
+
+      service.applyReferenceControlFont(mockCtrl, { name: 'Calibri', size: 11 });
+
+      expect(mockCtrl.font.bold).toBe(false);
+      expect(mockCtrl.font.name).toBe('Calibri');
+      expect(mockCtrl.font.size).toBe(11);
+    });
+
+    it('should leave font size and name unchanged if defaultFont is empty, but ensure bold = false', () => {
+      const mockPara: any = {
+        font: { bold: true },
+        styleBuiltIn: ''
+      };
+
+      service.applyReferenceFont(mockPara, {});
+
+      expect(mockPara.font.bold).toBe(false);
+      expect(mockPara.font.name).toBeUndefined();
+      expect(mockPara.font.size).toBeUndefined();
+    });
+
+    it('should extract font name and size from Normal style in getDocumentDefaultFont', async () => {
+      const mockContext: any = {
+        document: {
+          getStyles: () => ({
+            getByNameOrNullObject: (name: string) => ({
+              isNullObject: false,
+              font: { name: 'Aptos', size: 11 },
+              load: vi.fn()
+            })
+          })
+        },
+        sync: vi.fn().mockResolvedValue(undefined)
+      };
+
+      const font = await service.getDocumentDefaultFont(mockContext);
+      expect(font.name).toBe('Aptos');
+      expect(font.size).toBe(11);
+    });
+  });
 });
