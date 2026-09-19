@@ -25,11 +25,16 @@
   gap: 1rem;
 }
 
+.header-top-row {
+  display: contents;
+}
+
 .brand-area {
   display: flex;
   align-items: center;
   gap: 0.75rem;
   text-decoration: none;
+  order: 1;
 
   .brand-icon {
     width: 36px;
@@ -41,6 +46,7 @@
     align-items: center;
     justify-content: center;
     box-shadow: 0 2px 4px rgba(13, 148, 136, 0.2);
+    flex-shrink: 0;
 
     svg {
       width: 20px;
@@ -73,6 +79,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  order: 2;
 
   .nav-item {
     display: inline-flex;
@@ -85,10 +92,20 @@
     color: #475569;
     text-decoration: none;
     transition: all 0.15s ease;
+    white-space: nowrap;
 
     .nav-item-icon {
       width: 16px;
       height: 16px;
+      flex-shrink: 0;
+    }
+
+    .nav-label {
+      display: inline;
+    }
+
+    .nav-label-compact {
+      display: none;
     }
 
     &:hover, &.active {
@@ -102,6 +119,7 @@
       border-radius: 50%;
       background: #94a3b8;
       transition: all 0.2s ease;
+      flex-shrink: 0;
 
       &.has-refs {
         background: #10b981;
@@ -123,6 +141,7 @@
       font-size: 0.7rem;
       font-weight: 700;
       line-height: 1;
+      flex-shrink: 0;
     }
   }
 }
@@ -142,6 +161,190 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  order: 3;
+}
+
+/* Mixin for Option 1 Two-Tier Navigation */
+@mixin two-tier-header {
+  .header-content {
+    flex-direction: column;
+    padding: 0.55rem 0.75rem 0.5rem;
+    gap: 0.5rem;
+  }
+
+  .header-top-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 0.5rem;
+  }
+
+  .brand-area {
+    gap: 0.45rem;
+
+    .brand-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+
+      svg {
+        width: 16px;
+        height: 16px;
+      }
+    }
+
+    .brand-text {
+      .brand-name {
+        font-size: 1.05rem;
+      }
+
+      .brand-sub {
+        display: none;
+      }
+    }
+  }
+
+  .header-right {
+    gap: 0.4rem;
+
+    .btn-auth-signin {
+      padding: 0.35rem 0.55rem;
+      font-size: 0.75rem;
+      gap: 0.3rem;
+
+      .auth-icon {
+        width: 13px;
+        height: 13px;
+      }
+    }
+
+    .btn-user-profile {
+      padding: 0.2rem 0.45rem 0.2rem 0.25rem;
+      gap: 0.3rem;
+
+      .user-avatar {
+        width: 22px;
+        height: 22px;
+        font-size: 0.7rem;
+      }
+
+      .user-display-name {
+        max-width: 80px;
+        font-size: 0.75rem;
+      }
+
+      .chevron-icon {
+        width: 12px;
+        height: 12px;
+      }
+    }
+  }
+
+  /* Tier 2: Segmented Navigation Control */
+  .main-nav {
+    width: 100%;
+    display: flex;
+    align-items: stretch;
+    justify-content: space-between;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    padding: 0.2rem;
+    border-radius: 8px;
+    gap: 0.2rem;
+    box-sizing: border-box;
+
+    .nav-item {
+      flex: 1 1 0;
+      min-width: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.3rem;
+      padding: 0.42rem 0.2rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #64748b;
+      background: transparent;
+      transition: all 0.16s ease;
+      border: 1px solid transparent;
+
+      .nav-item-icon {
+        width: 14px;
+        height: 14px;
+      }
+
+      .nav-label {
+        display: none;
+      }
+
+      .nav-label-compact {
+        display: inline;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      &:hover {
+        color: #0f172a;
+        background: rgba(255, 255, 255, 0.6);
+      }
+
+      &.active {
+        color: #0d9488;
+        background: #ffffff;
+        font-weight: 700;
+        border-color: #cbd5e1;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+      }
+
+      .nav-count-badge {
+        min-width: 16px;
+        height: 16px;
+        font-size: 0.65rem;
+        padding: 0 3px;
+        border-radius: 8px;
+      }
+    }
+  }
+}
+
+/* Apply Two-Tier Navigation in Word Add-in and on narrow viewports */
+.app-layout.is-word-host {
+  @include two-tier-header;
+}
+
+@media (max-width: 860px) {
+  .app-layout {
+    @include two-tier-header;
+  }
+}
+
+@media (max-width: 320px) {
+  .app-layout {
+    .header-content {
+      padding: 0.45rem 0.5rem 0.4rem;
+    }
+
+    .header-right {
+      .btn-user-profile {
+        .user-display-name {
+          display: none;
+        }
+      }
+    }
+
+    .main-nav {
+      .nav-item {
+        padding: 0.4rem 0.15rem;
+        gap: 0.2rem;
+
+        .nav-label-compact {
+          font-size: 0.72rem;
+        }
+      }
+    }
+  }
 }
 
 .auth-header-section {
