@@ -86,19 +86,21 @@
       </div>
 
       <!-- Quick sample queries -->
-      <div class="sample-queries">
-        <span class="sample-label">Examples:</span>
-        <div class="query-chips">
-          @for (query of sampleQueries; track query) {
-            <button
-              type="button"
-              class="chip-btn"
-              (click)="setSampleQuery(query)">
-              {{ query }}
-            </button>
-          }
+      @if (!isWord) {
+        <div class="sample-queries">
+          <span class="sample-label">Examples:</span>
+          <div class="query-chips">
+            @for (query of sampleQueries; track query) {
+              <button
+                type="button"
+                class="chip-btn"
+                (click)="setSampleQuery(query)">
+                {{ query }}
+              </button>
+            }
+          </div>
         </div>
-      </div>
+      }
     </form>
   </div>
 
