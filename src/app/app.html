@@ -74,9 +74,34 @@
                         <span class="status-indicator-dot"></span>
                         <span>Biblion API Connected</span>
                       </div>
+                      <div class="info-subscription-pill">
+                        @if (subscriptionService.isOnTrial()) {
+                          <span class="sub-pill pill-trial">Free Trial: {{ subscriptionService.daysRemaining() ?? 30 }}d left</span>
+                        } @else if (subscriptionService.isActive() && !subscriptionService.isCancelled()) {
+                          <span class="sub-pill pill-active">Pro Active</span>
+                        } @else if (subscriptionService.isCancelled() && subscriptionService.isActive()) {
+                          <span class="sub-pill pill-warning">Cancelled (Active)</span>
+                        } @else if (subscriptionService.isInGracePeriod()) {
+                          <span class="sub-pill pill-danger">Grace: {{ subscriptionService.daysUntilErasure() ?? 30 }}d left</span>
+                        } @else if (subscriptionService.isErased()) {
+                          <span class="sub-pill pill-erased">Data Erased</span>
+                        }
+                      </div>
                     </div>
 
                     <div class="dropdown-divider"></div>
+
+                    <button
+                      type="button"
+                      class="dropdown-item subscription-item"
+                      role="menuitem"
+                      (click)="openSubscriptionModal()">
+                      <svg class="item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+                        <line x1="2" y1="10" x2="22" y2="10"></line>
+                      </svg>
+                      <span>Subscription &amp; Billing</span>
+                    </button>
 
                     <button
                       type="button"
@@ -192,6 +217,41 @@
     </div>
   </header>
 
+  <!-- Subscription Grace Period / Erasure Warning Banner -->
+  @if (authService.isAuthenticated() && subscriptionService.isInGracePeriod()) {
+    <aside class="subscription-top-banner grace-banner" role="alert">
+      <div class="banner-content">
+        <svg class="banner-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+          <line x1="12" y1="9" x2="12" y2="13"></line>
+          <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+        <span class="banner-text">
+          <strong>Subscription Expired:</strong> You have <strong>{{ subscriptionService.daysUntilErasure() ?? 30 }} days left</strong> to resume your subscription before all your saved references and collections are permanently erased.
+        </span>
+        <button type="button" class="btn-banner-action" (click)="openSubscriptionModal()">
+          Resume or Renew Now
+        </button>
+      </div>
+    </aside>
+  } @else if (authService.isAuthenticated() && subscriptionService.isErased()) {
+    <aside class="subscription-top-banner erased-banner" role="alert">
+      <div class="banner-content">
+        <svg class="banner-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <span class="banner-text">
+          <strong>Library Data Erased:</strong> Non-renewal exceeded the 1-month grace period. Subscribe to Biblion Pro to resume saving references.
+        </span>
+        <button type="button" class="btn-banner-action" (click)="openSubscriptionModal()">
+          Subscribe to Pro
+        </button>
+      </div>
+    </aside>
+  }
+
   <!-- Auth Modal Dialog -->
   @if (isAuthModalOpen()) {
     <app-auth-modal
@@ -199,6 +259,13 @@
       (close)="closeAuthModal()"
       (authenticated)="closeAuthModal()">
     </app-auth-modal>
+  }
+
+  <!-- Subscription Modal Dialog -->
+  @if (isSubscriptionModalOpen()) {
+    <app-subscription-modal
+      (closed)="closeSubscriptionModal()">
+    </app-subscription-modal>
   }
 
   <!-- Main Content Area -->

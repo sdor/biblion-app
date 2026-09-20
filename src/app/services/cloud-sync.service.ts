@@ -216,6 +216,17 @@ export class CloudSyncService {
         this.auth.clearSession();
         return false;
       }
+      if (err.status === 402) {
+        if (err.error?.subscription && this.auth.currentUser()) {
+          this.auth.currentUser.set({
+            ...this.auth.currentUser()!,
+            subscription: err.error.subscription
+          });
+        }
+        const msg = err.error?.error || 'Active subscription required to sync your library.';
+        this.syncError.set(msg);
+        return false;
+      }
       console.error('Cloud Sync failed:', err);
       const msg = err.error?.error || err.message || 'Failed to synchronize with cloud.';
       this.syncError.set(msg);

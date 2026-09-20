@@ -1,0 +1,113 @@
+import { TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { SubscriptionService } from './subscription.service';
+import { AuthService } from './auth.service';
+import { User } from '../models/auth.model';
+
+describe('SubscriptionService', () => {
+  let service: SubscriptionService;
+  let authService: AuthService;
+  let httpMock: HttpTestingController;
+
+  const mockUser: User = {
+    id: 10,
+    email_address: 'scientist@example.com',
+    name: 'Dr. Marie Curie',
+    trial_used: true,
+    subscription: {
+      status: 'on_trial',
+      active: true,
+      on_trial: true,
+      can_cancel: true,
+      can_resume: false,
+      trial_ends_at: new Date(Date.now() + 20 * 24 * 3600 * 1000).toISOString(),
+      renews_at: null,
+      ends_at: new Date(Date.now() + 20 * 24 * 3600 * 1000).toISOString(),
+      days_remaining: 20,
+      in_grace_period: false,
+      data_erasure_scheduled_at: null,
+      days_until_erasure: null,
+      data_erased: false,
+      checkout_url: 'https://biblion.lemonsqueezy.com/checkout/buy/test-id?checkout%5Bcustom%5D%5Buser_id%5D=10'
+    }
+  };
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        SubscriptionService,
+        AuthService
+      ]
+    });
+
+    service = TestBed.inject(SubscriptionService);
+    authService = TestBed.inject(AuthService);
+    httpMock = TestBed.inject(HttpTestingController);
+
+    authService.currentUser.set(mockUser);
+  });
+
+  afterEach(() => {
+    httpMock.verify();
+  });
+
+  it('should be created', () => {
+    expect(service).toBeTruthy();
+  });
+
+  it('computes subscription properties accurately from currentUser', () => {
+    expect(service.isActive()).toBe(true);
+    expect(service.isOnTrial()).toBe(true);
+    expect(service.canCancel()).toBe(true);
+    expect(service.canResume()).toBe(false);
+    expect(service.daysRemaining()).toBe(20);
+    expect(service.checkoutUrl()).toContain('checkout%5Bcustom%5D%5Buser_id%5D=10');
+  });
+
+  it('cancels subscription and updates auth currentUser', () => {
+    const updatedSub = {
+      ...mockUser.subscription!,
+      status: 'cancelled' as const,
+      can_cancel: false,
+      can_resume: true
+    };
+
+    service.cancelSubscription().subscribe((res) => {
+      expect(res.message).toBe('Subscription cancelled.');
+      expect(service.isCancelled()).toBe(true);
+    });
+
+    const req = httpMock.expectOne('/api/v1/subscriptions/cancel');
+    expect(req.request.method).toBe('POST');
+    req.flush({
+      message: 'Subscription cancelled.',
+      subscription: updatedSub,
+      user: { ...mockUser, subscription: updatedSub }
+    });
+  });
+
+  it('resumes subscription and updates auth currentUser', () => {
+    const updatedSub = {
+      ...mockUser.subscription!,
+      status: 'on_trial' as const,
+      can_cancel: true,
+      can_resume: false
+    };
+
+    service.resumeSubscription().subscribe((res) => {
+      expect(res.message).toBe('Trial resumed.');
+      expect(service.isOnTrial()).toBe(true);
+    });
+
+    const req = httpMock.expectOne('/api/v1/subscriptions/resume');
+    expect(req.request.method).toBe('POST');
+    req.flush({
+      message: 'Trial resumed.',
+      subscription: updatedSub,
+      user: { ...mockUser, subscription: updatedSub }
+    });
+  });
+});

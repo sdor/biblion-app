@@ -110,4 +110,51 @@ describe('App', () => {
     expect(app.authService.authModalMode()).toBe('edit');
     expect(app.isUserMenuOpen()).toBe(false);
   });
+
+  it('should toggle subscription modal when openSubscriptionModal / closeSubscriptionModal are called', async () => {
+    const fixture = TestBed.createComponent(App);
+    const app = fixture.componentInstance;
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(app.isSubscriptionModalOpen()).toBe(false);
+    app.openSubscriptionModal();
+    fixture.detectChanges();
+    expect(app.isSubscriptionModalOpen()).toBe(true);
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('app-subscription-modal')).toBeTruthy();
+
+    app.closeSubscriptionModal();
+    fixture.detectChanges();
+    expect(app.isSubscriptionModalOpen()).toBe(false);
+  });
+
+  it('should display grace period warning banner when user is in grace period', async () => {
+    const fixture = TestBed.createComponent(App);
+    const app = fixture.componentInstance;
+    app.authService.token.set('valid-token');
+    app.authService.currentUser.set({
+      id: 1,
+      email_address: 'test@example.com',
+      trial_used: true,
+      subscription: {
+        status: 'cancelled',
+        active: false,
+        on_trial: false,
+        can_cancel: false,
+        can_resume: false,
+        in_grace_period: true,
+        days_until_erasure: 22,
+        data_erased: false
+      }
+    });
+
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('.grace-banner')).toBeTruthy();
+    expect(compiled.querySelector('.grace-banner')?.textContent).toContain('22 days left');
+  });
 });

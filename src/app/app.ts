@@ -3,11 +3,13 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { CitationStyleSelectorComponent } from './components/citation-style-selector/citation-style-selector.component';
 import { AuthModalComponent } from './components/auth-modal/auth-modal.component';
+import { SubscriptionModalComponent } from './components/subscription-modal/subscription-modal.component';
 import { WordCitationService } from './services/word-citation.service';
 import { WordCursorTrackerService } from './services/word-cursor-tracker.service';
 import { LocalBibliographyService } from './services/local-bibliography.service';
 import { AuthService } from './services/auth.service';
 import { CloudSyncService } from './services/cloud-sync.service';
+import { SubscriptionService } from './services/subscription.service';
 
 @Component({
   selector: 'app-root',
@@ -18,7 +20,8 @@ import { CloudSyncService } from './services/cloud-sync.service';
     RouterLink,
     RouterLinkActive,
     CitationStyleSelectorComponent,
-    AuthModalComponent
+    AuthModalComponent,
+    SubscriptionModalComponent
   ],
   templateUrl: './app.html',
   styleUrl: './app.scss'
@@ -29,9 +32,11 @@ export class App implements OnInit {
   readonly bibService = inject(LocalBibliographyService);
   readonly authService = inject(AuthService);
   readonly cloudSync = inject(CloudSyncService);
+  readonly subscriptionService = inject(SubscriptionService);
   readonly title = signal('Biblion');
 
   readonly isAuthModalOpen = computed(() => this.authService.isAuthModalOpen());
+  readonly isSubscriptionModalOpen = computed(() => this.subscriptionService.isSubscriptionModalOpen());
   readonly isUserMenuOpen = signal<boolean>(false);
 
   get isWordHost(): boolean {
@@ -82,6 +87,15 @@ export class App implements OnInit {
   openEditAccount(): void {
     this.authService.openEditAccount();
     this.isUserMenuOpen.set(false);
+  }
+
+  openSubscriptionModal(): void {
+    this.subscriptionService.openSubscriptionModal();
+    this.isUserMenuOpen.set(false);
+  }
+
+  closeSubscriptionModal(): void {
+    this.subscriptionService.closeSubscriptionModal();
   }
 
   closeAuthModal(): void {
