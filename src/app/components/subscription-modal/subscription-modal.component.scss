@@ -14,7 +14,7 @@
 .subscription-modal-container {
   background: #ffffff;
   width: 100%;
-  max-width: 580px;
+  max-width: 680px;
   max-height: 90vh;
   border-radius: 12px;
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
@@ -175,6 +175,68 @@
     margin: 0 0 16px 0;
     line-height: 1.4;
   }
+
+  .plan-columns-grid {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 16px;
+    margin-top: 14px;
+
+    @media (max-width: 640px) {
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+  }
+
+  .pro-features-col {
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 16px;
+
+    .features-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .features-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+
+      .feature-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        font-size: 0.85rem;
+        color: #334155;
+        line-height: 1.35;
+
+        .check-icon {
+          width: 16px;
+          height: 16px;
+          color: #16a34a;
+          flex-shrink: 0;
+          margin-top: 2px;
+        }
+      }
+    }
+  }
+
+  .plan-status-col {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
 }
 
 .badge {
@@ -217,9 +279,9 @@
 }
 
 .plan-details-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   background: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
@@ -228,10 +290,10 @@
   .detail-item {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 2px;
 
     .detail-label {
-      font-size: 0.75rem;
+      font-size: 0.725rem;
       text-transform: uppercase;
       letter-spacing: 0.05em;
       color: #64748b;
@@ -239,7 +301,7 @@
     }
 
     .detail-value {
-      font-size: 0.95rem;
+      font-size: 0.925rem;
       font-weight: 600;
       color: #1e293b;
 
@@ -251,11 +313,10 @@
 }
 
 .billing-policy-notes {
-  margin-top: 12px;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  background: #f8fafc;
+  background: #ffffff;
   border: 1px dashed #cbd5e1;
   border-radius: 8px;
   padding: 10px 12px;
@@ -264,13 +325,13 @@
     display: flex;
     align-items: flex-start;
     gap: 8px;
-    font-size: 0.8rem;
+    font-size: 0.775rem;
     color: #475569;
-    line-height: 1.4;
+    line-height: 1.35;
 
     .policy-icon {
-      width: 15px;
-      height: 15px;
+      width: 14px;
+      height: 14px;
       color: #64748b;
       flex-shrink: 0;
       margin-top: 1px;
@@ -389,6 +450,30 @@
 
     &:hover:not(:disabled) {
       background: #0369a1;
+    }
+
+    &.btn-subscribe {
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+      font-size: 0.95rem;
+      padding: 12px 20px;
+      box-shadow: 0 4px 6px -1px rgba(2, 132, 199, 0.25), 0 2px 4px -2px rgba(2, 132, 199, 0.2);
+
+      &:hover:not(:disabled) {
+        background: linear-gradient(135deg, #0369a1 0%, #075985 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 8px -1px rgba(2, 132, 199, 0.35), 0 3px 6px -2px rgba(2, 132, 199, 0.25);
+      }
+
+      &:active:not(:disabled) {
+        transform: translateY(0);
+      }
+
+      .btn-external-icon {
+        width: 15px;
+        height: 15px;
+        margin-left: 2px;
+        opacity: 0.85;
+      }
     }
   }
 

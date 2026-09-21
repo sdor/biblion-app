@@ -111,7 +111,23 @@ describe('SubscriptionService', () => {
     });
   });
 
-  it('triggers LemonSqueezy.Url.Open when available on window', () => {
+  it('opens checkout in a new window/tab by default for spacious visual presentation', () => {
+    vi.spyOn(service, 'pollStatusAfterPurchase').mockImplementation(() => {});
+    const windowOpenSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
+
+    service.openCheckout();
+    expect(windowOpenSpy).toHaveBeenCalledWith(
+      service.checkoutUrl(),
+      '_blank',
+      'noopener,noreferrer'
+    );
+    expect(service.message()).toContain('Secure checkout opened');
+
+    windowOpenSpy.mockRestore();
+  });
+
+  it('triggers LemonSqueezy.Url.Open when preferNewTab is false and available on window', () => {
+    vi.spyOn(service, 'pollStatusAfterPurchase').mockImplementation(() => {});
     const openSpy = vi.fn();
     const setupSpy = vi.fn();
     (window as any).LemonSqueezy = {
@@ -119,7 +135,7 @@ describe('SubscriptionService', () => {
       Setup: setupSpy
     };
 
-    service.openCheckout();
+    service.openCheckout(false);
     expect(setupSpy).toHaveBeenCalled();
     expect(openSpy).toHaveBeenCalledWith(service.checkoutUrl());
 
@@ -128,11 +144,11 @@ describe('SubscriptionService', () => {
     delete (window as any).__biblion_lemon_setup;
   });
 
-  it('falls back to window.open when LemonSqueezy overlay is unavailable', () => {
+  it('falls back to window.open when LemonSqueezy overlay is requested but unavailable', () => {
     vi.spyOn(service, 'pollStatusAfterPurchase').mockImplementation(() => {});
     const windowOpenSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
 
-    service.openCheckout();
+    service.openCheckout(false);
     expect(windowOpenSpy).toHaveBeenCalledWith(
       service.checkoutUrl(),
       '_blank',

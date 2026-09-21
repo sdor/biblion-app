@@ -120,19 +120,30 @@ export class SubscriptionService {
     );
   }
 
-  openCheckout(): void {
+  openCheckout(preferNewTab: boolean = true): void {
     const url = this.checkoutUrl();
     if (typeof window === 'undefined') return;
 
-    // Inside Microsoft Word Add-in taskpane, open in default system browser for secure payment & 3DS
+    // Inside Microsoft Word Add-in taskpane, open in default system browser
     const officeUi = (window as any).Office?.context?.ui;
     if (officeUi?.openBrowserWindow) {
       officeUi.openBrowserWindow(url);
+      this.message.set('Secure checkout opened in your browser. Your Pro plan will activate automatically upon payment.');
       this.pollStatusAfterPurchase();
       return;
     }
 
-    // Check if LemonSqueezy.Url.Open is available from lemon.js
+    // When preferNewTab is true (default), open full hosted checkout in a new browser tab.
+    // This renders Lemon Squeezy's spacious 2-column desktop checkout with Apple Pay/Google Pay
+    // instead of a narrow, vertically cramped modal iframe overlay.
+    if (preferNewTab) {
+      this.openExternalUrl(url);
+      this.message.set('Secure checkout opened in a new tab. Your Pro plan will activate automatically upon payment.');
+      this.pollStatusAfterPurchase();
+      return;
+    }
+
+    // Fallback: Check if LemonSqueezy.Url.Open is available from lemon.js
     const win = window as any;
     if (win.createLemonSqueezy && !win.LemonSqueezy) {
       try {
@@ -143,7 +154,6 @@ export class SubscriptionService {
     }
 
     if (win.LemonSqueezy?.Url?.Open) {
-      // Register event handler if not already registered
       if (!win.__biblion_lemon_setup && win.LemonSqueezy.Setup) {
         try {
           win.LemonSqueezy.Setup({
