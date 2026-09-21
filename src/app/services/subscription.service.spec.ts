@@ -111,18 +111,24 @@ describe('SubscriptionService', () => {
     });
   });
 
-  it('opens checkout in a new window/tab by default for spacious visual presentation', () => {
+  it('opens checkout in a new window/tab by default and navigates to signed URL', () => {
     vi.spyOn(service, 'pollStatusAfterPurchase').mockImplementation(() => {});
-    const windowOpenSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
+    const mockWindow = { location: { href: '' }, closed: false } as any;
+    const windowOpenSpy = vi.spyOn(window, 'open').mockReturnValue(mockWindow);
 
     service.openCheckout();
     expect(windowOpenSpy).toHaveBeenCalledWith(
-      service.checkoutUrl(),
+      'about:blank',
       '_blank',
       'noopener,noreferrer'
     );
     expect(service.message()).toContain('Secure checkout opened');
 
+    const req = httpMock.expectOne('/api/v1/subscriptions/checkout');
+    expect(req.request.method).toBe('POST');
+    req.flush({ url: 'https://biblion.lemonsqueezy.com/checkout/custom/signed_123' });
+
+    expect(mockWindow.location.href).toBe('https://biblion.lemonsqueezy.com/checkout/custom/signed_123');
     windowOpenSpy.mockRestore();
   });
 
@@ -170,7 +176,11 @@ describe('SubscriptionService', () => {
     };
 
     service.openCheckout();
-    expect(openBrowserSpy).toHaveBeenCalledWith(service.checkoutUrl());
+    const req = httpMock.expectOne('/api/v1/subscriptions/checkout');
+    expect(req.request.method).toBe('POST');
+    req.flush({ url: 'https://biblion.lemonsqueezy.com/checkout/custom/office_123' });
+
+    expect(openBrowserSpy).toHaveBeenCalledWith('https://biblion.lemonsqueezy.com/checkout/custom/office_123');
 
     delete (window as any).Office;
   });

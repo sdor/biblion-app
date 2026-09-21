@@ -120,26 +120,69 @@ export class SubscriptionService {
     );
   }
 
+  getCheckoutUrl(): Observable<{ url: string }> {
+    const headers = this.auth.getAuthHeaders();
+    return this.http.post<{ url: string }>('/api/v1/subscriptions/checkout', {}, { headers });
+  }
+
   openCheckout(preferNewTab: boolean = true): void {
-    const url = this.checkoutUrl();
+    const fallbackUrl = this.checkoutUrl();
     if (typeof window === 'undefined') return;
 
     // Inside Microsoft Word Add-in taskpane, open in default system browser
     const officeUi = (window as any).Office?.context?.ui;
     if (officeUi?.openBrowserWindow) {
-      officeUi.openBrowserWindow(url);
+      this.getCheckoutUrl().subscribe({
+        next: (res) => {
+          officeUi.openBrowserWindow(res.url || fallbackUrl);
+        },
+        error: () => {
+          officeUi.openBrowserWindow(fallbackUrl);
+        }
+      });
       this.message.set('Secure checkout opened in your browser. Your Pro plan will activate automatically upon payment.');
       this.pollStatusAfterPurchase();
       return;
     }
 
     // When preferNewTab is true (default), open full hosted checkout in a new browser tab.
-    // This renders Lemon Squeezy's spacious 2-column desktop checkout with Apple Pay/Google Pay
-    // instead of a narrow, vertically cramped modal iframe overlay.
+    // We open the window synchronously to prevent popup blocker, then direct to the signed checkout URL.
     if (preferNewTab) {
-      this.openExternalUrl(url);
+      let popup: Window | null = null;
+      try {
+        popup = window.open('about:blank', '_blank', 'noopener,noreferrer');
+      } catch (e) {
+        popup = null;
+      }
+
       this.message.set('Secure checkout opened in a new tab. Your Pro plan will activate automatically upon payment.');
       this.pollStatusAfterPurchase();
+
+      this.getCheckoutUrl().subscribe({
+        next: (res) => {
+          const finalUrl = res.url || fallbackUrl;
+          if (popup && !popup.closed) {
+            try {
+              popup.location.href = finalUrl;
+            } catch {
+              this.openExternalUrl(finalUrl);
+            }
+          } else {
+            this.openExternalUrl(finalUrl);
+          }
+        },
+        error: () => {
+          if (popup && !popup.closed) {
+            try {
+              popup.location.href = fallbackUrl;
+            } catch {
+              this.openExternalUrl(fallbackUrl);
+            }
+          } else {
+            this.openExternalUrl(fallbackUrl);
+          }
+        }
+      });
       return;
     }
 
@@ -169,14 +212,14 @@ export class SubscriptionService {
         }
       }
       try {
-        win.LemonSqueezy.Url.Open(url);
+        win.LemonSqueezy.Url.Open(fallbackUrl);
         return;
       } catch (e) {
         console.warn('LemonSqueezy overlay open failed, falling back to window.open:', e);
       }
     }
 
-    this.openExternalUrl(url);
+    this.openExternalUrl(fallbackUrl);
     this.pollStatusAfterPurchase();
   }
 
