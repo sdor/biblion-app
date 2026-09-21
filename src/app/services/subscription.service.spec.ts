@@ -110,4 +110,35 @@ describe('SubscriptionService', () => {
       user: { ...mockUser, subscription: updatedSub }
     });
   });
+
+  it('triggers LemonSqueezy.Url.Open when available on window', () => {
+    const openSpy = vi.fn();
+    const setupSpy = vi.fn();
+    (window as any).LemonSqueezy = {
+      Url: { Open: openSpy },
+      Setup: setupSpy
+    };
+
+    service.openCheckout();
+    expect(setupSpy).toHaveBeenCalled();
+    expect(openSpy).toHaveBeenCalledWith(service.checkoutUrl());
+
+    // Clean up
+    delete (window as any).LemonSqueezy;
+    delete (window as any).__biblion_lemon_setup;
+  });
+
+  it('falls back to window.open when LemonSqueezy overlay is unavailable', () => {
+    const windowOpenSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
+
+    service.openCheckout();
+    expect(windowOpenSpy).toHaveBeenCalledWith(
+      service.checkoutUrl(),
+      '_blank',
+      'noopener,noreferrer'
+    );
+
+    windowOpenSpy.mockRestore();
+  });
 });
+
