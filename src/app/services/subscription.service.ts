@@ -120,9 +120,43 @@ export class SubscriptionService {
 
   openCheckout(): void {
     const url = this.checkoutUrl();
-    if (typeof window !== 'undefined') {
-      window.open(url, '_blank', 'noopener,noreferrer');
+    if (typeof window === 'undefined') return;
+
+    // Check if LemonSqueezy.Url.Open is available from lemon.js
+    const win = window as any;
+    if (win.createLemonSqueezy && !win.LemonSqueezy) {
+      try {
+        win.createLemonSqueezy();
+      } catch (e) {
+        console.warn('Could not initialize LemonSqueezy library:', e);
+      }
     }
+
+    if (win.LemonSqueezy?.Url?.Open) {
+      // Register event handler if not already registered
+      if (!win.__biblion_lemon_setup && win.LemonSqueezy.Setup) {
+        try {
+          win.LemonSqueezy.Setup({
+            eventHandler: (event: any) => {
+              if (event?.event === 'Checkout.Success') {
+                this.refreshStatus();
+              }
+            }
+          });
+          win.__biblion_lemon_setup = true;
+        } catch (e) {
+          console.warn('Could not setup LemonSqueezy event handler:', e);
+        }
+      }
+      try {
+        win.LemonSqueezy.Url.Open(url);
+        return;
+      } catch (e) {
+        console.warn('LemonSqueezy overlay open failed, falling back to window.open:', e);
+      }
+    }
+
+    window.open(url, '_blank', 'noopener,noreferrer');
   }
 
   openCustomerPortal(): void {
