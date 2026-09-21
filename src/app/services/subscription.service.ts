@@ -34,6 +34,8 @@ export class SubscriptionService {
   readonly isActive = computed(() => this.subscription()?.active ?? false);
   readonly isOnTrial = computed(() => this.subscription()?.on_trial ?? false);
   readonly isCancelled = computed(() => this.subscription()?.status === 'cancelled');
+  readonly isPastDue = computed(() => this.subscription()?.status === 'past_due');
+  readonly isPaused = computed(() => this.subscription()?.status === 'paused');
   readonly isInGracePeriod = computed(() => this.subscription()?.in_grace_period ?? false);
   readonly isErased = computed(() => this.subscription()?.data_erased ?? false);
   readonly canCancel = computed(() => this.subscription()?.can_cancel ?? false);
@@ -122,6 +124,14 @@ export class SubscriptionService {
     const url = this.checkoutUrl();
     if (typeof window === 'undefined') return;
 
+    // Inside Microsoft Word Add-in taskpane, open in default system browser for secure payment & 3DS
+    const officeUi = (window as any).Office?.context?.ui;
+    if (officeUi?.openBrowserWindow) {
+      officeUi.openBrowserWindow(url);
+      this.pollStatusAfterPurchase();
+      return;
+    }
+
     // Check if LemonSqueezy.Url.Open is available from lemon.js
     const win = window as any;
     if (win.createLemonSqueezy && !win.LemonSqueezy) {
@@ -139,7 +149,7 @@ export class SubscriptionService {
           win.LemonSqueezy.Setup({
             eventHandler: (event: any) => {
               if (event?.event === 'Checkout.Success') {
-                this.refreshStatus();
+                this.pollStatusAfterPurchase();
               }
             }
           });
@@ -156,30 +166,44 @@ export class SubscriptionService {
       }
     }
 
-    window.open(url, '_blank', 'noopener,noreferrer');
+    this.openExternalUrl(url);
+    this.pollStatusAfterPurchase();
   }
 
   openCustomerPortal(): void {
-    const directUrl = this.subscription()?.customer_portal_url;
-    if (directUrl && typeof window !== 'undefined') {
-      window.open(directUrl, '_blank', 'noopener,noreferrer');
-      return;
-    }
-
     this.isLoading.set(true);
     const headers = this.auth.getAuthHeaders();
     this.http.get<PortalResponse>('/api/v1/subscriptions/portal', { headers }).subscribe({
       next: (res) => {
         this.isLoading.set(false);
-        if (res.url && typeof window !== 'undefined') {
-          window.open(res.url, '_blank', 'noopener,noreferrer');
+        if (res.url) {
+          this.openExternalUrl(res.url);
         }
       },
       error: () => {
         this.isLoading.set(false);
-        this.openCheckout();
+        this.openExternalUrl('https://biblion.lemonsqueezy.com/billing');
       }
     });
+  }
+
+  openUpdatePaymentMethod(): void {
+    const url = this.subscription()?.update_payment_method_url;
+    if (url) {
+      this.openExternalUrl(url);
+    } else {
+      this.openCustomerPortal();
+    }
+  }
+
+  openExternalUrl(url: string): void {
+    if (typeof window === 'undefined' || !url) return;
+    const officeUi = (window as any).Office?.context?.ui;
+    if (officeUi?.openBrowserWindow) {
+      officeUi.openBrowserWindow(url);
+      return;
+    }
+    window.open(url, '_blank', 'noopener,noreferrer');
   }
 
   refreshStatus(): void {
@@ -187,5 +211,11 @@ export class SubscriptionService {
     this.auth.checkMe().subscribe({
       error: () => {}
     });
+  }
+
+  pollStatusAfterPurchase(): void {
+    this.refreshStatus();
+    setTimeout(() => this.refreshStatus(), 2000);
+    setTimeout(() => this.refreshStatus(), 5000);
   }
 }

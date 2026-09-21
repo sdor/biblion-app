@@ -401,6 +401,15 @@
     }
   }
 
+  .btn-warning {
+    background: #f59e0b;
+    color: #ffffff;
+
+    &:hover:not(:disabled) {
+      background: #d97706;
+    }
+  }
+
   .btn-danger-outline {
     background: transparent;
     color: #dc2626;

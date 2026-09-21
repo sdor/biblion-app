@@ -129,6 +129,7 @@ describe('SubscriptionService', () => {
   });
 
   it('falls back to window.open when LemonSqueezy overlay is unavailable', () => {
+    vi.spyOn(service, 'pollStatusAfterPurchase').mockImplementation(() => {});
     const windowOpenSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
 
     service.openCheckout();
@@ -138,6 +139,46 @@ describe('SubscriptionService', () => {
       'noopener,noreferrer'
     );
 
+    windowOpenSpy.mockRestore();
+  });
+
+  it('delegates to Office.context.ui.openBrowserWindow when running inside Office Add-in', () => {
+    vi.spyOn(service, 'pollStatusAfterPurchase').mockImplementation(() => {});
+    const openBrowserSpy = vi.fn();
+    (window as any).Office = {
+      context: {
+        ui: {
+          openBrowserWindow: openBrowserSpy
+        }
+      }
+    };
+
+    service.openCheckout();
+    expect(openBrowserSpy).toHaveBeenCalledWith(service.checkoutUrl());
+
+    delete (window as any).Office;
+  });
+
+  it('correctly computes isPastDue and opens update payment method', () => {
+    const pastDueUser: User = {
+      ...mockUser,
+      subscription: {
+        ...mockUser.subscription!,
+        status: 'past_due',
+        update_payment_method_url: 'https://biblion.lemonsqueezy.com/update-my-card'
+      }
+    };
+    authService.currentUser.set(pastDueUser);
+
+    expect(service.isPastDue()).toBe(true);
+
+    const windowOpenSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
+    service.openUpdatePaymentMethod();
+    expect(windowOpenSpy).toHaveBeenCalledWith(
+      'https://biblion.lemonsqueezy.com/update-my-card',
+      '_blank',
+      'noopener,noreferrer'
+    );
     windowOpenSpy.mockRestore();
   });
 });

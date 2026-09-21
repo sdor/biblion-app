@@ -58,6 +58,10 @@
             <span class="plan-name">Biblion Pro Plan</span>
             @if (subscriptionService.isOnTrial()) {
               <span class="badge badge-trial">Free Trial Active</span>
+            } @else if (subscriptionService.isPastDue()) {
+              <span class="badge badge-warning">Payment Past Due</span>
+            } @else if (subscriptionService.isPaused()) {
+              <span class="badge badge-warning">Subscription Paused</span>
             } @else if (subscriptionService.isActive() && !subscriptionService.isCancelled()) {
               <span class="badge badge-active">Active</span>
             } @else if (subscriptionService.isCancelled() && subscriptionService.isActive()) {
@@ -141,6 +145,25 @@
           </div>
         </div>
 
+        <!-- Warning: Payment Failed / Past Due -->
+        @if (subscriptionService.isPastDue()) {
+          <div class="grace-period-box past-due-box">
+            <div class="grace-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+            </div>
+            <div class="grace-content">
+              <h4>Payment Failed — Action Required</h4>
+              <p>
+                Your latest subscription renewal payment could not be processed. Please update your payment method to restore full access and prevent account data erasure.
+              </p>
+            </div>
+          </div>
+        }
+
         <!-- Warning: Grace Period Countdown to Data Erasure -->
         @if (subscriptionService.isInGracePeriod()) {
           <div class="grace-period-box">
@@ -187,8 +210,23 @@
 
       <!-- Action Buttons Grid -->
       <div class="modal-actions">
+        <!-- Update Payment Method button for past_due users or when update URL is available -->
+        @if (subscriptionService.isPastDue() || subscription()?.update_payment_method_url) {
+          <button
+            type="button"
+            class="btn btn-warning btn-payment-method"
+            [disabled]="subscriptionService.isLoading()"
+            (click)="updatePaymentMethod()">
+            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+              <line x1="2" y1="10" x2="22" y2="10"></line>
+            </svg>
+            <span>Update Payment Method</span>
+          </button>
+        }
+
         <!-- Upgrade / Subscribe button for trial, expired, or erased users -->
-        @if (subscriptionService.isOnTrial() || !subscriptionService.isActive()) {
+        @if (subscriptionService.isOnTrial() || (!subscriptionService.isActive() && !subscriptionService.isPastDue())) {
           <button
             type="button"
             class="btn btn-primary btn-subscribe"

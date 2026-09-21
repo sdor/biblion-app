@@ -83,6 +83,10 @@
                       <div class="info-subscription-pill">
                         @if (subscriptionService.isOnTrial()) {
                           <span class="sub-pill pill-trial">Free Trial: {{ subscriptionService.daysRemaining() ?? 30 }}d left</span>
+                        } @else if (subscriptionService.isPastDue()) {
+                          <span class="sub-pill pill-warning">Payment Past Due</span>
+                        } @else if (subscriptionService.isPaused()) {
+                          <span class="sub-pill pill-warning">Paused</span>
                         } @else if (subscriptionService.isActive() && !subscriptionService.isCancelled()) {
                           <span class="sub-pill pill-active">Pro Active</span>
                         } @else if (subscriptionService.isCancelled() && subscriptionService.isActive()) {

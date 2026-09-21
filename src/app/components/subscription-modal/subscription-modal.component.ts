@@ -47,4 +47,8 @@ export class SubscriptionModalComponent {
   openPortal(): void {
     this.subscriptionService.openCustomerPortal();
   }
+
+  updatePaymentMethod(): void {
+    this.subscriptionService.openUpdatePaymentMethod();
+  }
 }
