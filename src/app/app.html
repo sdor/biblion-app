@@ -82,7 +82,7 @@
                       </div>
                       <div class="info-subscription-pill">
                         @if (subscriptionService.isOnTrial()) {
-                          <span class="sub-pill pill-trial">Free Trial: {{ subscriptionService.daysRemaining() ?? 30 }}d left</span>
+                          <span class="sub-pill pill-trial">Free Trial: {{ subscriptionService.daysRemaining() ?? 14 }}d left</span>
                         } @else if (subscriptionService.isPastDue()) {
                           <span class="sub-pill pill-warning">Payment Past Due</span>
                         } @else if (subscriptionService.isPaused()) {

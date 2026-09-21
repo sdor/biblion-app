@@ -22,8 +22,8 @@ describe('SubscriptionModalComponent', () => {
       on_trial: true,
       can_cancel: true,
       can_resume: false,
-      trial_ends_at: new Date(Date.now() + 15 * 86400000).toISOString(),
-      days_remaining: 15,
+      trial_ends_at: new Date(Date.now() + 14 * 86400000).toISOString(),
+      days_remaining: 14,
       in_grace_period: false,
       data_erasure_scheduled_at: null,
       days_until_erasure: null,
@@ -58,7 +58,7 @@ describe('SubscriptionModalComponent', () => {
   it('displays free trial status badge and days remaining', () => {
     const el = fixture.nativeElement as HTMLElement;
     expect(el.textContent).toContain('Free Trial Active');
-    expect(el.textContent).toContain('15 days remaining');
+    expect(el.textContent).toContain('14 days remaining');
   });
 
   it('calls close on close button click', () => {
