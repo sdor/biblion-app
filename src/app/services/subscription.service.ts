@@ -120,9 +120,23 @@ export class SubscriptionService {
     );
   }
 
+  readonly signedCheckoutUrl = signal<string | null>(null);
+
   getCheckoutUrl(): Observable<{ url: string }> {
     const headers = this.auth.getAuthHeaders();
     return this.http.post<{ url: string }>('/api/v1/subscriptions/checkout', {}, { headers });
+  }
+
+  preloadCheckoutUrl(): void {
+    if (this.signedCheckoutUrl() || !this.auth.isAuthenticated()) return;
+    this.getCheckoutUrl().subscribe({
+      next: (res) => {
+        if (res?.url) {
+          this.signedCheckoutUrl.set(res.url);
+        }
+      },
+      error: () => {}
+    });
   }
 
   openCheckout(preferNewTab: boolean = true): void {
@@ -132,26 +146,32 @@ export class SubscriptionService {
     // Inside Microsoft Word Add-in taskpane, open in default system browser
     const officeUi = (window as any).Office?.context?.ui;
     if (officeUi?.openBrowserWindow) {
-      this.getCheckoutUrl().subscribe({
-        next: (res) => {
-          officeUi.openBrowserWindow(res.url || fallbackUrl);
-        },
-        error: () => {
-          officeUi.openBrowserWindow(fallbackUrl);
-        }
-      });
+      const targetUrl = this.signedCheckoutUrl() || fallbackUrl;
+      officeUi.openBrowserWindow(targetUrl);
       this.message.set('Secure checkout opened in your browser. Your Pro plan will activate automatically upon payment.');
       this.pollStatusAfterPurchase();
       return;
     }
 
-    // When preferNewTab is true (default), open full hosted checkout in a new browser tab.
-    // We open the window synchronously to prevent popup blocker, then direct to the signed checkout URL.
     if (preferNewTab) {
+      // 1. If preloaded signed checkout URL is already available, open directly and synchronously
+      const preloaded = this.signedCheckoutUrl();
+      if (preloaded) {
+        this.openExternalUrl(preloaded);
+        this.message.set('Secure checkout opened in a new tab. Your Pro plan will activate automatically upon payment.');
+        this.pollStatusAfterPurchase();
+        return;
+      }
+
+      // 2. If not yet preloaded, open a new window synchronously without 'noopener'
+      // so the WindowProxy reference is preserved and we can navigate it upon response
       let popup: Window | null = null;
       try {
-        popup = window.open('about:blank', '_blank', 'noopener,noreferrer');
-      } catch (e) {
+        popup = window.open('', '_blank');
+        if (popup && popup.document) {
+          popup.document.write(`<!DOCTYPE html><html><head><title>Connecting to Secure Checkout...</title><style>body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;margin:0;background-color:#f8fafc;color:#0f172a;}.spinner{width:36px;height:36px;border:3px solid #e2e8f0;border-top-color:#0284c7;border-radius:50%;animation:spin .8s linear infinite;margin-bottom:14px}@keyframes spin{to{transform:rotate(360deg)}}p{font-size:15px;color:#475569;margin:0;font-weight:500}</style></head><body><div class="spinner"></div><p>Connecting to secure checkout...</p></body></html>`);
+        }
+      } catch {
         popup = null;
       }
 
@@ -161,6 +181,7 @@ export class SubscriptionService {
       this.getCheckoutUrl().subscribe({
         next: (res) => {
           const finalUrl = res.url || fallbackUrl;
+          this.signedCheckoutUrl.set(finalUrl);
           if (popup && !popup.closed) {
             try {
               popup.location.href = finalUrl;

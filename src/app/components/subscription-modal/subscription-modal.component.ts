@@ -1,4 +1,4 @@
-import { Component, inject, Output, EventEmitter } from '@angular/core';
+import { Component, inject, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule, DatePipe, UpperCasePipe } from '@angular/common';
 import { SubscriptionService } from '../../services/subscription.service';
 
@@ -9,11 +9,15 @@ import { SubscriptionService } from '../../services/subscription.service';
   templateUrl: './subscription-modal.component.html',
   styleUrls: ['./subscription-modal.component.scss']
 })
-export class SubscriptionModalComponent {
+export class SubscriptionModalComponent implements OnInit {
   readonly subscriptionService = inject(SubscriptionService);
   readonly subscription = this.subscriptionService.subscription;
 
   @Output() closed = new EventEmitter<void>();
+
+  ngOnInit(): void {
+    this.subscriptionService.preloadCheckoutUrl();
+  }
 
   close(): void {
     this.subscriptionService.closeSubscriptionModal();

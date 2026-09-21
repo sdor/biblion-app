@@ -113,15 +113,12 @@ describe('SubscriptionService', () => {
 
   it('opens checkout in a new window/tab by default and navigates to signed URL', () => {
     vi.spyOn(service, 'pollStatusAfterPurchase').mockImplementation(() => {});
-    const mockWindow = { location: { href: '' }, closed: false } as any;
+    const mockWindow = { location: { href: '' }, closed: false, document: { write: vi.fn() } } as any;
     const windowOpenSpy = vi.spyOn(window, 'open').mockReturnValue(mockWindow);
 
     service.openCheckout();
-    expect(windowOpenSpy).toHaveBeenCalledWith(
-      'about:blank',
-      '_blank',
-      'noopener,noreferrer'
-    );
+    expect(windowOpenSpy).toHaveBeenCalledWith('', '_blank');
+    expect(mockWindow.document.write).toHaveBeenCalled();
     expect(service.message()).toContain('Secure checkout opened');
 
     const req = httpMock.expectOne('/api/v1/subscriptions/checkout');
@@ -130,6 +127,22 @@ describe('SubscriptionService', () => {
 
     expect(mockWindow.location.href).toBe('https://biblion.lemonsqueezy.com/checkout/custom/signed_123');
     windowOpenSpy.mockRestore();
+  });
+
+  it('opens preloaded signed checkout URL directly without redirect', () => {
+    vi.spyOn(service, 'pollStatusAfterPurchase').mockImplementation(() => {});
+    service.signedCheckoutUrl.set('https://biblion.lemonsqueezy.com/checkout/custom/preloaded_abc');
+    const windowOpenSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
+
+    service.openCheckout();
+    expect(windowOpenSpy).toHaveBeenCalledWith(
+      'https://biblion.lemonsqueezy.com/checkout/custom/preloaded_abc',
+      '_blank',
+      'noopener,noreferrer'
+    );
+    expect(service.message()).toContain('Secure checkout opened');
+    windowOpenSpy.mockRestore();
+    service.signedCheckoutUrl.set(null);
   });
 
   it('triggers LemonSqueezy.Url.Open when preferNewTab is false and available on window', () => {
@@ -176,11 +189,7 @@ describe('SubscriptionService', () => {
     };
 
     service.openCheckout();
-    const req = httpMock.expectOne('/api/v1/subscriptions/checkout');
-    expect(req.request.method).toBe('POST');
-    req.flush({ url: 'https://biblion.lemonsqueezy.com/checkout/custom/office_123' });
-
-    expect(openBrowserSpy).toHaveBeenCalledWith('https://biblion.lemonsqueezy.com/checkout/custom/office_123');
+    expect(openBrowserSpy).toHaveBeenCalledWith(service.checkoutUrl());
 
     delete (window as any).Office;
   });
