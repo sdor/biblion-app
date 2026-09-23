@@ -84,13 +84,29 @@ describe('MyLibraryComponent', () => {
     expect(component.cloudStatus().label).toBe('Cloud: Sync Off');
     expect(el.textContent).toContain('Cloud: Sync Off');
 
-    // 2. Logged in and OK: Green
-    component.authService.currentUser.set({ id: 1, email_address: 'scientist@nih.gov', name: 'Dr. Scientist' });
+    // 2. Logged in but subscription inactive / expired: Yellow (Subscription Required)
+    component.authService.currentUser.set({
+      id: 1,
+      email_address: 'scientist@nih.gov',
+      name: 'Dr. Scientist',
+      subscription: { active: false, status: 'expired', on_trial: false, can_cancel: false, can_resume: false }
+    });
+    fixture.detectChanges();
+    expect(component.cloudStatus().status).toBe('warning');
+    expect(component.cloudStatus().label).toBe('Cloud: Subscription Required');
+
+    // 3. Logged in and active subscription: Green
+    component.authService.currentUser.set({
+      id: 1,
+      email_address: 'scientist@nih.gov',
+      name: 'Dr. Scientist',
+      subscription: { active: true, status: 'active', on_trial: false, can_cancel: true, can_resume: false }
+    });
     fixture.detectChanges();
     expect(component.cloudStatus().status).toBe('ok');
     expect(component.cloudStatus().label).toBe('Cloud: OK');
 
-    // 3. Connection problem: Yellow
+    // 4. Connection problem: Yellow
     component.cloudSync.syncError.set('Network timeout connecting to Biblion Cloud');
     fixture.detectChanges();
     expect(component.cloudStatus().status).toBe('warning');

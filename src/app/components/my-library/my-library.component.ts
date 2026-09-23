@@ -36,6 +36,14 @@ export class MyLibraryComponent implements OnInit {
         tooltip: 'Not logged in. Cloud synchronization is not on.'
       };
     }
+    const isSubActive = this.authService.currentUser()?.subscription?.active ?? false;
+    if (!isSubActive) {
+      return {
+        status: 'warning',
+        label: 'Cloud: Subscription Required',
+        tooltip: 'An active subscription or free trial is required for cloud synchronization.'
+      };
+    }
     const syncError = this.cloudSync.syncError();
     if (syncError) {
       return {

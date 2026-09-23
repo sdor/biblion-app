@@ -95,6 +95,8 @@
                           <span class="sub-pill pill-danger">Grace: {{ subscriptionService.daysUntilErasure() ?? 30 }}d left</span>
                         } @else if (subscriptionService.isErased()) {
                           <span class="sub-pill pill-erased">Data Erased</span>
+                        } @else if (!subscriptionService.isActive()) {
+                          <span class="sub-pill pill-danger">Subscription Required</span>
                         }
                       </div>
                     </div>
@@ -260,7 +262,40 @@
         </button>
       </div>
     </aside>
+  } @else if (authService.isAuthenticated() && subscriptionService.isPastDue()) {
+    <aside class="subscription-top-banner grace-banner" role="alert">
+      <div class="banner-content">
+        <svg class="banner-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <span class="banner-text">
+          <strong>Payment Failed:</strong> Your renewal payment could not be processed. Please update your payment method to restore access.
+        </span>
+        <button type="button" class="btn-banner-action" (click)="openSubscriptionModal()">
+          Update Payment Method
+        </button>
+      </div>
+    </aside>
+  } @else if (authService.isAuthenticated() && !subscriptionService.isActive()) {
+    <aside class="subscription-top-banner grace-banner" role="alert">
+      <div class="banner-content">
+        <svg class="banner-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <span class="banner-text">
+          <strong>Subscription Required:</strong> An active subscription or free trial is required for cloud library features.
+        </span>
+        <button type="button" class="btn-banner-action" (click)="openSubscriptionModal()">
+          Subscribe to Pro
+        </button>
+      </div>
+    </aside>
   }
+
 
   <!-- Auth Modal Dialog -->
   @if (isAuthModalOpen()) {

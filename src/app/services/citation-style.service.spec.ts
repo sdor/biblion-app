@@ -5,6 +5,7 @@ describe('CitationStyleService', () => {
   let service: CitationStyleService;
 
   beforeEach(() => {
+    localStorage.clear();
     TestBed.configureTestingModule({});
     service = TestBed.inject(CitationStyleService);
   });

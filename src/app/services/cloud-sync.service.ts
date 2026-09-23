@@ -68,6 +68,12 @@ export class CloudSyncService {
       return false;
     }
 
+    const user = this.auth.currentUser();
+    if (user?.subscription && !user.subscription.active) {
+      this.syncError.set('An active subscription or free trial is required for cloud synchronization.');
+      return false;
+    }
+
     deletedPmids.forEach((id) => this.pendingDeletedPmids.add(id));
     deletedColIds.forEach((id) => this.pendingDeletedColIds.add(id));
 
