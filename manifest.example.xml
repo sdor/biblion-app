@@ -5,7 +5,7 @@
   xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="TaskPaneApp">
   <Id>da41848a-44f6-4c62-b0fb-bcea03b416c4</Id>
   <Version>1.0.0.0</Version>
-  <ProviderName>Biosys</ProviderName>
+  <ProviderName>Biosys Technologies</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
   <DisplayName DefaultValue="Biblion-Dev" />
   <Description DefaultValue="A template to get started." />
