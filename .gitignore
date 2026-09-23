@@ -43,3 +43,8 @@ manifest.xml
 # System files
 .DS_Store
 Thumbs.db
+
+# Playwright E2E Test Artifacts
+/test-results/
+/playwright-report/
+
