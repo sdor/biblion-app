@@ -5,11 +5,15 @@ set -e
 # Biblion Office Add-in Local Sideload Script for macOS
 
 APP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-MANIFEST_SRC="$APP_DIR/manifest.xml"
+MANIFEST_SRC="${MANIFEST_PATH:-${3:-$APP_DIR/manifest.prod.xml}}"
 
 if [ ! -f "$MANIFEST_SRC" ]; then
-  echo "Error: manifest.xml not found in $APP_DIR"
-  exit 1
+  if [ -f "$APP_DIR/manifest.xml" ]; then
+    MANIFEST_SRC="$APP_DIR/manifest.xml"
+  else
+    echo "Error: Manifest not found ($MANIFEST_SRC)"
+    exit 1
+  fi
 fi
 
 WORD_WEF="$HOME/Library/Containers/com.microsoft.Word/Data/Documents/wef"
@@ -28,7 +32,7 @@ install_manifest() {
   if [ -d "$container_parent" ]; then
     mkdir -p "$target_dir"
     cp "$MANIFEST_SRC" "$target_dir/manifest.xml"
-    echo "✓ Sideloaded manifest.xml into $app_name WEF folder: $target_dir"
+    echo "✓ Sideloaded $(basename "$MANIFEST_SRC") into $app_name WEF folder as manifest.xml: $target_dir"
   else
     echo "⚠ $app_name container directory not found ($container_parent). Is $app_name installed?"
   fi

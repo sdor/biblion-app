@@ -7,6 +7,7 @@
     "start:ssl": "node scripts/start-ssl.js",
     "generate-ssl": "node scripts/generate-ssl.js",
     "sideload": "./scripts/sideload.sh install word",
+    "sideload:prod": "./scripts/sideload.sh install word ./manifest.prod.xml",
     "sideload:word": "./scripts/sideload.sh install word",
     "sideload:win": "powershell -ExecutionPolicy Bypass -File ./scripts/sideload.ps1 install",
     "sideload:excel": "./scripts/sideload.sh install excel",
