@@ -5,7 +5,7 @@ import { AuthService } from './auth.service';
 import { SubscriptionInfo, User } from '../models/auth.model';
 
 export const DEFAULT_LEMONSQUEEZY_CHECKOUT_URL =
-  'https://biblion.lemonsqueezy.com/checkout/buy/3c97fb4c-acf6-4e6b-a0cd-f508828e6972?discount=0';
+  'https://biblion.lemonsqueezy.com/checkout/buy/e0e957c6-9733-4e35-8a19-24119e5b2225?discount=0';
 
 export interface SubscriptionActionResponse {
   message?: string;
@@ -20,7 +20,7 @@ export interface PortalResponse {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SubscriptionService {
   private http = inject(HttpClient);
@@ -68,27 +68,29 @@ export class SubscriptionService {
     this.message.set(null);
 
     const headers = this.auth.getAuthHeaders();
-    return this.http.post<SubscriptionActionResponse>('/api/v1/subscriptions/cancel', {}, { headers }).pipe(
-      tap((res) => {
-        this.isLoading.set(false);
-        this.message.set(res.message || 'Subscription cancelled successfully.');
-        if (res.user) {
-          this.auth.currentUser.set(res.user);
-        } else if (res.subscription && this.auth.currentUser()) {
-          const current = this.auth.currentUser()!;
-          this.auth.currentUser.set({
-            ...current,
-            subscription: res.subscription
-          });
-        }
-      }),
-      catchError((err) => {
-        this.isLoading.set(false);
-        const msg = err.error?.error || err.error?.message || 'Failed to cancel subscription.';
-        this.error.set(msg);
-        return throwError(() => new Error(msg));
-      })
-    );
+    return this.http
+      .post<SubscriptionActionResponse>('/api/v1/subscriptions/cancel', {}, { headers })
+      .pipe(
+        tap((res) => {
+          this.isLoading.set(false);
+          this.message.set(res.message || 'Subscription cancelled successfully.');
+          if (res.user) {
+            this.auth.currentUser.set(res.user);
+          } else if (res.subscription && this.auth.currentUser()) {
+            const current = this.auth.currentUser()!;
+            this.auth.currentUser.set({
+              ...current,
+              subscription: res.subscription,
+            });
+          }
+        }),
+        catchError((err) => {
+          this.isLoading.set(false);
+          const msg = err.error?.error || err.error?.message || 'Failed to cancel subscription.';
+          this.error.set(msg);
+          return throwError(() => new Error(msg));
+        }),
+      );
   }
 
   resumeSubscription(): Observable<SubscriptionActionResponse> {
@@ -97,27 +99,29 @@ export class SubscriptionService {
     this.message.set(null);
 
     const headers = this.auth.getAuthHeaders();
-    return this.http.post<SubscriptionActionResponse>('/api/v1/subscriptions/resume', {}, { headers }).pipe(
-      tap((res) => {
-        this.isLoading.set(false);
-        this.message.set(res.message || 'Subscription resumed successfully.');
-        if (res.user) {
-          this.auth.currentUser.set(res.user);
-        } else if (res.subscription && this.auth.currentUser()) {
-          const current = this.auth.currentUser()!;
-          this.auth.currentUser.set({
-            ...current,
-            subscription: res.subscription
-          });
-        }
-      }),
-      catchError((err) => {
-        this.isLoading.set(false);
-        const msg = err.error?.error || err.error?.message || 'Failed to resume subscription.';
-        this.error.set(msg);
-        return throwError(() => new Error(msg));
-      })
-    );
+    return this.http
+      .post<SubscriptionActionResponse>('/api/v1/subscriptions/resume', {}, { headers })
+      .pipe(
+        tap((res) => {
+          this.isLoading.set(false);
+          this.message.set(res.message || 'Subscription resumed successfully.');
+          if (res.user) {
+            this.auth.currentUser.set(res.user);
+          } else if (res.subscription && this.auth.currentUser()) {
+            const current = this.auth.currentUser()!;
+            this.auth.currentUser.set({
+              ...current,
+              subscription: res.subscription,
+            });
+          }
+        }),
+        catchError((err) => {
+          this.isLoading.set(false);
+          const msg = err.error?.error || err.error?.message || 'Failed to resume subscription.';
+          this.error.set(msg);
+          return throwError(() => new Error(msg));
+        }),
+      );
   }
 
   readonly signedCheckoutUrl = signal<string | null>(null);
@@ -135,7 +139,7 @@ export class SubscriptionService {
           this.signedCheckoutUrl.set(res.url);
         }
       },
-      error: () => {}
+      error: () => {},
     });
   }
 
@@ -148,7 +152,9 @@ export class SubscriptionService {
     if (officeUi?.openBrowserWindow) {
       const targetUrl = this.signedCheckoutUrl() || fallbackUrl;
       officeUi.openBrowserWindow(targetUrl);
-      this.message.set('Secure checkout opened in your browser. Your Pro plan will activate automatically upon payment.');
+      this.message.set(
+        'Secure checkout opened in your browser. Your Pro plan will activate automatically upon payment.',
+      );
       this.pollStatusAfterPurchase();
       return;
     }
@@ -158,7 +164,9 @@ export class SubscriptionService {
       const preloaded = this.signedCheckoutUrl();
       if (preloaded) {
         this.openExternalUrl(preloaded);
-        this.message.set('Secure checkout opened in a new tab. Your Pro plan will activate automatically upon payment.');
+        this.message.set(
+          'Secure checkout opened in a new tab. Your Pro plan will activate automatically upon payment.',
+        );
         this.pollStatusAfterPurchase();
         return;
       }
@@ -169,13 +177,17 @@ export class SubscriptionService {
       try {
         popup = window.open('', '_blank');
         if (popup && popup.document) {
-          popup.document.write(`<!DOCTYPE html><html><head><title>Connecting to Secure Checkout...</title><style>body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;margin:0;background-color:#f8fafc;color:#0f172a;}.spinner{width:36px;height:36px;border:3px solid #e2e8f0;border-top-color:#0284c7;border-radius:50%;animation:spin .8s linear infinite;margin-bottom:14px}@keyframes spin{to{transform:rotate(360deg)}}p{font-size:15px;color:#475569;margin:0;font-weight:500}</style></head><body><div class="spinner"></div><p>Connecting to secure checkout...</p></body></html>`);
+          popup.document.write(
+            `<!DOCTYPE html><html><head><title>Connecting to Secure Checkout...</title><style>body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;margin:0;background-color:#f8fafc;color:#0f172a;}.spinner{width:36px;height:36px;border:3px solid #e2e8f0;border-top-color:#0284c7;border-radius:50%;animation:spin .8s linear infinite;margin-bottom:14px}@keyframes spin{to{transform:rotate(360deg)}}p{font-size:15px;color:#475569;margin:0;font-weight:500}</style></head><body><div class="spinner"></div><p>Connecting to secure checkout...</p></body></html>`,
+          );
         }
       } catch {
         popup = null;
       }
 
-      this.message.set('Secure checkout opened in a new tab. Your Pro plan will activate automatically upon payment.');
+      this.message.set(
+        'Secure checkout opened in a new tab. Your Pro plan will activate automatically upon payment.',
+      );
       this.pollStatusAfterPurchase();
 
       this.getCheckoutUrl().subscribe({
@@ -202,7 +214,7 @@ export class SubscriptionService {
           } else {
             this.openExternalUrl(fallbackUrl);
           }
-        }
+        },
       });
       return;
     }
@@ -225,7 +237,7 @@ export class SubscriptionService {
               if (event?.event === 'Checkout.Success') {
                 this.pollStatusAfterPurchase();
               }
-            }
+            },
           });
           win.__biblion_lemon_setup = true;
         } catch (e) {
@@ -257,7 +269,7 @@ export class SubscriptionService {
       error: () => {
         this.isLoading.set(false);
         this.openExternalUrl('https://biblion.lemonsqueezy.com/billing');
-      }
+      },
     });
   }
 
@@ -283,7 +295,7 @@ export class SubscriptionService {
   refreshStatus(): void {
     if (!this.auth.isAuthenticated()) return;
     this.auth.checkMe().subscribe({
-      error: () => {}
+      error: () => {},
     });
   }
 
