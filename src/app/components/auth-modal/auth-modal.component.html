@@ -264,6 +264,7 @@
               <label class="checkbox-label">
                 <input
                   type="checkbox"
+                  name="enableAiSetup"
                   [ngModel]="enableAiSetup()"
                   (ngModelChange)="enableAiSetup.set($event)">
                 <span>Configure AI Query Rewriter (BYOK, Optional)</span>
@@ -273,6 +274,7 @@
                 <div class="ai-fields-box">
                   <label class="form-label">Provider</label>
                   <select
+                    name="aiProvider"
                     class="form-input"
                     [ngModel]="aiProvider()"
                     (ngModelChange)="aiProvider.set($event)">
@@ -285,6 +287,7 @@
                   <label class="form-label" style="margin-top: 8px;">API Key</label>
                   <input
                     type="password"
+                    name="aiKey"
                     class="form-input"
                     placeholder="sk-..."
                     [ngModel]="aiKey()"

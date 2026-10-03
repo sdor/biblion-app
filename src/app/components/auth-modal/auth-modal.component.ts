@@ -245,13 +245,16 @@ export class AuthModalComponent implements OnInit {
         }
       });
     } else {
-      const aiPayload = this.enableAiSetup() && this.aiKey().trim() ? {
-        ai_provider: this.aiProvider(),
-        ai_model: this.aiModel(),
-        ai_key: this.aiKey().trim()
-      } : undefined;
+      const hasAi = this.enableAiSetup() && !!this.aiKey().trim();
+      const registerObs = hasAi
+        ? this.authService.register(emailVal, passVal, this.name().trim() || undefined, {
+            ai_provider: this.aiProvider(),
+            ai_model: this.aiModel(),
+            ai_key: this.aiKey().trim()
+          })
+        : this.authService.register(emailVal, passVal, this.name().trim() || undefined);
 
-      this.authService.register(emailVal, passVal, this.name().trim() || undefined, aiPayload).subscribe({
+      registerObs.subscribe({
         next: () => {
           this.isSubmitting.set(false);
           this.cloudSync.syncWithCloud();
