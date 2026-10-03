@@ -25,6 +25,12 @@ export class AuthModalComponent implements OnInit {
   readonly passwordConfirmation = signal<string>('');
   readonly currentPassword = signal<string>('');
   readonly resetToken = signal<string>('');
+
+  // Optional AI setup on registration
+  readonly enableAiSetup = signal<boolean>(false);
+  readonly aiProvider = signal<string>('openrouter');
+  readonly aiModel = signal<string>('anthropic/claude-3.5-sonnet');
+  readonly aiKey = signal<string>('');
   readonly name = signal<string>('');
   readonly errorMessage = signal<string | null>(null);
   readonly successMessage = signal<string | null>(null);
