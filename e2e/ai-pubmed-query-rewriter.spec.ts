@@ -288,4 +288,105 @@ test.describe('AI PubMed Query Rewriter & BYOK E2E Scenarios', () => {
     await configBtn.click();
     await expect(page.locator('.ai-settings-modal-container')).toBeVisible();
   });
+
+  test('Scenario 5: User Registration with Optional AI Provider Setup', async ({ page }) => {
+    await mockBiblionApi(page);
+
+    let capturedRegistrationPayload: any = null;
+    await page.route('**/api/v1/registrations', async (route) => {
+      capturedRegistrationPayload = route.request().postDataJSON();
+      await route.fulfill({
+        status: 201,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          token: 'mock-reg-token-xyz',
+          user: {
+            id: 99,
+            email_address: 'scientist@institution.edu',
+            name: 'Dr. Rosalind Franklin',
+            subscription: {
+              status: 'on_trial',
+              active: true,
+              days_remaining: 30
+            }
+          }
+        })
+      });
+    });
+
+    await page.goto('/');
+    await page.click('.btn-auth-signin');
+    const modal = page.locator('.modal-dialog');
+    await expect(modal).toBeVisible();
+
+    // Switch to Create Account tab
+    await modal.locator('.tab-btn:has-text("Create Account")').click();
+    await modal.locator('#auth-name').fill('Dr. Rosalind Franklin');
+    await modal.locator('#auth-email').fill('scientist@institution.edu');
+    await modal.locator('#auth-password').fill('securepassword123');
+
+    // Enable Optional AI Provider Setup
+    const aiCheckbox = modal.locator('input[name="enableAiSetup"]');
+    await aiCheckbox.check();
+
+    // Select Provider and input key
+    await modal.locator('select[name="aiProvider"]').selectOption('openrouter');
+    await modal.locator('input[name="aiKey"]').fill('sk-or-v1-reg-test-key-8888');
+
+    // Screenshot registration form with AI configuration
+    await page.screenshot({
+      path: 'e2e/screenshots/07-registration-ai-setup.png',
+      fullPage: true
+    });
+
+    // Submit registration
+    await modal.locator('button[type="submit"]').click();
+
+    // Verify modal closes and user is logged in
+    await expect(modal).not.toBeVisible();
+    await expect(page.locator('.btn-user-profile')).toBeVisible();
+
+    // Verify payload dispatched to backend
+    expect(capturedRegistrationPayload.name).toBe('Dr. Rosalind Franklin');
+    expect(capturedRegistrationPayload.email_address).toBe('scientist@institution.edu');
+    expect(capturedRegistrationPayload.ai_provider).toBe('openrouter');
+    expect(capturedRegistrationPayload.ai_key).toBe('sk-or-v1-reg-test-key-8888');
+  });
+
+  test('Scenario 6: Shared Computer Security on Logout Purges Credentials', async ({ page }) => {
+    await mockBiblionApi(page, { status: 'active' });
+    await page.goto('/');
+    await loginViaModal(page);
+
+    // Set mock local AI settings
+    await page.evaluate(() => {
+      localStorage.setItem('biblion_ai_byok_settings', JSON.stringify({
+        provider: 'openrouter',
+        apiKey: 'sk-or-sensitive-key-should-be-cleared'
+      }));
+    });
+
+    // Verify active logged in session
+    await expect(page.locator('.btn-user-profile')).toBeVisible();
+
+    // Perform Sign Out
+    await page.click('.btn-user-profile');
+    await page.click('.dropdown-item.signout-item');
+
+    // Verify unauthenticated state in UI
+    await expect(page.locator('.btn-auth-signin')).toBeVisible();
+    await expect(page.locator('.btn-user-profile')).not.toBeVisible();
+
+    // Verify credentials and tokens are wiped from localStorage
+    const storedAiSettings = await page.evaluate(() => localStorage.getItem('biblion_ai_byok_settings'));
+    const storedToken = await page.evaluate(() => localStorage.getItem('biblion_auth_token'));
+    expect(storedAiSettings).toBeNull();
+    expect(storedToken).toBeNull();
+
+    // Screenshot unauthenticated state post-logout
+    await page.screenshot({
+      path: 'e2e/screenshots/08-logout-security-cleared.png',
+      fullPage: true
+    });
+  });
 });
