@@ -133,15 +133,22 @@ export class AuthService {
     );
   }
 
-  register(email_address: string, password: string, name?: string): Observable<AuthResponse> {
+  register(email_address: string, password: string, name?: string, aiData?: { ai_provider?: string; ai_model?: string; ai_key?: string }): Observable<AuthResponse> {
     this.isLoading.set(true);
     this.error.set(null);
 
-    return this.http.post<AuthResponse>('/api/v1/registrations', {
+    const body: Record<string, any> = {
       email_address,
       password,
       name
-    }).pipe(
+    };
+    if (aiData?.ai_provider && aiData?.ai_key) {
+      body['ai_provider'] = aiData.ai_provider;
+      body['ai_model'] = aiData.ai_model;
+      body['ai_key'] = aiData.ai_key;
+    }
+
+    return this.http.post<AuthResponse>('/api/v1/registrations', body).pipe(
       tap((res) => {
         this.isLoading.set(false);
         this.token.set(res.token);
@@ -244,6 +251,14 @@ export class AuthService {
     this.currentUser.set(null);
     this.token.set(null);
     this.removeStoredToken();
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        window.localStorage.removeItem('biblion_ai_byok_settings');
+        window.localStorage.removeItem('biblion_ai_settings');
+      }
+    } catch {
+      // Ignore
+    }
   }
 }
 

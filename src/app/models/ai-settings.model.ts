@@ -6,6 +6,23 @@ export interface AISettings {
   model?: string;
 }
 
+export interface UserAiCredential {
+  id: number;
+  provider: AIProvider;
+  model: string;
+  is_active: boolean;
+  key_hint: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CreateAiCredentialPayload {
+  provider: AIProvider;
+  api_key: string;
+  model?: string;
+  is_active?: boolean;
+}
+
 export interface QueryRewriteRequest {
   query: string;
 }

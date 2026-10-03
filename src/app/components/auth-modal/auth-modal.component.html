@@ -248,7 +248,7 @@
         <form (ngSubmit)="onSubmit()" class="auth-form">
           @if (mode() === 'register') {
             <div class="form-group">
-              <label class="form-label" for="auth-name">Your Name</label>
+              <label class="form-label" for="auth-name">Full Name (Optional)</label>
               <input
                 id="auth-name"
                 type="text"
@@ -256,7 +256,41 @@
                 placeholder="e.g. Dr. Jane Smith"
                 [ngModel]="name()"
                 (ngModelChange)="name.set($event)"
-                name="name" />
+                autocomplete="name">
+            </div>
+
+            <!-- Optional AI Provider Setup -->
+            <div class="form-group ai-setup-group">
+              <label class="checkbox-label">
+                <input
+                  type="checkbox"
+                  [ngModel]="enableAiSetup()"
+                  (ngModelChange)="enableAiSetup.set($event)">
+                <span>Configure AI Query Rewriter (BYOK, Optional)</span>
+              </label>
+
+              @if (enableAiSetup()) {
+                <div class="ai-fields-box">
+                  <label class="form-label">Provider</label>
+                  <select
+                    class="form-input"
+                    [ngModel]="aiProvider()"
+                    (ngModelChange)="aiProvider.set($event)">
+                    <option value="openrouter">OpenRouter (Recommended)</option>
+                    <option value="openai">OpenAI</option>
+                    <option value="anthropic">Anthropic</option>
+                    <option value="gemini">Google Gemini</option>
+                  </select>
+
+                  <label class="form-label" style="margin-top: 8px;">API Key</label>
+                  <input
+                    type="password"
+                    class="form-input"
+                    placeholder="sk-..."
+                    [ngModel]="aiKey()"
+                    (ngModelChange)="aiKey.set($event)">
+                </div>
+              }
             </div>
           }
 

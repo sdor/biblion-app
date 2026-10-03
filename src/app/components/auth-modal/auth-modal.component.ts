@@ -245,7 +245,13 @@ export class AuthModalComponent implements OnInit {
         }
       });
     } else {
-      this.authService.register(emailVal, passVal, this.name().trim() || undefined).subscribe({
+      const aiPayload = this.enableAiSetup() && this.aiKey().trim() ? {
+        ai_provider: this.aiProvider(),
+        ai_model: this.aiModel(),
+        ai_key: this.aiKey().trim()
+      } : undefined;
+
+      this.authService.register(emailVal, passVal, this.name().trim() || undefined, aiPayload).subscribe({
         next: () => {
           this.isSubmitting.set(false);
           this.cloudSync.syncWithCloud();
