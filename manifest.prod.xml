@@ -4,11 +4,11 @@
   xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0"
   xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="TaskPaneApp">
   <Id>da41848a-44f6-4c62-b0fb-bcea03b416c4</Id>
-  <Version>1.0.0.0</Version>
+  <Version>1.0.0.1</Version>
   <ProviderName>Biblion</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
-  <DisplayName DefaultValue="Biblion" />
-  <Description DefaultValue="MEDLINE / PubMed Search &amp; Word Citation Manager" />
+  <DisplayName DefaultValue="Biblion: PubMed Citations &amp; Literature Search" />
+  <Description DefaultValue="Search PubMed and insert formatted citations directly into Word without leaving your document." />
   <IconUrl DefaultValue="https://biosystechnologies.com/icon-32.png" />
   <HighResolutionIconUrl DefaultValue="https://biosystechnologies.com/icon-64.png" />
   <SupportUrl DefaultValue="https://biosystechnologies.com/#/about" />
@@ -86,8 +86,8 @@
       </bt:ShortStrings>
       <bt:LongStrings>
         <bt:String id="GetStarted.Description"
-          DefaultValue="Biblion PubMed literature discovery and citation manager loaded successfully." />
-        <bt:String id="TaskpaneButton.Tooltip" DefaultValue="Click to open Biblion PubMed Search and Citations" />
+          DefaultValue="Search PubMed, review structured abstracts, and insert formatted citations directly in Word." />
+        <bt:String id="TaskpaneButton.Tooltip" DefaultValue="Search PubMed and insert formatted citations directly into Word" />
       </bt:LongStrings>
     </Resources>
   </VersionOverrides>

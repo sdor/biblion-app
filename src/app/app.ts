@@ -4,12 +4,14 @@ import { CommonModule } from '@angular/common';
 import { CitationStyleSelectorComponent } from './components/citation-style-selector/citation-style-selector.component';
 import { AuthModalComponent } from './components/auth-modal/auth-modal.component';
 import { SubscriptionModalComponent } from './components/subscription-modal/subscription-modal.component';
+import { AiSettingsModalComponent } from './components/ai-settings-modal/ai-settings-modal.component';
 import { WordCitationService } from './services/word-citation.service';
 import { WordCursorTrackerService } from './services/word-cursor-tracker.service';
 import { LocalBibliographyService } from './services/local-bibliography.service';
 import { AuthService } from './services/auth.service';
 import { CloudSyncService } from './services/cloud-sync.service';
 import { SubscriptionService } from './services/subscription.service';
+import { AiSettingsService } from './services/ai-settings.service';
 
 @Component({
   selector: 'app-root',
@@ -21,7 +23,8 @@ import { SubscriptionService } from './services/subscription.service';
     RouterLinkActive,
     CitationStyleSelectorComponent,
     AuthModalComponent,
-    SubscriptionModalComponent
+    SubscriptionModalComponent,
+    AiSettingsModalComponent
   ],
   templateUrl: './app.html',
   styleUrl: './app.scss'
@@ -33,6 +36,7 @@ export class App implements OnInit {
   readonly authService = inject(AuthService);
   readonly cloudSync = inject(CloudSyncService);
   readonly subscriptionService = inject(SubscriptionService);
+  readonly aiSettingsService = inject(AiSettingsService);
   readonly title = signal('Biblion');
 
   readonly isAuthModalOpen = computed(() => this.authService.isAuthModalOpen());
@@ -96,6 +100,15 @@ export class App implements OnInit {
 
   closeSubscriptionModal(): void {
     this.subscriptionService.closeSubscriptionModal();
+  }
+
+  openAiSettings(): void {
+    this.aiSettingsService.openSettingsModal();
+    this.isUserMenuOpen.set(false);
+  }
+
+  closeAiSettings(): void {
+    this.aiSettingsService.closeSettingsModal();
   }
 
   closeAuthModal(): void {

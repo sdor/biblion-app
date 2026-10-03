@@ -69,6 +69,24 @@
         }
 
         <button
+          type="button"
+          class="ai-enhance-btn"
+          (click)="onEnhanceQuery()"
+          [disabled]="!searchTerm().trim() || isRewriting() || pubmedService.isLoading()"
+          title="Enhance Query with AI (BYOK)"
+          aria-label="Enhance Query with AI">
+          @if (isRewriting()) {
+            <span class="btn-spinner"></span>
+            <span class="btn-text">Rewriting...</span>
+          } @else {
+            <svg class="wand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path>
+            </svg>
+            <span class="btn-text">AI Rewrite</span>
+          }
+        </button>
+
+        <button
           type="submit"
           class="submit-search-btn"
           [title]="pubmedService.isLoading() ? 'Searching...' : 'Search PubMed'"
@@ -104,6 +122,26 @@
         </div>
       }
     </form>
+
+    <!-- AI Query Rewriter Error / Quota Banner -->
+    @if (rewriterError()) {
+      <div class="ai-error-banner" [class.quota-error]="isQuotaError()">
+        <svg class="error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <div class="ai-error-content">
+          <strong>{{ isQuotaError() ? 'Upstream Quota Exhaustion (402):' : 'AI Query Rewriter Notice:' }}</strong>
+          <span>{{ rewriterError() }}</span>
+        </div>
+        @if (isQuotaError() || !aiSettingsService.isConfigured()) {
+          <button type="button" class="btn-settings-link" (click)="aiSettingsService.openSettingsModal()">
+            Configure AI Settings
+          </button>
+        }
+      </div>
+    }
   </div>
 
   <!-- Search Results Section -->
@@ -223,6 +261,22 @@
           </svg>
           <h3>No PubMed records found</h3>
           <p>No matching citations were returned for "<em>{{ pubmedService.currentTerm() }}</em>". Try refining your keywords or checking spelling.</p>
+
+          @if (isLastSearchRewritten() && lastAtmFallbackQuery()) {
+            <div class="atm-fallback-card">
+              <div class="atm-fallback-info">
+                <div class="atm-badge">Automatic Term Mapping Fallback</div>
+                <strong>Strict E-utilities boolean query returned 0 hits</strong>
+                <p>The AI boolean groupings and field tags may have been too restrictive. Click below to re-run your search with NCBI PubMed's native Automatic Term Mapping:</p>
+              </div>
+              <button type="button" class="btn-atm-fallback" (click)="executeAtmFallback()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+                </svg>
+                <span>Re-run native ATM search for "{{ lastAtmFallbackQuery() }}"</span>
+              </button>
+            </div>
+          }
         </div>
       }
 
@@ -268,4 +322,64 @@
     }
 
   </div>
+
+  <!-- Diff / Review Preview Modal -->
+  @if (isDiffModalOpen()) {
+    <div class="modal-backdrop" (click)="onDiffBackdropClick($event)">
+      <div class="diff-modal-container" role="dialog" aria-modal="true" aria-labelledby="diffModalTitle">
+        <div class="modal-header">
+          <div class="header-title-group">
+            <div class="sparkle-icon-circle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path>
+              </svg>
+            </div>
+            <div>
+              <h3 id="diffModalTitle" class="modal-title">PubMed Query Synthesizer Preview</h3>
+              <p class="modal-subtitle">Review, edit, and apply generated NCBI E-utilities boolean syntax</p>
+            </div>
+          </div>
+          <button type="button" class="close-btn" (click)="closeDiffModal()" aria-label="Close">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <div class="diff-comparison">
+            <div class="diff-box original-box">
+              <span class="diff-label">Original Query (Natural Language)</span>
+              <div class="query-preview-text">{{ originalQueryForDiff() }}</div>
+            </div>
+
+            <div class="diff-box rewritten-box">
+              <div class="box-header-row">
+                <span class="diff-label">Rewritten NCBI Query (Editable)</span>
+                <span class="syntax-badge">Valid Syntax</span>
+              </div>
+              <textarea
+                class="query-edit-textarea"
+                rows="4"
+                [ngModel]="rewrittenQueryCandidate()"
+                (ngModelChange)="rewrittenQueryCandidate.set($event)">
+              </textarea>
+              <small class="diff-hint">You can make manual adjustments to the boolean operators and tags above.</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-cancel" (click)="closeDiffModal()">Cancel</button>
+          <div class="footer-actions">
+            <button type="button" class="btn-apply-only" (click)="applyRewrittenQueryOnly()">Apply to Input</button>
+            <button type="button" class="btn-apply-search" (click)="applyRewrittenQueryAndSearch()">
+              Apply &amp; Search PubMed
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
 </div>

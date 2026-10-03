@@ -1,0 +1,138 @@
+<div class="modal-backdrop" (click)="onBackdropClick($event)">
+  <div class="ai-settings-modal-container" role="dialog" aria-modal="true" aria-labelledby="aiSettingsTitle">
+    
+    <!-- Header -->
+    <div class="modal-header">
+      <div class="header-title-group">
+        <div class="header-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path>
+          </svg>
+        </div>
+        <div>
+          <h3 id="aiSettingsTitle" class="modal-title">AI Query Rewriter Settings</h3>
+          <p class="modal-subtitle">Bring Your Own Key (BYOK) for OpenRouter, Claude, GPT, or Gemini</p>
+        </div>
+      </div>
+      <button type="button" class="close-btn" (click)="close()" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Body -->
+    <div class="modal-body">
+      <div class="byok-info-banner">
+        <svg class="shield-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+        </svg>
+        <div class="banner-text">
+          <strong>Privacy &amp; Security Guaranteed:</strong> Your API keys are stored only in your local browser storage and sent ephemerally in transit memory. Keys are never saved in databases or logs.
+        </div>
+      </div>
+
+      <!-- Provider Selection -->
+      <div class="form-group">
+        <label class="form-label">Select AI Provider</label>
+        <div class="providers-grid">
+          @for (p of providers; track p.id) {
+            <div
+              class="provider-card"
+              [class.selected]="provider() === p.id"
+              (click)="onProviderChange(p.id)">
+              <div class="card-radio">
+                <input
+                  type="radio"
+                  name="aiProvider"
+                  [id]="'provider-' + p.id"
+                  [value]="p.id"
+                  [checked]="provider() === p.id"
+                  (change)="onProviderChange(p.id)" />
+              </div>
+              <div class="card-details">
+                <label [for]="'provider-' + p.id" class="provider-name">{{ p.name }}</label>
+                <p class="provider-desc">{{ p.description }}</p>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Model Selection -->
+      <div class="form-group">
+        <label for="aiModelInput" class="form-label">Model Identifier</label>
+        <input
+          id="aiModelInput"
+          type="text"
+          class="form-control"
+          [ngModel]="model()"
+          (ngModelChange)="model.set($event)"
+          placeholder="e.g. anthropic/claude-3.5-sonnet, gpt-4o-mini" />
+        <small class="form-help">Default model for {{ provider() }}. You may customize this for aggregator models.</small>
+      </div>
+
+      <!-- API Key Input -->
+      <div class="form-group">
+        <label for="aiKeyInput" class="form-label">API Key</label>
+        <div class="key-input-wrapper">
+          <input
+            id="aiKeyInput"
+            [type]="showKey() ? 'text' : 'password'"
+            class="form-control key-input"
+            [ngModel]="apiKey()"
+            (ngModelChange)="apiKey.set($event)"
+            placeholder="Enter your API key"
+            autocomplete="off"
+            spellcheck="false" />
+          <button
+            type="button"
+            class="toggle-eye-btn"
+            (click)="toggleShowKey()"
+            [title]="showKey() ? 'Hide Key' : 'Show Key'">
+            @if (showKey()) {
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                <line x1="1" y1="1" x2="23" y2="23"></line>
+              </svg>
+            } @else {
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            }
+          </button>
+        </div>
+      </div>
+
+      @if (saveSuccess()) {
+        <div class="alert-success">
+          Settings saved successfully!
+        </div>
+      }
+    </div>
+
+    <!-- Footer -->
+    <div class="modal-footer">
+      @if (aiSettingsService.isConfigured()) {
+        <button type="button" class="btn-danger-outline" (click)="clear()">
+          Remove Key
+        </button>
+      }
+      <div class="footer-actions">
+        <button type="button" class="btn-cancel" (click)="close()">
+          Cancel
+        </button>
+        <button
+          type="button"
+          class="btn-save"
+          [disabled]="!apiKey().trim()"
+          (click)="save()">
+          Save Settings
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
