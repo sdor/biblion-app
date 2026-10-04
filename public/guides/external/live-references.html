@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live References: See the Citations Under Your Cursor - Biblion Guides</title>
+  <link rel="stylesheet" href="../guides.css">
+  <link rel="icon" href="../favicon.ico" type="image/x-icon">
+</head>
+<body>
+  <div class="site-wrapper">
+    <!-- Top Navbar -->
+    <header class="top-bar">
+      <div class="top-bar-left">
+        <button id="menu-toggle" class="btn-icon" aria-label="Toggle navigation">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <a href="../index.html" class="brand-link">
+          <div class="brand-icon-box">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          </div>
+          <span class="brand-name">Biblion Documentation</span>
+        </a>
+      </div>
+      <div class="top-bar-right">
+        <a href="/" class="btn-back-app">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+          <span>Biblion App</span>
+        </a>
+      </div>
+    </header>
+
+    <div class="body-layout">
+      <!-- Left Sidebar Navigation -->
+      <aside class="sidebar" id="sidebar">
+        <div class="search-box">
+          <input type="text" id="guide-filter" placeholder="Filter guides..." aria-label="Filter guides" onkeyup="filterNavigation()">
+        </div>
+        <div class="nav-group"><div class="nav-group-title">Overview</div><ul class="nav-list">
+<li><a href="../index.html">Documentation Portal</a></li>
+</ul></div>
+<div class="nav-group"><div class="nav-group-title">User & Researcher Manuals</div><ul class="nav-list">
+<li><a href="../external/user-guide.html">Word Add-in User Guide</a></li>
+<li><a href="../external/pubmed-search-and-citations.html">PubMed Search & Citations</a></li>
+<li><a href="../external/ai-query-rewriter.html">AI Query Rewriter</a></li>
+<li><a href="../external/citation-styles.html">Citation Styles & Bibliographies</a></li>
+<li><a href="../external/live-references.html" class="active">Live References (Word)</a></li>
+<li><a href="../external/library-and-sync.html">Library, Offline Sync & Export</a></li>
+<li><a href="../external/account-and-sign-in.html">Account & Sign-In</a></li>
+<li><a href="../external/billing-and-subscriptions.html">Billing & Subscriptions</a></li>
+<li><a href="../external/standalone-web-mode.html">Using Biblion in a Browser</a></li>
+</ul></div>
+<div class="nav-group"><div class="nav-group-title">Internal Engineering Guides</div><ul class="nav-list">
+<li><a href="../internal/developer-onboarding.html">Developer Onboarding</a></li>
+<li><a href="../internal/api-architecture.html">Rails API Architecture</a></li>
+<li><a href="../internal/office-integration.html">Angular Word Integration</a></li>
+<li><a href="../internal/sdd-and-qa-guide.html">SDD & QA Framework</a></li>
+<li><a href="../internal/security-and-hygiene.html">Security & Secret Hygiene</a></li>
+<li><a href="../internal/deployment-runbook.html">Droplet Deployment Runbook</a></li>
+</ul></div>
+      </aside>
+
+      <!-- Main Article Container -->
+      <main class="content-area">
+        <article class="markdown-body">
+          <h1 id="live-references-see-the-citations-under-your-cursor"><a href="#live-references-see-the-citations-under-your-cursor" class="heading-anchor">#</a>Live References: See the Citations Under Your Cursor</h1>
+<p><strong>Product:</strong> Biblion Citation Assistant</p>
+<p><strong>Audience:</strong> Academic Researchers, Scientists &amp; Medical Writers</p>
+<p><strong>Available in:</strong> Microsoft Word only</p>
+<p><strong>Maintained by:</strong> Documentation Writer</p>
+<hr class="guide-divider" />
+<h2 id="1-what-it-does"><a href="#1-what-it-does" class="heading-anchor">#</a>1. What It Does</h2>
+<p><strong>Live References</strong> watches where your cursor is in your Word manuscript. Whenever you click into or type in a sentence, Biblion shows the references behind that sentence in the Biblion taskpane. There is no need to scroll to the bibliography to check what a citation points to.</p>
+<figure class="guide-figure"><img src="../images/05_live_cursor_tracker_active.png" alt="Live References tab in the Word taskpane" class="guide-image" loading="lazy" /><figcaption>Live References tab in the Word taskpane</figcaption></figure>
+<h2 id="2-why-it-matters"><a href="#2-why-it-matters" class="heading-anchor">#</a>2. Why It Matters</h2>
+<ul>
+<li><strong>Verify claims quickly</strong> while editing: see the title, authors, journal and abstract link for the paper cited in the sentence you are reading.</li>
+<li><strong>Catch loose references</strong>: Biblion also recognises PMIDs and DOIs you typed as plain text and offers to turn them into managed citations.</li>
+<li><strong>Stay oriented in long documents</strong>: the active sentence is highlighted in the taskpane so you always know which sentence the references belong to.</li>
+</ul>
+<hr class="guide-divider" />
+<h2 id="3-how-to-use-it"><a href="#3-how-to-use-it" class="heading-anchor">#</a>3. How to Use It</h2>
+<ol>
+<li>Open your manuscript in Microsoft Word and open the <strong>Biblion</strong> taskpane.</li>
+<li>Click the <strong>Live References</strong> tab. This tab appears only inside Word.</li>
+<li>Click or type anywhere in your document. After a brief pause (about a third of a second), the tab updates.</li>
+<li>Read the reference cards for the sentence you are in. The sentence is highlighted.</li>
+</ol>
+<h3 id="what-the-badges-mean"><a href="#what-the-badges-mean" class="heading-anchor">#</a>What the badges mean</h3>
+<div class="table-responsive"><table>
+<thead><tr><th>Badge</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><strong>Biblion Control</strong></td><td>A citation inserted by Biblion (a Word content control). Fully managed: it renumbers and reformats with your style.</td></tr>
+<tr><td><strong>Detected in Text (PMID)</strong></td><td>You typed something like <code>PMID: 28453412</code>. Biblion looked the article up for you.</td></tr>
+<tr><td><strong>Detected in Text (DOI)</strong></td><td>Biblion found a DOI such as <code>10.1038/171737a0</code> in the sentence.</td></tr>
+</tbody></table></div>
+<p>For plain-text detections, click <strong>Convert to Citation Control</strong> to turn it into a managed citation.</p>
+<h3 id="empty-paragraphs"><a href="#empty-paragraphs" class="heading-anchor">#</a>Empty paragraphs</h3>
+<p>If your cursor is in a blank paragraph, the tab shows <strong>No citations found at current cursor position.</strong> This is normal.</p>
+<hr class="guide-divider" />
+<h2 id="4-smart-sentence-detection"><a href="#4-smart-sentence-detection" class="heading-anchor">#</a>4. Smart Sentence Detection</h2>
+<p>Scientific writing is full of dots that are <em>not</em> the end of a sentence. Biblion understands common cases, so a sentence is not split wrongly at:</p>
+<ul>
+<li><code>et al.</code>, <code>e.g.</code>, <code>i.e.</code>, <code>Fig.</code>, <code>Refs.</code>, <code>vs.</code>, <code>Dr.</code>, <code>Prof.</code>, <code>vol.</code>, <code>pp.</code></li>
+<li>author initials such as <code>Watson, J. D.</code></li>
+<li>decimals such as <code>4.5%</code> or <code>p &lt; 0.05</code></li>
+</ul>
+<p><em>Example:</em> in &quot;According to Smith et al. the rate was 4.5% in the first cohort. However, Jones et al. disputed this.&quot; Biblion correctly treats the first half as <strong>one</strong> sentence.</p>
+<hr class="guide-divider" />
+<h2 id="5-good-to-know"><a href="#5-good-to-know" class="heading-anchor">#</a>5. Good to Know</h2>
+<ul>
+<li>Live References works only inside Microsoft Word. In a normal browser the tab is hidden. See <a href="standalone-web-mode.html">Using Biblion in a Web Browser</a>.</li>
+<li>It reads your document to find citations; it does not change your text unless you click <strong>Convert to Citation Control</strong>.</li>
+</ul>
+<p>Related: <a href="citation-styles.html">Citation Styles &amp; Bibliographies</a>, <a href="pubmed-search-and-citations.html">Searching PubMed</a></p>
+        </article>
+        <footer class="page-footer">
+          <p>Maintained by <strong>Biblion Evangelist</strong> &middot; Biosys Technologies &middot; <a href="../index.html">Documentation Home</a></p>
+        </footer>
+      </main>
+
+      <!-- Right Table of Contents (Desktop) -->
+      <aside class="toc-aside">
+        <nav class="toc-nav"><h4>On This Page</h4><ul>
+<li class="toc-h2"><a href="#1-what-it-does">1. What It Does</a></li>
+<li class="toc-h2"><a href="#2-why-it-matters">2. Why It Matters</a></li>
+<li class="toc-h2"><a href="#3-how-to-use-it">3. How to Use It</a></li>
+<li class="toc-h3"><a href="#what-the-badges-mean">What the badges mean</a></li>
+<li class="toc-h3"><a href="#empty-paragraphs">Empty paragraphs</a></li>
+<li class="toc-h2"><a href="#4-smart-sentence-detection">4. Smart Sentence Detection</a></li>
+<li class="toc-h2"><a href="#5-good-to-know">5. Good to Know</a></li>
+</ul></nav>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    function copyCode(btn) {
+      const container = btn.closest('.code-container');
+      const code = container.querySelector('code').innerText;
+      navigator.clipboard.writeText(code).then(() => {
+        btn.innerText = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.innerText = 'Copy';
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    }
+
+    function filterNavigation() {
+      const q = document.getElementById('guide-filter').value.toLowerCase();
+      const items = document.querySelectorAll('.nav-list li');
+      items.forEach(li => {
+        const text = li.innerText.toLowerCase();
+        li.style.display = text.includes(q) ? '' : 'none';
+      });
+    }
+
+    const toggleBtn = document.getElementById('menu-toggle');
+    const sidebar = document.getElementById('sidebar');
+    if (toggleBtn && sidebar) {
+      toggleBtn.addEventListener('click', () => {
+        sidebar.classList.toggle('open');
+      });
+    }
+  </script>
+</body>
+</html>

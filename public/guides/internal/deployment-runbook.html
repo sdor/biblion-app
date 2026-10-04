@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DigitalOcean Droplet Deployment &amp; Operation Runbook - Biblion Guides</title>
+  <link rel="stylesheet" href="../guides.css">
+  <link rel="icon" href="../favicon.ico" type="image/x-icon">
+</head>
+<body>
+  <div class="site-wrapper">
+    <!-- Top Navbar -->
+    <header class="top-bar">
+      <div class="top-bar-left">
+        <button id="menu-toggle" class="btn-icon" aria-label="Toggle navigation">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <a href="../index.html" class="brand-link">
+          <div class="brand-icon-box">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          </div>
+          <span class="brand-name">Biblion Documentation</span>
+        </a>
+      </div>
+      <div class="top-bar-right">
+        <a href="/" class="btn-back-app">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+          <span>Biblion App</span>
+        </a>
+      </div>
+    </header>
+
+    <div class="body-layout">
+      <!-- Left Sidebar Navigation -->
+      <aside class="sidebar" id="sidebar">
+        <div class="search-box">
+          <input type="text" id="guide-filter" placeholder="Filter guides..." aria-label="Filter guides" onkeyup="filterNavigation()">
+        </div>
+        <div class="nav-group"><div class="nav-group-title">Overview</div><ul class="nav-list">
+<li><a href="../index.html">Documentation Portal</a></li>
+</ul></div>
+<div class="nav-group"><div class="nav-group-title">User & Researcher Manuals</div><ul class="nav-list">
+<li><a href="../external/user-guide.html">Word Add-in User Guide</a></li>
+<li><a href="../external/pubmed-search-and-citations.html">PubMed Search & Citations</a></li>
+<li><a href="../external/ai-query-rewriter.html">AI Query Rewriter</a></li>
+<li><a href="../external/citation-styles.html">Citation Styles & Bibliographies</a></li>
+<li><a href="../external/live-references.html">Live References (Word)</a></li>
+<li><a href="../external/library-and-sync.html">Library, Offline Sync & Export</a></li>
+<li><a href="../external/account-and-sign-in.html">Account & Sign-In</a></li>
+<li><a href="../external/billing-and-subscriptions.html">Billing & Subscriptions</a></li>
+<li><a href="../external/standalone-web-mode.html">Using Biblion in a Browser</a></li>
+</ul></div>
+<div class="nav-group"><div class="nav-group-title">Internal Engineering Guides</div><ul class="nav-list">
+<li><a href="../internal/developer-onboarding.html">Developer Onboarding</a></li>
+<li><a href="../internal/api-architecture.html">Rails API Architecture</a></li>
+<li><a href="../internal/office-integration.html">Angular Word Integration</a></li>
+<li><a href="../internal/sdd-and-qa-guide.html">SDD & QA Framework</a></li>
+<li><a href="../internal/security-and-hygiene.html">Security & Secret Hygiene</a></li>
+<li><a href="../internal/deployment-runbook.html" class="active">Droplet Deployment Runbook</a></li>
+</ul></div>
+      </aside>
+
+      <!-- Main Article Container -->
+      <main class="content-area">
+        <article class="markdown-body">
+          <h1 id="digitalocean-droplet-deployment-operation-runbook"><a href="#digitalocean-droplet-deployment-operation-runbook" class="heading-anchor">#</a>DigitalOcean Droplet Deployment &amp; Operation Runbook</h1>
+<p><strong>Audience:</strong> DevOps Engineers &amp; Release Managers</p>
+<p><strong>Maintained by:</strong> Biblion Evangelist</p>
+<hr class="guide-divider" />
+<h2 id="1-droplet-infrastructure"><a href="#1-droplet-infrastructure" class="heading-anchor">#</a>1. Droplet Infrastructure</h2>
+<ul>
+<li><strong>Host</strong>: DigitalOcean Droplet (<code>159.223.191.180</code> / <code>biosystechnologies.com</code>)</li>
+<li><strong>SSH User</strong>: <code>biblion</code> (configured via <code>~/.ssh/macbookpro</code> and <code>~/.ssh/id_ed25519</code>)</li>
+<li><strong>Backend Path</strong>: <code>/var/www/biblion-api/current</code></li>
+<li><strong>Service</strong>: <code>systemd: biblion-api.service</code></li>
+<li><strong>Database</strong>: PostgreSQL (database <code>biblion</code>)</li>
+<li><strong>Reverse Proxy</strong>: Nginx with SSL termination</li>
+</ul>
+<hr class="guide-divider" />
+<h2 id="2-pre-deployment-rules-checklist"><a href="#2-pre-deployment-rules-checklist" class="heading-anchor">#</a>2. Pre-Deployment Rules &amp; Checklist</h2>
+<div class="callout callout-warning"><p><strong>CRITICAL INVARIANT:</strong> Deployments to production occur <strong>exclusively from the <code>main</code> branch</strong>.</p></div>
+<p>Before running deployment:</p>
+<ol>
+<li>Confirm <code>main</code> branch on all workspace repos:</li>
+</ol>
+<p>   ```bash</p>
+<p>   git -C biblion-app rev-parse --abbrev-ref HEAD</p>
+<p>   git -C biblion-api rev-parse --abbrev-ref HEAD</p>
+<p>   ```</p>
+<ol>
+<li>Verify working trees are clean (no untracked files or uncommitted changes):</li>
+</ol>
+<p>   ```bash</p>
+<p>   git -C biblion-app status --short</p>
+<p>   git -C biblion-api status --short</p>
+<p>   ```</p>
+<ol>
+<li>Verify all changes in <code>development</code> have been tested and merged into <code>main</code>.</li>
+</ol>
+<hr class="guide-divider" />
+<h2 id="3-deployment-procedure"><a href="#3-deployment-procedure" class="heading-anchor">#</a>3. Deployment Procedure</h2>
+<p>Execute deployment script from the workspace:</p>
+<div class="code-container">
+<div class="code-header"><span class="code-lang">bash</span><button class="copy-code-btn" onclick="copyCode(this)">Copy</button></div>
+<pre><code class="language-bash">./scripts/deploy.sh</code></pre>
+</div>
+<p>Or perform step-by-step deploy via SSH:</p>
+<div class="code-container">
+<div class="code-header"><span class="code-lang">bash</span><button class="copy-code-btn" onclick="copyCode(this)">Copy</button></div>
+<pre><code class="language-bash">ssh biblion@159.223.191.180 &quot;bash -l -c &#x27;cd /var/www/biblion-api/current &amp;&amp; git pull origin main &amp;&amp; bundle install &amp;&amp; RAILS_ENV=production bin/rails db:migrate &amp;&amp; sudo systemctl restart biblion-api&#x27;&quot;</code></pre>
+</div>
+<hr class="guide-divider" />
+<h2 id="4-post-deployment-verification-diagnostics"><a href="#4-post-deployment-verification-diagnostics" class="heading-anchor">#</a>4. Post-Deployment Verification &amp; Diagnostics</h2>
+<ol>
+<li><strong>Service Status</strong>:</li>
+</ol>
+<p>   ```bash</p>
+<p>   ssh biblion@159.223.191.180 &quot;sudo systemctl status biblion-api.service&quot;</p>
+<p>   ```</p>
+<ol>
+<li><strong>Inspect Service Logs</strong>:</li>
+</ol>
+<p>   ```bash</p>
+<p>   ssh biblion@159.223.191.180 &quot;journalctl -u biblion-api.service -n 50 --no-pager&quot;</p>
+<p>   ```</p>
+<ol>
+<li><strong>Nginx Health</strong>:</li>
+</ol>
+<p>   ```bash</p>
+<p>   ssh biblion@159.223.191.180 &quot;sudo nginx -t &amp;&amp; sudo systemctl reload nginx&quot;</p>
+<p>   ```</p>
+<ol>
+<li><strong>Public Endpoint Check</strong>:</li>
+</ol>
+<p>   ```bash</p>
+<p>   curl -I https://biosystechnologies.com/health</p>
+<p>   ```</p>
+        </article>
+        <footer class="page-footer">
+          <p>Maintained by <strong>Biblion Evangelist</strong> &middot; Biosys Technologies &middot; <a href="../index.html">Documentation Home</a></p>
+        </footer>
+      </main>
+
+      <!-- Right Table of Contents (Desktop) -->
+      <aside class="toc-aside">
+        <nav class="toc-nav"><h4>On This Page</h4><ul>
+<li class="toc-h2"><a href="#1-droplet-infrastructure">1. Droplet Infrastructure</a></li>
+<li class="toc-h2"><a href="#2-pre-deployment-rules-checklist">2. Pre-Deployment Rules &amp; Checklist</a></li>
+<li class="toc-h2"><a href="#3-deployment-procedure">3. Deployment Procedure</a></li>
+<li class="toc-h2"><a href="#4-post-deployment-verification-diagnostics">4. Post-Deployment Verification &amp; Diagnostics</a></li>
+</ul></nav>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    function copyCode(btn) {
+      const container = btn.closest('.code-container');
+      const code = container.querySelector('code').innerText;
+      navigator.clipboard.writeText(code).then(() => {
+        btn.innerText = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.innerText = 'Copy';
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    }
+
+    function filterNavigation() {
+      const q = document.getElementById('guide-filter').value.toLowerCase();
+      const items = document.querySelectorAll('.nav-list li');
+      items.forEach(li => {
+        const text = li.innerText.toLowerCase();
+        li.style.display = text.includes(q) ? '' : 'none';
+      });
+    }
+
+    const toggleBtn = document.getElementById('menu-toggle');
+    const sidebar = document.getElementById('sidebar');
+    if (toggleBtn && sidebar) {
+      toggleBtn.addEventListener('click', () => {
+        sidebar.classList.toggle('open');
+      });
+    }
+  </script>
+</body>
+</html>

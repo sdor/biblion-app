@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Biblion Guides &amp; Documentation - Biblion Guides</title>
+  <link rel="stylesheet" href="./guides.css">
+  <link rel="icon" href="./favicon.ico" type="image/x-icon">
+</head>
+<body>
+  <div class="site-wrapper">
+    <!-- Top Navbar -->
+    <header class="top-bar">
+      <div class="top-bar-left">
+        <button id="menu-toggle" class="btn-icon" aria-label="Toggle navigation">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <a href="./index.html" class="brand-link">
+          <div class="brand-icon-box">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          </div>
+          <span class="brand-name">Biblion Documentation</span>
+        </a>
+      </div>
+      <div class="top-bar-right">
+        <a href="/" class="btn-back-app">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+          <span>Biblion App</span>
+        </a>
+      </div>
+    </header>
+
+    <div class="body-layout">
+      <!-- Left Sidebar Navigation -->
+      <aside class="sidebar" id="sidebar">
+        <div class="search-box">
+          <input type="text" id="guide-filter" placeholder="Filter guides..." aria-label="Filter guides" onkeyup="filterNavigation()">
+        </div>
+        <div class="nav-group"><div class="nav-group-title">Overview</div><ul class="nav-list">
+<li><a href="./index.html" class="active">Documentation Portal</a></li>
+</ul></div>
+<div class="nav-group"><div class="nav-group-title">User & Researcher Manuals</div><ul class="nav-list">
+<li><a href="./external/user-guide.html">Word Add-in User Guide</a></li>
+<li><a href="./external/pubmed-search-and-citations.html">PubMed Search & Citations</a></li>
+<li><a href="./external/ai-query-rewriter.html">AI Query Rewriter</a></li>
+<li><a href="./external/citation-styles.html">Citation Styles & Bibliographies</a></li>
+<li><a href="./external/live-references.html">Live References (Word)</a></li>
+<li><a href="./external/library-and-sync.html">Library, Offline Sync & Export</a></li>
+<li><a href="./external/account-and-sign-in.html">Account & Sign-In</a></li>
+<li><a href="./external/billing-and-subscriptions.html">Billing & Subscriptions</a></li>
+<li><a href="./external/standalone-web-mode.html">Using Biblion in a Browser</a></li>
+</ul></div>
+<div class="nav-group"><div class="nav-group-title">Internal Engineering Guides</div><ul class="nav-list">
+<li><a href="./internal/developer-onboarding.html">Developer Onboarding</a></li>
+<li><a href="./internal/api-architecture.html">Rails API Architecture</a></li>
+<li><a href="./internal/office-integration.html">Angular Word Integration</a></li>
+<li><a href="./internal/sdd-and-qa-guide.html">SDD & QA Framework</a></li>
+<li><a href="./internal/security-and-hygiene.html">Security & Secret Hygiene</a></li>
+<li><a href="./internal/deployment-runbook.html">Droplet Deployment Runbook</a></li>
+</ul></div>
+      </aside>
+
+      <!-- Main Article Container -->
+      <main class="content-area">
+        <article class="markdown-body">
+          <h1 id="biblion-guides-documentation"><a href="#biblion-guides-documentation" class="heading-anchor">#</a>Biblion Guides &amp; Documentation</h1>
+<p><strong>Managed by:</strong> Biblion Developers Group</p>
+<p><strong>Lead Bot:</strong> Biblion Evangelist</p>
+<hr class="guide-divider" />
+<h2 id="mission-scope"><a href="#mission-scope" class="heading-anchor">#</a>📌 Mission &amp; Scope</h2>
+<p>Biblion Evangelist is tasked with producing, maintaining, and updating both internal technical guides and external user-facing documentation for the Biblion platform (Angular Word Add-in + Rails API).</p>
+<figure class="guide-figure"><img src="images/guide_portal.png" alt="Biblion Documentation Portal Overview" class="guide-image" loading="lazy" /><figcaption>Biblion Documentation Portal Overview</figcaption></figure>
+<hr class="guide-divider" />
+<h2 id="documentation-roadmap-milestones"><a href="#documentation-roadmap-milestones" class="heading-anchor">#</a>🗺️ Documentation Roadmap &amp; Milestones</h2>
+<h3 id="milestone-1-foundation-onboarding-completed"><a href="#milestone-1-foundation-onboarding-completed" class="heading-anchor">#</a>Milestone 1: Foundation &amp; Onboarding (Completed)</h3>
+<ul>
+<li>[x] Establish documentation directory structure (<code>guides/internal/</code> and <code>guides/external/</code>)</li>
+<li>[x] Create Internal Developer Onboarding &amp; Architecture Guide</li>
+<li>[x] Create External User Quickstart &amp; Microsoft Word Add-in Guide</li>
+<li>[x] Review with Dr. Doronin</li>
+</ul>
+<h3 id="milestone-2-technical-deep-dives-internal-completed"><a href="#milestone-2-technical-deep-dives-internal-completed" class="heading-anchor">#</a>Milestone 2: Technical Deep-Dives (Internal - Completed)</h3>
+<ul>
+<li>[x] Rails API &amp; Authentication Guide (<code>guides/internal/api-architecture.md</code>)</li>
+<li>[x] Angular Office.js Word Integration Guide (<code>guides/internal/office-integration.md</code>)</li>
+<li>[x] DigitalOcean Deployment &amp; Operation Runbook (<code>guides/internal/deployment-runbook.md</code>)</li>
+</ul>
+<h3 id="milestone-3-researcher-web-facing-manuals-external-completed"><a href="#milestone-3-researcher-web-facing-manuals-external-completed" class="heading-anchor">#</a>Milestone 3: Researcher &amp; Web-Facing Manuals (External - Completed)</h3>
+<ul>
+<li>[x] Comprehensive PubMed Search &amp; Citation Guide (<code>guides/external/pubmed-search-and-citations.md</code>)</li>
+<li>[x] Library Management, Offline Sync &amp; Export Guide (<code>guides/external/library-and-sync.md</code>)</li>
+<li>[x] Account, Licensing &amp; Subscription Management (<code>guides/external/billing-and-subscriptions.md</code>)</li>
+</ul>
+<h3 id="milestone-4-web-pages-angular-integration-completed"><a href="#milestone-4-web-pages-angular-integration-completed" class="heading-anchor">#</a>Milestone 4: Web Pages &amp; Angular Integration (Completed)</h3>
+<ul>
+<li>[x] Static HTML documentation generator (<code>scripts/build_guides.py</code>)</li>
+<li>[x] Responsive layout with live sidebar filter, code copy, and on-page TOC</li>
+<li>[x] Static asset bundle deployed into Angular public folder (<code>biblion-app/public/guides/</code>)</li>
+<li>[x] In-app navigation links added to About &amp; Support page and User Profile menu</li>
+</ul>
+<h3 id="milestone-5-screenshots-incorporation-completed"><a href="#milestone-5-screenshots-incorporation-completed" class="heading-anchor">#</a>Milestone 5: Screenshots Incorporation (Completed)</h3>
+<ul>
+<li>[x] Curate and optimize UI screenshots across guides (<code>guides/images/</code>)</li>
+<li>[x] Support responsive Markdown image tags (<code><figure class="guide-figure"><img src="src" alt="alt" class="guide-image" loading="lazy" /><figcaption>alt</figcaption></figure></code>) in site generator</li>
+<li>[x] Integrate Word taskpane, PubMed search, library sync, and billing snapshots</li>
+<li>[x] Recompile web pages and rebuild Angular production assets</li>
+</ul>
+<hr class="guide-divider" />
+<h2 id="guide-directory-layout"><a href="#guide-directory-layout" class="heading-anchor">#</a>📁 Guide Directory Layout</h2>
+<div class="code-container">
+<div class="code-header"><span class="code-lang">code</span><button class="copy-code-btn" onclick="copyCode(this)">Copy</button></div>
+<pre><code class="language-">guides/
+├── README.md                           # Master roadmap and milestone tracking
+├── html/                               # Standalone compiled HTML web pages
+├── internal/                           # Technical documentation for engineers
+│   ├── api-architecture.md
+│   ├── deployment-runbook.md
+│   ├── developer-onboarding.md
+│   └── office-integration.md
+└── external/                           # Researcher-facing documentation
+    ├── billing-and-subscriptions.md
+    ├── library-and-sync.md
+    ├── pubmed-search-and-citations.md
+    └── user-guide.md</code></pre>
+</div>
+<h2 id="building-web-pages"><a href="#building-web-pages" class="heading-anchor">#</a>🔨 Building Web Pages</h2>
+<p>To recompile Markdown guides into HTML web pages at any time:</p>
+<div class="code-container">
+<div class="code-header"><span class="code-lang">bash</span><button class="copy-code-btn" onclick="copyCode(this)">Copy</button></div>
+<pre><code class="language-bash">python3 scripts/build_guides.py</code></pre>
+</div>
+<p>Output is automatically placed in <code>guides/html/</code> and <code>biblion-app/public/guides/</code>.</p>
+        </article>
+        <footer class="page-footer">
+          <p>Maintained by <strong>Biblion Evangelist</strong> &middot; Biosys Technologies &middot; <a href="./index.html">Documentation Home</a></p>
+        </footer>
+      </main>
+
+      <!-- Right Table of Contents (Desktop) -->
+      <aside class="toc-aside">
+        <nav class="toc-nav"><h4>On This Page</h4><ul>
+<li class="toc-h2"><a href="#mission-scope">📌 Mission &amp; Scope</a></li>
+<li class="toc-h2"><a href="#documentation-roadmap-milestones">🗺️ Documentation Roadmap &amp; Milestones</a></li>
+<li class="toc-h3"><a href="#milestone-1-foundation-onboarding-completed">Milestone 1: Foundation &amp; Onboarding (Completed)</a></li>
+<li class="toc-h3"><a href="#milestone-2-technical-deep-dives-internal-completed">Milestone 2: Technical Deep-Dives (Internal - Completed)</a></li>
+<li class="toc-h3"><a href="#milestone-3-researcher-web-facing-manuals-external-completed">Milestone 3: Researcher &amp; Web-Facing Manuals (External - Completed)</a></li>
+<li class="toc-h3"><a href="#milestone-4-web-pages-angular-integration-completed">Milestone 4: Web Pages &amp; Angular Integration (Completed)</a></li>
+<li class="toc-h3"><a href="#milestone-5-screenshots-incorporation-completed">Milestone 5: Screenshots Incorporation (Completed)</a></li>
+<li class="toc-h2"><a href="#guide-directory-layout">📁 Guide Directory Layout</a></li>
+<li class="toc-h2"><a href="#building-web-pages">🔨 Building Web Pages</a></li>
+</ul></nav>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    function copyCode(btn) {
+      const container = btn.closest('.code-container');
+      const code = container.querySelector('code').innerText;
+      navigator.clipboard.writeText(code).then(() => {
+        btn.innerText = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.innerText = 'Copy';
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    }
+
+    function filterNavigation() {
+      const q = document.getElementById('guide-filter').value.toLowerCase();
+      const items = document.querySelectorAll('.nav-list li');
+      items.forEach(li => {
+        const text = li.innerText.toLowerCase();
+        li.style.display = text.includes(q) ? '' : 'none';
+      });
+    }
+
+    const toggleBtn = document.getElementById('menu-toggle');
+    const sidebar = document.getElementById('sidebar');
+    if (toggleBtn && sidebar) {
+      toggleBtn.addEventListener('click', () => {
+        sidebar.classList.toggle('open');
+      });
+    }
+  </script>
+</body>
+</html>

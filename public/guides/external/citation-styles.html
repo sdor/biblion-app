@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Citation Styles &amp; Automatic Bibliographies - Biblion Guides</title>
+  <link rel="stylesheet" href="../guides.css">
+  <link rel="icon" href="../favicon.ico" type="image/x-icon">
+</head>
+<body>
+  <div class="site-wrapper">
+    <!-- Top Navbar -->
+    <header class="top-bar">
+      <div class="top-bar-left">
+        <button id="menu-toggle" class="btn-icon" aria-label="Toggle navigation">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <a href="../index.html" class="brand-link">
+          <div class="brand-icon-box">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          </div>
+          <span class="brand-name">Biblion Documentation</span>
+        </a>
+      </div>
+      <div class="top-bar-right">
+        <a href="/" class="btn-back-app">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+          <span>Biblion App</span>
+        </a>
+      </div>
+    </header>
+
+    <div class="body-layout">
+      <!-- Left Sidebar Navigation -->
+      <aside class="sidebar" id="sidebar">
+        <div class="search-box">
+          <input type="text" id="guide-filter" placeholder="Filter guides..." aria-label="Filter guides" onkeyup="filterNavigation()">
+        </div>
+        <div class="nav-group"><div class="nav-group-title">Overview</div><ul class="nav-list">
+<li><a href="../index.html">Documentation Portal</a></li>
+</ul></div>
+<div class="nav-group"><div class="nav-group-title">User & Researcher Manuals</div><ul class="nav-list">
+<li><a href="../external/user-guide.html">Word Add-in User Guide</a></li>
+<li><a href="../external/pubmed-search-and-citations.html">PubMed Search & Citations</a></li>
+<li><a href="../external/ai-query-rewriter.html">AI Query Rewriter</a></li>
+<li><a href="../external/citation-styles.html" class="active">Citation Styles & Bibliographies</a></li>
+<li><a href="../external/live-references.html">Live References (Word)</a></li>
+<li><a href="../external/library-and-sync.html">Library, Offline Sync & Export</a></li>
+<li><a href="../external/account-and-sign-in.html">Account & Sign-In</a></li>
+<li><a href="../external/billing-and-subscriptions.html">Billing & Subscriptions</a></li>
+<li><a href="../external/standalone-web-mode.html">Using Biblion in a Browser</a></li>
+</ul></div>
+<div class="nav-group"><div class="nav-group-title">Internal Engineering Guides</div><ul class="nav-list">
+<li><a href="../internal/developer-onboarding.html">Developer Onboarding</a></li>
+<li><a href="../internal/api-architecture.html">Rails API Architecture</a></li>
+<li><a href="../internal/office-integration.html">Angular Word Integration</a></li>
+<li><a href="../internal/sdd-and-qa-guide.html">SDD & QA Framework</a></li>
+<li><a href="../internal/security-and-hygiene.html">Security & Secret Hygiene</a></li>
+<li><a href="../internal/deployment-runbook.html">Droplet Deployment Runbook</a></li>
+</ul></div>
+      </aside>
+
+      <!-- Main Article Container -->
+      <main class="content-area">
+        <article class="markdown-body">
+          <h1 id="citation-styles-automatic-bibliographies"><a href="#citation-styles-automatic-bibliographies" class="heading-anchor">#</a>Citation Styles &amp; Automatic Bibliographies</h1>
+<p><strong>Product:</strong> Biblion Citation Assistant</p>
+<p><strong>Audience:</strong> Academic Researchers, Scientists &amp; Medical Writers</p>
+<p><strong>Available in:</strong> Microsoft Word (style selection and document formatting)</p>
+<p><strong>Maintained by:</strong> Documentation Writer</p>
+<hr class="guide-divider" />
+<h2 id="1-what-it-does"><a href="#1-what-it-does" class="heading-anchor">#</a>1. What It Does</h2>
+<p>Biblion inserts citations into Word as smart citation controls and keeps a <strong>References</strong> section at the end of your document up to date. When your target journal changes, switch the style once and Biblion reformats every citation and the whole reference list for you.</p>
+<figure class="guide-figure"><img src="../images/04_citation_styles.png" alt="Citation style selection" class="guide-image" loading="lazy" /><figcaption>Citation style selection</figcaption></figure>
+<h2 id="2-supported-styles"><a href="#2-supported-styles" class="heading-anchor">#</a>2. Supported Styles</h2>
+<div class="table-responsive"><table>
+<thead><tr><th>Style</th><th>Type</th><th>In-text example</th><th>Reference list order</th></tr></thead>
+<tbody>
+<tr><td><strong>APA 7th Edition</strong></td><td>Author–date</td><td>(Watson &amp; Crick, 1953)</td><td>Alphabetical by first author</td></tr>
+<tr><td><strong>Harvard</strong></td><td>Author–date</td><td>(Watson and Crick 1953)</td><td>Alphabetical by first author</td></tr>
+<tr><td><strong>IEEE</strong></td><td>Numbered, brackets</td><td>[1]</td><td>Order of appearance</td></tr>
+<tr><td><strong>Vancouver / NLM</strong></td><td>Numbered, parentheses</td><td>(1)</td><td>Order of appearance</td></tr>
+<tr><td><strong>AMA 11th Edition</strong></td><td>Superscript numbers</td><td>¹</td><td>Order of appearance</td></tr>
+<tr><td><strong>Nature</strong></td><td>Superscript numbers</td><td>¹</td><td>Order of appearance</td></tr>
+</tbody></table></div>
+<hr class="guide-divider" />
+<h2 id="3-choose-a-style"><a href="#3-choose-a-style" class="heading-anchor">#</a>3. Choose a Style</h2>
+<ol>
+<li>Open the <strong>style selector</strong> at the top of the Biblion taskpane. It shows the current style, for example <strong>APA</strong>. It appears only inside Word.</li>
+<li>Pick a style from the list. A live preview shows what in-text citations will look like (for IEEE, <code>[1]</code>).</li>
+<li>Close the panel. Biblion reformats the citations already in your document automatically.</li>
+</ol>
+<p>You will see a confirmation such as <em>&quot;Successfully reformatted 3 in-text citation(s) and 3 reference(s) to APA 7th Edition!&quot;</em></p>
+<hr class="guide-divider" />
+<h2 id="4-insert-a-citation"><a href="#4-insert-a-citation" class="heading-anchor">#</a>4. Insert a Citation</h2>
+<ol>
+<li>Place your cursor where the citation belongs.</li>
+<li>Search PubMed in Biblion (see <a href="pubmed-search-and-citations.html">Searching PubMed</a>).</li>
+<li>On the article card, click <strong>Insert Citation</strong>.</li>
+</ol>
+<p>Biblion then:</p>
+<ul>
+<li>inserts the in-text citation in your document font and size,</li>
+<li>creates a <strong>References</strong> heading at the end of the document (first citation only),</li>
+<li>adds the formatted reference to the list, and</li>
+<li>confirms, for example, <em>&quot;Citation inserted in Vancouver / NLM (Document: 1 citations, 1 references)!&quot;</em></li>
+</ul>
+<h3 id="several-references-in-one-place"><a href="#several-references-in-one-place" class="heading-anchor">#</a>Several references in one place</h3>
+<p>Insert a second citation right next to an existing one (separated only by a space) and Biblion <strong>merges them into one group</strong>: <code>[1]</code> + <code>[2]</code> becomes <code>[1, 2]</code>. Three or more consecutive numbers are shortened to ranges, e.g. <code>[2–4, 7, 9–11]</code>. In AMA and Nature the numbers are shown as superscripts, e.g. <code>¹˒³⁻⁵</code>.</p>
+<hr class="guide-divider" />
+<h2 id="5-numbering-stays-correct-automatically"><a href="#5-numbering-stays-correct-automatically" class="heading-anchor">#</a>5. Numbering Stays Correct Automatically</h2>
+<ul>
+<li><strong>Numbered styles</strong> (IEEE, Vancouver, AMA, Nature): numbers follow the order citations first appear in the document. Add a citation earlier in the text and everything renumbers.</li>
+<li><strong>Author–date styles</strong> (APA, Harvard): the reference list is sorted alphabetically by first author.</li>
+<li>References that are no longer cited are removed from the list; newly cited ones are added.</li>
+</ul>
+<p>If some details are missing (no volume, issue or pages), Biblion leaves them out cleanly, with no stray punctuation.</p>
+<hr class="guide-divider" />
+<h2 id="6-tips"><a href="#6-tips" class="heading-anchor">#</a>6. Tips</h2>
+<ul>
+<li>Pick the journal&#x27;s style <em>before</em> you start, but don&#x27;t worry: you can switch at any time.</li>
+<li>Use <a href="live-references.html">Live References</a> to double-check what a citation points to.</li>
+<li>Outside Word, <strong>Copy Citation</strong> copies both the in-text citation and the reference. See <a href="standalone-web-mode.html">Using Biblion in a Web Browser</a>.</li>
+</ul>
+<div class="callout"><p><strong>Coming later (proposed, not yet available):</strong> Chicago style and importing custom CSL style files.</p></div>
+        </article>
+        <footer class="page-footer">
+          <p>Maintained by <strong>Biblion Evangelist</strong> &middot; Biosys Technologies &middot; <a href="../index.html">Documentation Home</a></p>
+        </footer>
+      </main>
+
+      <!-- Right Table of Contents (Desktop) -->
+      <aside class="toc-aside">
+        <nav class="toc-nav"><h4>On This Page</h4><ul>
+<li class="toc-h2"><a href="#1-what-it-does">1. What It Does</a></li>
+<li class="toc-h2"><a href="#2-supported-styles">2. Supported Styles</a></li>
+<li class="toc-h2"><a href="#3-choose-a-style">3. Choose a Style</a></li>
+<li class="toc-h2"><a href="#4-insert-a-citation">4. Insert a Citation</a></li>
+<li class="toc-h3"><a href="#several-references-in-one-place">Several references in one place</a></li>
+<li class="toc-h2"><a href="#5-numbering-stays-correct-automatically">5. Numbering Stays Correct Automatically</a></li>
+<li class="toc-h2"><a href="#6-tips">6. Tips</a></li>
+</ul></nav>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    function copyCode(btn) {
+      const container = btn.closest('.code-container');
+      const code = container.querySelector('code').innerText;
+      navigator.clipboard.writeText(code).then(() => {
+        btn.innerText = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.innerText = 'Copy';
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    }
+
+    function filterNavigation() {
+      const q = document.getElementById('guide-filter').value.toLowerCase();
+      const items = document.querySelectorAll('.nav-list li');
+      items.forEach(li => {
+        const text = li.innerText.toLowerCase();
+        li.style.display = text.includes(q) ? '' : 'none';
+      });
+    }
+
+    const toggleBtn = document.getElementById('menu-toggle');
+    const sidebar = document.getElementById('sidebar');
+    if (toggleBtn && sidebar) {
+      toggleBtn.addEventListener('click', () => {
+        sidebar.classList.toggle('open');
+      });
+    }
+  </script>
+</body>
+</html>

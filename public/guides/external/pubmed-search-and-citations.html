@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Searching PubMed &amp; Citing Articles - Biblion Guides</title>
+  <link rel="stylesheet" href="../guides.css">
+  <link rel="icon" href="../favicon.ico" type="image/x-icon">
+</head>
+<body>
+  <div class="site-wrapper">
+    <!-- Top Navbar -->
+    <header class="top-bar">
+      <div class="top-bar-left">
+        <button id="menu-toggle" class="btn-icon" aria-label="Toggle navigation">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <a href="../index.html" class="brand-link">
+          <div class="brand-icon-box">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          </div>
+          <span class="brand-name">Biblion Documentation</span>
+        </a>
+      </div>
+      <div class="top-bar-right">
+        <a href="/" class="btn-back-app">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+          <span>Biblion App</span>
+        </a>
+      </div>
+    </header>
+
+    <div class="body-layout">
+      <!-- Left Sidebar Navigation -->
+      <aside class="sidebar" id="sidebar">
+        <div class="search-box">
+          <input type="text" id="guide-filter" placeholder="Filter guides..." aria-label="Filter guides" onkeyup="filterNavigation()">
+        </div>
+        <div class="nav-group"><div class="nav-group-title">Overview</div><ul class="nav-list">
+<li><a href="../index.html">Documentation Portal</a></li>
+</ul></div>
+<div class="nav-group"><div class="nav-group-title">User & Researcher Manuals</div><ul class="nav-list">
+<li><a href="../external/user-guide.html">Word Add-in User Guide</a></li>
+<li><a href="../external/pubmed-search-and-citations.html" class="active">PubMed Search & Citations</a></li>
+<li><a href="../external/ai-query-rewriter.html">AI Query Rewriter</a></li>
+<li><a href="../external/citation-styles.html">Citation Styles & Bibliographies</a></li>
+<li><a href="../external/live-references.html">Live References (Word)</a></li>
+<li><a href="../external/library-and-sync.html">Library, Offline Sync & Export</a></li>
+<li><a href="../external/account-and-sign-in.html">Account & Sign-In</a></li>
+<li><a href="../external/billing-and-subscriptions.html">Billing & Subscriptions</a></li>
+<li><a href="../external/standalone-web-mode.html">Using Biblion in a Browser</a></li>
+</ul></div>
+<div class="nav-group"><div class="nav-group-title">Internal Engineering Guides</div><ul class="nav-list">
+<li><a href="../internal/developer-onboarding.html">Developer Onboarding</a></li>
+<li><a href="../internal/api-architecture.html">Rails API Architecture</a></li>
+<li><a href="../internal/office-integration.html">Angular Word Integration</a></li>
+<li><a href="../internal/sdd-and-qa-guide.html">SDD & QA Framework</a></li>
+<li><a href="../internal/security-and-hygiene.html">Security & Secret Hygiene</a></li>
+<li><a href="../internal/deployment-runbook.html">Droplet Deployment Runbook</a></li>
+</ul></div>
+      </aside>
+
+      <!-- Main Article Container -->
+      <main class="content-area">
+        <article class="markdown-body">
+          <h1 id="searching-pubmed-citing-articles"><a href="#searching-pubmed-citing-articles" class="heading-anchor">#</a>Searching PubMed &amp; Citing Articles</h1>
+<p><strong>Product:</strong> Biblion Citation Assistant</p>
+<p><strong>Audience:</strong> Academic Researchers, Life Scientists &amp; Medical Writers</p>
+<p><strong>Maintained by:</strong> Documentation Writer</p>
+<hr class="guide-divider" />
+<h2 id="1-what-it-does-and-why-it-helps"><a href="#1-what-it-does-and-why-it-helps" class="heading-anchor">#</a>1. What It Does and Why It Helps</h2>
+<p>Biblion&#x27;s <strong>PubMed / MEDLINE Search</strong> lets you search the National Library of Medicine&#x27;s biomedical literature from the Biblion taskpane in Word or from any browser. You read abstracts, then cite or save a paper without switching windows, so you stay focused on writing.</p>
+<figure class="guide-figure"><img src="../images/guide_pubmed_search.png" alt="PubMed search and results" class="guide-image" loading="lazy" /><figcaption>PubMed search and results</figcaption></figure>
+<hr class="guide-divider" />
+<h2 id="2-run-a-search"><a href="#2-run-a-search" class="heading-anchor">#</a>2. Run a Search</h2>
+<ol>
+<li>Open the <strong>Search</strong> page. It is the home page of Biblion.</li>
+<li>Type your terms in the search box, for example <code>CRISPR prime editing</code>. The <strong>search</strong> button becomes active once you have typed something.</li>
+<li>Press the search button.</li>
+<li>Biblion shows how many records were found and lists article cards, with paging to move through longer result sets.</li>
+</ol>
+<p><strong>Handy features</strong></p>
+<ul>
+<li><strong>Example queries</strong>: clickable suggestions below the search box. One click fills the box <em>and</em> runs the search. A good way to try Biblion.</li>
+<li><strong>Clear button (×)</strong> appears while you type and empties the box.</li>
+<li>PubMed syntax works: use <code>AND</code>, <code>OR</code>, <code>NOT</code>, quotes and field tags such as <code>[MeSH Terms]</code> or <code>[Title/Abstract]</code>.</li>
+<li>Not sure how to write a query? Use the <a href="ai-query-rewriter.html">AI Query Rewriter</a>.</li>
+</ul>
+<h3 id="if-something-goes-wrong"><a href="#if-something-goes-wrong" class="heading-anchor">#</a>If something goes wrong</h3>
+<div class="table-responsive"><table>
+<thead><tr><th>You see</th><th>Meaning</th><th>What to do</th></tr></thead>
+<tbody>
+<tr><td><strong>No PubMed records found</strong></td><td>Zero matches</td><td>Simplify or broaden your terms</td></tr>
+<tr><td><strong>Search Request Failed</strong></td><td>NCBI could not be reached or errored</td><td>Click <strong>Retry</strong></td></tr>
+</tbody></table></div>
+<hr class="guide-divider" />
+<h2 id="3-read-an-article-card"><a href="#3-read-an-article-card" class="heading-anchor">#</a>3. Read an Article Card</h2>
+<p>Each card shows the <strong>PMID</strong>, title, authors, journal, year and DOI link.</p>
+<p>To read the abstract, click the <strong>Abstract</strong> (info) button on the card. The card <strong>flips over</strong> to show the full abstract. Click the close button to flip back. Your place in the results is not lost.</p>
+<figure class="guide-figure"><img src="../images/03_abstract_flip.png" alt="Flipped card with abstract" class="guide-image" loading="lazy" /><figcaption>Flipped card with abstract</figcaption></figure>
+<hr class="guide-divider" />
+<h2 id="4-cite-or-save"><a href="#4-cite-or-save" class="heading-anchor">#</a>4. Cite or Save</h2>
+<p>The buttons on each card depend on where you run Biblion:</p>
+<div class="table-responsive"><table>
+<thead><tr><th>Button</th><th>Where</th><th>What it does</th></tr></thead>
+<tbody>
+<tr><td><strong>Insert Citation</strong></td><td>Microsoft Word</td><td>Inserts an in-text citation at your cursor and adds the reference to the References section. Shows <em>Citation inserted</em>. See <a href="citation-styles.html">Citation Styles</a>.</td></tr>
+<tr><td><strong>Copy Citation</strong></td><td>Web browser</td><td>Copies citation and reference to the clipboard. Shows <strong>Copied!</strong> briefly.</td></tr>
+<tr><td><strong>Save to Library</strong></td><td>Both</td><td>Adds the article to <a href="library-and-sync.html">My Library</a>. Changes to <strong>Saved in Library</strong>; click again to remove.</td></tr>
+</tbody></table></div>
+<p>The number badge next to <strong>My Library</strong> in the navigation shows how many articles you have saved.</p>
+<hr class="guide-divider" />
+<h2 id="5-typical-workflow"><a href="#5-typical-workflow" class="heading-anchor">#</a>5. Typical Workflow</h2>
+<ol>
+<li>Search a topic and skim titles.</li>
+<li>Flip cards to read abstracts.</li>
+<li><strong>Save to Library</strong> the papers you want to keep.</li>
+<li>In Word, put your cursor in the manuscript and click <strong>Insert Citation</strong>.</li>
+<li>Switch citation style any time. Biblion reformats everything. See <a href="citation-styles.html">Citation Styles</a>.</li>
+<li>Use <a href="live-references.html">Live References</a> to check what a sentence cites.</li>
+</ol>
+<p>Related: <a href="standalone-web-mode.html">Using Biblion in a Web Browser</a></p>
+        </article>
+        <footer class="page-footer">
+          <p>Maintained by <strong>Biblion Evangelist</strong> &middot; Biosys Technologies &middot; <a href="../index.html">Documentation Home</a></p>
+        </footer>
+      </main>
+
+      <!-- Right Table of Contents (Desktop) -->
+      <aside class="toc-aside">
+        <nav class="toc-nav"><h4>On This Page</h4><ul>
+<li class="toc-h2"><a href="#1-what-it-does-and-why-it-helps">1. What It Does and Why It Helps</a></li>
+<li class="toc-h2"><a href="#2-run-a-search">2. Run a Search</a></li>
+<li class="toc-h3"><a href="#if-something-goes-wrong">If something goes wrong</a></li>
+<li class="toc-h2"><a href="#3-read-an-article-card">3. Read an Article Card</a></li>
+<li class="toc-h2"><a href="#4-cite-or-save">4. Cite or Save</a></li>
+<li class="toc-h2"><a href="#5-typical-workflow">5. Typical Workflow</a></li>
+</ul></nav>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    function copyCode(btn) {
+      const container = btn.closest('.code-container');
+      const code = container.querySelector('code').innerText;
+      navigator.clipboard.writeText(code).then(() => {
+        btn.innerText = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.innerText = 'Copy';
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    }
+
+    function filterNavigation() {
+      const q = document.getElementById('guide-filter').value.toLowerCase();
+      const items = document.querySelectorAll('.nav-list li');
+      items.forEach(li => {
+        const text = li.innerText.toLowerCase();
+        li.style.display = text.includes(q) ? '' : 'none';
+      });
+    }
+
+    const toggleBtn = document.getElementById('menu-toggle');
+    const sidebar = document.getElementById('sidebar');
+    if (toggleBtn && sidebar) {
+      toggleBtn.addEventListener('click', () => {
+        sidebar.classList.toggle('open');
+      });
+    }
+  </script>
+</body>
+</html>

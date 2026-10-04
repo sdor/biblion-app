@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Biblion Rails API Architecture &amp; Integration Guide - Biblion Guides</title>
+  <link rel="stylesheet" href="../guides.css">
+  <link rel="icon" href="../favicon.ico" type="image/x-icon">
+</head>
+<body>
+  <div class="site-wrapper">
+    <!-- Top Navbar -->
+    <header class="top-bar">
+      <div class="top-bar-left">
+        <button id="menu-toggle" class="btn-icon" aria-label="Toggle navigation">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <a href="../index.html" class="brand-link">
+          <div class="brand-icon-box">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          </div>
+          <span class="brand-name">Biblion Documentation</span>
+        </a>
+      </div>
+      <div class="top-bar-right">
+        <a href="/" class="btn-back-app">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+          <span>Biblion App</span>
+        </a>
+      </div>
+    </header>
+
+    <div class="body-layout">
+      <!-- Left Sidebar Navigation -->
+      <aside class="sidebar" id="sidebar">
+        <div class="search-box">
+          <input type="text" id="guide-filter" placeholder="Filter guides..." aria-label="Filter guides" onkeyup="filterNavigation()">
+        </div>
+        <div class="nav-group"><div class="nav-group-title">Overview</div><ul class="nav-list">
+<li><a href="../index.html">Documentation Portal</a></li>
+</ul></div>
+<div class="nav-group"><div class="nav-group-title">User & Researcher Manuals</div><ul class="nav-list">
+<li><a href="../external/user-guide.html">Word Add-in User Guide</a></li>
+<li><a href="../external/pubmed-search-and-citations.html">PubMed Search & Citations</a></li>
+<li><a href="../external/ai-query-rewriter.html">AI Query Rewriter</a></li>
+<li><a href="../external/citation-styles.html">Citation Styles & Bibliographies</a></li>
+<li><a href="../external/live-references.html">Live References (Word)</a></li>
+<li><a href="../external/library-and-sync.html">Library, Offline Sync & Export</a></li>
+<li><a href="../external/account-and-sign-in.html">Account & Sign-In</a></li>
+<li><a href="../external/billing-and-subscriptions.html">Billing & Subscriptions</a></li>
+<li><a href="../external/standalone-web-mode.html">Using Biblion in a Browser</a></li>
+</ul></div>
+<div class="nav-group"><div class="nav-group-title">Internal Engineering Guides</div><ul class="nav-list">
+<li><a href="../internal/developer-onboarding.html">Developer Onboarding</a></li>
+<li><a href="../internal/api-architecture.html" class="active">Rails API Architecture</a></li>
+<li><a href="../internal/office-integration.html">Angular Word Integration</a></li>
+<li><a href="../internal/sdd-and-qa-guide.html">SDD & QA Framework</a></li>
+<li><a href="../internal/security-and-hygiene.html">Security & Secret Hygiene</a></li>
+<li><a href="../internal/deployment-runbook.html">Droplet Deployment Runbook</a></li>
+</ul></div>
+      </aside>
+
+      <!-- Main Article Container -->
+      <main class="content-area">
+        <article class="markdown-body">
+          <h1 id="biblion-rails-api-architecture-integration-guide"><a href="#biblion-rails-api-architecture-integration-guide" class="heading-anchor">#</a>Biblion Rails API Architecture &amp; Integration Guide</h1>
+<p><strong>Audience:</strong> Backend Engineers &amp; API Integrators</p>
+<p><strong>Maintained by:</strong> Biblion Evangelist</p>
+<hr class="guide-divider" />
+<h2 id="1-overview-stack"><a href="#1-overview-stack" class="heading-anchor">#</a>1. Overview &amp; Stack</h2>
+<p><code>biblion-api</code> is a headless Ruby on Rails 8 API backend powering client authentication, cloud bibliography synchronization, and billing operations.</p>
+<ul>
+<li><strong>Framework</strong>: Rails 8 (API-only mode)</li>
+<li><strong>Database</strong>: PostgreSQL (<code>biblion</code> database)</li>
+<li><strong>Authentication</strong>: Bearer Token / Session tokens</li>
+<li><strong>Payment Gateway</strong>: Lemon Squeezy (Subscriptions &amp; Webhooks)</li>
+<li><strong>Environment &amp; Secrets</strong>: Loaded via <code>dotenv-rails</code> locally from <code>.env</code>, production reads <code>/etc/biblion-api.env</code> (symlinked as <code>/var/www/biblion-api/shared/.env</code>)</li>
+</ul>
+<hr class="guide-divider" />
+<h2 id="2-core-subsystems"><a href="#2-core-subsystems" class="heading-anchor">#</a>2. Core Subsystems</h2>
+<h3 id="21-authentication-account-lifecycle"><a href="#21-authentication-account-lifecycle" class="heading-anchor">#</a>2.1 Authentication &amp; Account Lifecycle</h3>
+<ul>
+<li>Endpoints handle user registration, password authentication, session issuance, and password resets.</li>
+<li>Tokens are passed as <code>Authorization: Bearer &lt;token&gt;</code> in API requests.</li>
+<li>Complies with data erasure requirements upon account deletion.</li>
+</ul>
+<figure class="guide-figure"><img src="../images/11_auth_modal.png" alt="User Authentication and Session Issuance Modal" class="guide-image" loading="lazy" /><figcaption>User Authentication and Session Issuance Modal</figcaption></figure>
+<h3 id="22-bibliography-synchronization"><a href="#22-bibliography-synchronization" class="heading-anchor">#</a>2.2 Bibliography Synchronization</h3>
+<ul>
+<li>Manages cloud persistence for citations, collections, and custom metadata.</li>
+<li>Handles conflict resolution between client IndexedDB records and PostgreSQL server records using timestamped revisions (<code>updated_at</code> / version vectors).</li>
+</ul>
+<figure class="guide-figure"><img src="../images/10_cloud_sync_gate.png" alt="Cloud Synchronization Architecture Gate" class="guide-image" loading="lazy" /><figcaption>Cloud Synchronization Architecture Gate</figcaption></figure>
+<h3 id="23-lemon-squeezy-subscriptions-webhooks"><a href="#23-lemon-squeezy-subscriptions-webhooks" class="heading-anchor">#</a>2.3 Lemon Squeezy Subscriptions &amp; Webhooks</h3>
+<ul>
+<li>Inbound webhook handler: <code>POST /webhook</code> (bound to <code>biosystechnologies.com/webhook</code>).</li>
+<li>Verifies signature using <code>LEMONSQUEEZY_WEBHOOK_SECRET</code>.</li>
+<li>Core lifecycle events handled:</li>
+<li><code>subscription_created</code>: Provision tier and billing cycle.</li>
+<li><code>subscription_updated</code>: Update plan, status, or renewal dates.</li>
+<li><code>subscription_cancelled</code>: Mark scheduled cancellation (access maintained through grace period).</li>
+<li><code>subscription_resumed</code>: Re-activate active status.</li>
+<li><code>subscription_expired</code>: Revoke access, trigger data retention/purging job.</li>
+</ul>
+<h3 id="24-background-jobs"><a href="#24-background-jobs" class="heading-anchor">#</a>2.4 Background Jobs</h3>
+<ul>
+<li><code>PurgeExpiredDataJob</code>: Periodically purges unrenewed expired account data according to retention policies.</li>
+</ul>
+        </article>
+        <footer class="page-footer">
+          <p>Maintained by <strong>Biblion Evangelist</strong> &middot; Biosys Technologies &middot; <a href="../index.html">Documentation Home</a></p>
+        </footer>
+      </main>
+
+      <!-- Right Table of Contents (Desktop) -->
+      <aside class="toc-aside">
+        <nav class="toc-nav"><h4>On This Page</h4><ul>
+<li class="toc-h2"><a href="#1-overview-stack">1. Overview &amp; Stack</a></li>
+<li class="toc-h2"><a href="#2-core-subsystems">2. Core Subsystems</a></li>
+<li class="toc-h3"><a href="#21-authentication-account-lifecycle">2.1 Authentication &amp; Account Lifecycle</a></li>
+<li class="toc-h3"><a href="#22-bibliography-synchronization">2.2 Bibliography Synchronization</a></li>
+<li class="toc-h3"><a href="#23-lemon-squeezy-subscriptions-webhooks">2.3 Lemon Squeezy Subscriptions &amp; Webhooks</a></li>
+<li class="toc-h3"><a href="#24-background-jobs">2.4 Background Jobs</a></li>
+</ul></nav>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    function copyCode(btn) {
+      const container = btn.closest('.code-container');
+      const code = container.querySelector('code').innerText;
+      navigator.clipboard.writeText(code).then(() => {
+        btn.innerText = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.innerText = 'Copy';
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    }
+
+    function filterNavigation() {
+      const q = document.getElementById('guide-filter').value.toLowerCase();
+      const items = document.querySelectorAll('.nav-list li');
+      items.forEach(li => {
+        const text = li.innerText.toLowerCase();
+        li.style.display = text.includes(q) ? '' : 'none';
+      });
+    }
+
+    const toggleBtn = document.getElementById('menu-toggle');
+    const sidebar = document.getElementById('sidebar');
+    if (toggleBtn && sidebar) {
+      toggleBtn.addEventListener('click', () => {
+        sidebar.classList.toggle('open');
+      });
+    }
+  </script>
+</body>
+</html>

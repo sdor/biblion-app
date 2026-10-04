@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Biblion User Guide: Research, Citations &amp; Bibliographies - Biblion Guides</title>
+  <link rel="stylesheet" href="../guides.css">
+  <link rel="icon" href="../favicon.ico" type="image/x-icon">
+</head>
+<body>
+  <div class="site-wrapper">
+    <!-- Top Navbar -->
+    <header class="top-bar">
+      <div class="top-bar-left">
+        <button id="menu-toggle" class="btn-icon" aria-label="Toggle navigation">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <a href="../index.html" class="brand-link">
+          <div class="brand-icon-box">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          </div>
+          <span class="brand-name">Biblion Documentation</span>
+        </a>
+      </div>
+      <div class="top-bar-right">
+        <a href="/" class="btn-back-app">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+          <span>Biblion App</span>
+        </a>
+      </div>
+    </header>
+
+    <div class="body-layout">
+      <!-- Left Sidebar Navigation -->
+      <aside class="sidebar" id="sidebar">
+        <div class="search-box">
+          <input type="text" id="guide-filter" placeholder="Filter guides..." aria-label="Filter guides" onkeyup="filterNavigation()">
+        </div>
+        <div class="nav-group"><div class="nav-group-title">Overview</div><ul class="nav-list">
+<li><a href="../index.html">Documentation Portal</a></li>
+</ul></div>
+<div class="nav-group"><div class="nav-group-title">User & Researcher Manuals</div><ul class="nav-list">
+<li><a href="../external/user-guide.html" class="active">Word Add-in User Guide</a></li>
+<li><a href="../external/pubmed-search-and-citations.html">PubMed Search & Citations</a></li>
+<li><a href="../external/ai-query-rewriter.html">AI Query Rewriter</a></li>
+<li><a href="../external/citation-styles.html">Citation Styles & Bibliographies</a></li>
+<li><a href="../external/live-references.html">Live References (Word)</a></li>
+<li><a href="../external/library-and-sync.html">Library, Offline Sync & Export</a></li>
+<li><a href="../external/account-and-sign-in.html">Account & Sign-In</a></li>
+<li><a href="../external/billing-and-subscriptions.html">Billing & Subscriptions</a></li>
+<li><a href="../external/standalone-web-mode.html">Using Biblion in a Browser</a></li>
+</ul></div>
+<div class="nav-group"><div class="nav-group-title">Internal Engineering Guides</div><ul class="nav-list">
+<li><a href="../internal/developer-onboarding.html">Developer Onboarding</a></li>
+<li><a href="../internal/api-architecture.html">Rails API Architecture</a></li>
+<li><a href="../internal/office-integration.html">Angular Word Integration</a></li>
+<li><a href="../internal/sdd-and-qa-guide.html">SDD & QA Framework</a></li>
+<li><a href="../internal/security-and-hygiene.html">Security & Secret Hygiene</a></li>
+<li><a href="../internal/deployment-runbook.html">Droplet Deployment Runbook</a></li>
+</ul></div>
+      </aside>
+
+      <!-- Main Article Container -->
+      <main class="content-area">
+        <article class="markdown-body">
+          <h1 id="biblion-user-guide-research-citations-bibliographies"><a href="#biblion-user-guide-research-citations-bibliographies" class="heading-anchor">#</a>Biblion User Guide: Research, Citations &amp; Bibliographies</h1>
+<p><strong>Product:</strong> Biblion Citation Assistant</p>
+<p><strong>Audience:</strong> Academic Researchers, Scientists &amp; Medical Writers</p>
+<p><strong>Maintained by:</strong> Documentation Writer</p>
+<hr class="guide-divider" />
+<h2 id="1-what-is-biblion"><a href="#1-what-is-biblion" class="heading-anchor">#</a>1. What Is Biblion?</h2>
+<p>Biblion is a literature search and citation tool for biomedical researchers. It runs as a taskpane inside <strong>Microsoft Word</strong> and as a standalone <strong>web app</strong>. Search PubMed, read abstracts, keep a personal library, and insert correctly formatted citations and a reference list without leaving your manuscript.</p>
+<figure class="guide-figure"><img src="../images/guide_word_addin.png" alt="Biblion in the Word taskpane" class="guide-image" loading="lazy" /><figcaption>Biblion in the Word taskpane</figcaption></figure>
+<hr class="guide-divider" />
+<h2 id="2-choose-your-task"><a href="#2-choose-your-task" class="heading-anchor">#</a>2. Choose Your Task</h2>
+<div class="table-responsive"><table>
+<thead><tr><th>I want to...</th><th>Read</th></tr></thead>
+<tbody>
+<tr><td>Find papers and read abstracts</td><td><a href="pubmed-search-and-citations.html">Searching PubMed &amp; Citing Articles</a></td></tr>
+<tr><td>Write better searches with AI</td><td><a href="ai-query-rewriter.html">AI Query Rewriter</a></td></tr>
+<tr><td>Format citations and the reference list</td><td><a href="citation-styles.html">Citation Styles &amp; Automatic Bibliographies</a></td></tr>
+<tr><td>See what a sentence in my manuscript cites</td><td><a href="live-references.html">Live References</a></td></tr>
+<tr><td>Organise, annotate and export my papers</td><td><a href="library-and-sync.html">My Library, Collections &amp; Sync</a></td></tr>
+<tr><td>Create an account or reset my password</td><td><a href="account-and-sign-in.html">Account &amp; Sign-In</a></td></tr>
+<tr><td>Understand my trial, billing or cancellation</td><td><a href="billing-and-subscriptions.html">Subscription &amp; Billing</a></td></tr>
+<tr><td>Use Biblion outside Word</td><td><a href="standalone-web-mode.html">Using Biblion in a Web Browser</a></td></tr>
+</tbody></table></div>
+<hr class="guide-divider" />
+<h2 id="3-five-minute-quickstart"><a href="#3-five-minute-quickstart" class="heading-anchor">#</a>3. Five-Minute Quickstart</h2>
+<ol>
+<li><strong>Open Biblion.</strong> In Word, open the Biblion taskpane. Or open Biblion in a browser.</li>
+<li><strong>Sign in (optional but recommended).</strong> Click <strong>Sign In</strong> → <strong>Create Account</strong>. You get a 30-day free trial and cloud sync.</li>
+<li><strong>Search.</strong> Type a topic, or click an example query, then search.</li>
+<li><strong>Read.</strong> Flip a card with its <strong>Abstract</strong> button.</li>
+<li><strong>Keep.</strong> Click <strong>Save to Library</strong> on papers you want.</li>
+<li><strong>Cite.</strong> In Word, place your cursor in the manuscript and click <strong>Insert Citation</strong>. In a browser, click <strong>Copy Citation</strong> and paste.</li>
+<li><strong>Format.</strong> In Word, pick your journal&#x27;s style from the style selector. Biblion reformats everything.</li>
+</ol>
+<hr class="guide-divider" />
+<h2 id="4-the-main-areas-of-biblion"><a href="#4-the-main-areas-of-biblion" class="heading-anchor">#</a>4. The Main Areas of Biblion</h2>
+<ul>
+<li><strong>Search</strong>: PubMed / MEDLINE search</li>
+<li><strong>My Library</strong>: saved articles, collections, tags, notes, export</li>
+<li><strong>Live References</strong>: citations at your cursor <em>(Word only)</em></li>
+<li><strong>About &amp; Support</strong>: help, documentation guides, contact</li>
+<li><strong>Your name menu</strong>: Subscription &amp; Billing, Edit Account, AI Settings, Sign Out</li>
+</ul>
+<hr class="guide-divider" />
+<h2 id="5-help"><a href="#5-help" class="heading-anchor">#</a>5. Help</h2>
+<p>The <strong>About &amp; Support</strong> page links to all guides and contact details. The same guides are available from your name menu → <strong>Documentation Guides</strong>.</p>
+        </article>
+        <footer class="page-footer">
+          <p>Maintained by <strong>Biblion Evangelist</strong> &middot; Biosys Technologies &middot; <a href="../index.html">Documentation Home</a></p>
+        </footer>
+      </main>
+
+      <!-- Right Table of Contents (Desktop) -->
+      <aside class="toc-aside">
+        <nav class="toc-nav"><h4>On This Page</h4><ul>
+<li class="toc-h2"><a href="#1-what-is-biblion">1. What Is Biblion?</a></li>
+<li class="toc-h2"><a href="#2-choose-your-task">2. Choose Your Task</a></li>
+<li class="toc-h2"><a href="#3-five-minute-quickstart">3. Five-Minute Quickstart</a></li>
+<li class="toc-h2"><a href="#4-the-main-areas-of-biblion">4. The Main Areas of Biblion</a></li>
+<li class="toc-h2"><a href="#5-help">5. Help</a></li>
+</ul></nav>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    function copyCode(btn) {
+      const container = btn.closest('.code-container');
+      const code = container.querySelector('code').innerText;
+      navigator.clipboard.writeText(code).then(() => {
+        btn.innerText = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.innerText = 'Copy';
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    }
+
+    function filterNavigation() {
+      const q = document.getElementById('guide-filter').value.toLowerCase();
+      const items = document.querySelectorAll('.nav-list li');
+      items.forEach(li => {
+        const text = li.innerText.toLowerCase();
+        li.style.display = text.includes(q) ? '' : 'none';
+      });
+    }
+
+    const toggleBtn = document.getElementById('menu-toggle');
+    const sidebar = document.getElementById('sidebar');
+    if (toggleBtn && sidebar) {
+      toggleBtn.addEventListener('click', () => {
+        sidebar.classList.toggle('open');
+      });
+    }
+  </script>
+</body>
+</html>

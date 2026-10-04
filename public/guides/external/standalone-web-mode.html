@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Using Biblion in a Web Browser (Standalone Mode) - Biblion Guides</title>
+  <link rel="stylesheet" href="../guides.css">
+  <link rel="icon" href="../favicon.ico" type="image/x-icon">
+</head>
+<body>
+  <div class="site-wrapper">
+    <!-- Top Navbar -->
+    <header class="top-bar">
+      <div class="top-bar-left">
+        <button id="menu-toggle" class="btn-icon" aria-label="Toggle navigation">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <a href="../index.html" class="brand-link">
+          <div class="brand-icon-box">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          </div>
+          <span class="brand-name">Biblion Documentation</span>
+        </a>
+      </div>
+      <div class="top-bar-right">
+        <a href="/" class="btn-back-app">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+          <span>Biblion App</span>
+        </a>
+      </div>
+    </header>
+
+    <div class="body-layout">
+      <!-- Left Sidebar Navigation -->
+      <aside class="sidebar" id="sidebar">
+        <div class="search-box">
+          <input type="text" id="guide-filter" placeholder="Filter guides..." aria-label="Filter guides" onkeyup="filterNavigation()">
+        </div>
+        <div class="nav-group"><div class="nav-group-title">Overview</div><ul class="nav-list">
+<li><a href="../index.html">Documentation Portal</a></li>
+</ul></div>
+<div class="nav-group"><div class="nav-group-title">User & Researcher Manuals</div><ul class="nav-list">
+<li><a href="../external/user-guide.html">Word Add-in User Guide</a></li>
+<li><a href="../external/pubmed-search-and-citations.html">PubMed Search & Citations</a></li>
+<li><a href="../external/ai-query-rewriter.html">AI Query Rewriter</a></li>
+<li><a href="../external/citation-styles.html">Citation Styles & Bibliographies</a></li>
+<li><a href="../external/live-references.html">Live References (Word)</a></li>
+<li><a href="../external/library-and-sync.html">Library, Offline Sync & Export</a></li>
+<li><a href="../external/account-and-sign-in.html">Account & Sign-In</a></li>
+<li><a href="../external/billing-and-subscriptions.html">Billing & Subscriptions</a></li>
+<li><a href="../external/standalone-web-mode.html" class="active">Using Biblion in a Browser</a></li>
+</ul></div>
+<div class="nav-group"><div class="nav-group-title">Internal Engineering Guides</div><ul class="nav-list">
+<li><a href="../internal/developer-onboarding.html">Developer Onboarding</a></li>
+<li><a href="../internal/api-architecture.html">Rails API Architecture</a></li>
+<li><a href="../internal/office-integration.html">Angular Word Integration</a></li>
+<li><a href="../internal/sdd-and-qa-guide.html">SDD & QA Framework</a></li>
+<li><a href="../internal/security-and-hygiene.html">Security & Secret Hygiene</a></li>
+<li><a href="../internal/deployment-runbook.html">Droplet Deployment Runbook</a></li>
+</ul></div>
+      </aside>
+
+      <!-- Main Article Container -->
+      <main class="content-area">
+        <article class="markdown-body">
+          <h1 id="using-biblion-in-a-web-browser-standalone-mode"><a href="#using-biblion-in-a-web-browser-standalone-mode" class="heading-anchor">#</a>Using Biblion in a Web Browser (Standalone Mode)</h1>
+<p><strong>Product:</strong> Biblion Citation Assistant</p>
+<p><strong>Audience:</strong> Academic Researchers, Scientists &amp; Medical Writers</p>
+<p><strong>Maintained by:</strong> Documentation Writer</p>
+<hr class="guide-divider" />
+<h2 id="1-what-is-standalone-mode"><a href="#1-what-is-standalone-mode" class="heading-anchor">#</a>1. What Is Standalone Mode?</h2>
+<p>Biblion works in two places:</p>
+<ul>
+<li><strong>Inside Microsoft Word</strong>, as a taskpane add-in, where it can insert citations straight into your manuscript.</li>
+<li><strong>In any web browser</strong>, as a standalone app. Use it to search PubMed, read abstracts, organise your library and copy citations into any editor.</li>
+</ul>
+<p>Biblion detects where it is running and adjusts itself.</p>
+<h2 id="2-what-changes-outside-word"><a href="#2-what-changes-outside-word" class="heading-anchor">#</a>2. What Changes Outside Word</h2>
+<div class="table-responsive"><table>
+<thead><tr><th>Feature</th><th>In Word</th><th>In a browser</th></tr></thead>
+<tbody>
+<tr><td>PubMed search, abstracts</td><td>Yes</td><td>Yes</td></tr>
+<tr><td>My Library, collections, notes, export</td><td>Yes</td><td>Yes</td></tr>
+<tr><td>Cloud sync, account, billing</td><td>Yes</td><td>Yes</td></tr>
+<tr><td><strong>Insert Citation</strong> button</td><td>Yes</td><td>Replaced by <strong>Copy Citation</strong></td></tr>
+<tr><td>Citation style selector</td><td>Yes</td><td>Hidden</td></tr>
+<tr><td><strong>Live References</strong> tab</td><td>Yes</td><td>Hidden</td></tr>
+</tbody></table></div>
+<h2 id="3-copy-a-citation-in-the-browser"><a href="#3-copy-a-citation-in-the-browser" class="heading-anchor">#</a>3. Copy a Citation in the Browser</h2>
+<ol>
+<li>Search for an article.</li>
+<li>On its card, click <strong>Copy Citation</strong>. The button briefly changes to <strong>Copied!</strong></li>
+<li>Paste into your document. You get the in-text citation and the full reference entry, formatted in the current style (APA 7th Edition by default in a browser).</li>
+</ol>
+<h2 id="4-works-in-a-narrow-taskpane-too"><a href="#4-works-in-a-narrow-taskpane-too" class="heading-anchor">#</a>4. Works in a Narrow Taskpane Too</h2>
+<p>The layout adapts to narrow windows, down to about 320 px wide, the width of a typical Word taskpane. The header, the navigation and the search box stay usable.</p>
+<h2 id="5-navigating-biblion"><a href="#5-navigating-biblion" class="heading-anchor">#</a>5. Navigating Biblion</h2>
+<p>The main navigation has three places:</p>
+<ul>
+<li><strong>Search</strong>: PubMed / MEDLINE search (home page)</li>
+<li><strong>My Library</strong>: your saved articles</li>
+<li><strong>About &amp; Support</strong>: help, documentation guides, contact information</li>
+</ul>
+<p>The footer links to the <strong>Privacy Policy</strong> and <strong>Terms of Use</strong>.</p>
+<hr class="guide-divider" />
+<p>Related: <a href="account-and-sign-in.html">Account &amp; Sign-In</a>, <a href="pubmed-search-and-citations.html">Searching PubMed</a></p>
+        </article>
+        <footer class="page-footer">
+          <p>Maintained by <strong>Biblion Evangelist</strong> &middot; Biosys Technologies &middot; <a href="../index.html">Documentation Home</a></p>
+        </footer>
+      </main>
+
+      <!-- Right Table of Contents (Desktop) -->
+      <aside class="toc-aside">
+        <nav class="toc-nav"><h4>On This Page</h4><ul>
+<li class="toc-h2"><a href="#1-what-is-standalone-mode">1. What Is Standalone Mode?</a></li>
+<li class="toc-h2"><a href="#2-what-changes-outside-word">2. What Changes Outside Word</a></li>
+<li class="toc-h2"><a href="#3-copy-a-citation-in-the-browser">3. Copy a Citation in the Browser</a></li>
+<li class="toc-h2"><a href="#4-works-in-a-narrow-taskpane-too">4. Works in a Narrow Taskpane Too</a></li>
+<li class="toc-h2"><a href="#5-navigating-biblion">5. Navigating Biblion</a></li>
+</ul></nav>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    function copyCode(btn) {
+      const container = btn.closest('.code-container');
+      const code = container.querySelector('code').innerText;
+      navigator.clipboard.writeText(code).then(() => {
+        btn.innerText = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.innerText = 'Copy';
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    }
+
+    function filterNavigation() {
+      const q = document.getElementById('guide-filter').value.toLowerCase();
+      const items = document.querySelectorAll('.nav-list li');
+      items.forEach(li => {
+        const text = li.innerText.toLowerCase();
+        li.style.display = text.includes(q) ? '' : 'none';
+      });
+    }
+
+    const toggleBtn = document.getElementById('menu-toggle');
+    const sidebar = document.getElementById('sidebar');
+    if (toggleBtn && sidebar) {
+      toggleBtn.addEventListener('click', () => {
+        sidebar.classList.toggle('open');
+      });
+    }
+  </script>
+</body>
+</html>

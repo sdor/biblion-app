@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spec-Driven Development (SDD) &amp; Quality Assurance Guide - Biblion Guides</title>
+  <link rel="stylesheet" href="../guides.css">
+  <link rel="icon" href="../favicon.ico" type="image/x-icon">
+</head>
+<body>
+  <div class="site-wrapper">
+    <!-- Top Navbar -->
+    <header class="top-bar">
+      <div class="top-bar-left">
+        <button id="menu-toggle" class="btn-icon" aria-label="Toggle navigation">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <a href="../index.html" class="brand-link">
+          <div class="brand-icon-box">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          </div>
+          <span class="brand-name">Biblion Documentation</span>
+        </a>
+      </div>
+      <div class="top-bar-right">
+        <a href="/" class="btn-back-app">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+          <span>Biblion App</span>
+        </a>
+      </div>
+    </header>
+
+    <div class="body-layout">
+      <!-- Left Sidebar Navigation -->
+      <aside class="sidebar" id="sidebar">
+        <div class="search-box">
+          <input type="text" id="guide-filter" placeholder="Filter guides..." aria-label="Filter guides" onkeyup="filterNavigation()">
+        </div>
+        <div class="nav-group"><div class="nav-group-title">Overview</div><ul class="nav-list">
+<li><a href="../index.html">Documentation Portal</a></li>
+</ul></div>
+<div class="nav-group"><div class="nav-group-title">User & Researcher Manuals</div><ul class="nav-list">
+<li><a href="../external/user-guide.html">Word Add-in User Guide</a></li>
+<li><a href="../external/pubmed-search-and-citations.html">PubMed Search & Citations</a></li>
+<li><a href="../external/ai-query-rewriter.html">AI Query Rewriter</a></li>
+<li><a href="../external/citation-styles.html">Citation Styles & Bibliographies</a></li>
+<li><a href="../external/live-references.html">Live References (Word)</a></li>
+<li><a href="../external/library-and-sync.html">Library, Offline Sync & Export</a></li>
+<li><a href="../external/account-and-sign-in.html">Account & Sign-In</a></li>
+<li><a href="../external/billing-and-subscriptions.html">Billing & Subscriptions</a></li>
+<li><a href="../external/standalone-web-mode.html">Using Biblion in a Browser</a></li>
+</ul></div>
+<div class="nav-group"><div class="nav-group-title">Internal Engineering Guides</div><ul class="nav-list">
+<li><a href="../internal/developer-onboarding.html">Developer Onboarding</a></li>
+<li><a href="../internal/api-architecture.html">Rails API Architecture</a></li>
+<li><a href="../internal/office-integration.html">Angular Word Integration</a></li>
+<li><a href="../internal/sdd-and-qa-guide.html" class="active">SDD & QA Framework</a></li>
+<li><a href="../internal/security-and-hygiene.html">Security & Secret Hygiene</a></li>
+<li><a href="../internal/deployment-runbook.html">Droplet Deployment Runbook</a></li>
+</ul></div>
+      </aside>
+
+      <!-- Main Article Container -->
+      <main class="content-area">
+        <article class="markdown-body">
+          <h1 id="spec-driven-development-sdd-quality-assurance-guide"><a href="#spec-driven-development-sdd-quality-assurance-guide" class="heading-anchor">#</a>Spec-Driven Development (SDD) &amp; Quality Assurance Guide</h1>
+<p><strong>Target Audience:</strong> Biblion Core Engineers, QA Testers &amp; Reviewers</p>
+<p><strong>Authors:</strong> Biblion Evangelist in cooperation with Biblion Spec/QA Engineer</p>
+<hr class="guide-divider" />
+<h2 id="1-sdd-framework-overview"><a href="#1-sdd-framework-overview" class="heading-anchor">#</a>1. SDD Framework Overview</h2>
+<p>Biblion practices rigorous <strong>Spec-Driven Development (SDD)</strong>. Specifications in <code>biblion-specs/</code> are living technical contracts that govern system behavior before implementation begins.</p>
+<p>All specifications are written in Gherkin-aligned Markdown with clear behavioral boundaries, pre-conditions, and post-conditions.</p>
+<hr class="guide-divider" />
+<h2 id="2-implemented-vs-proposed-scenarios"><a href="#2-implemented-vs-proposed-scenarios" class="heading-anchor">#</a>2. Implemented vs. Proposed Scenarios</h2>
+<p>Every specification document under <code>biblion-specs/</code> partitions behavior into two explicit sections:</p>
+<ol>
+<li><strong>Implemented Scenarios</strong>:</li>
+</ol>
+<ul>
+<li>Reflect code currently merged into <code>main</code>.</li>
+<li>Covered by automated unit, integration, or end-to-end tests.</li>
+<li>Must pass in CI before any release.</li>
+</ul>
+<ol>
+<li><strong>Proposed Scenarios</strong>:</li>
+</ol>
+<ul>
+<li>Describe requested enhancements, new API endpoints, or revised UI workflows.</li>
+<li>Carry metadata tag: <code>Status: [PROPOSED]</code>.</li>
+</ul>
+<h3 id="approval-gate"><a href="#approval-gate" class="heading-anchor">#</a>Approval Gate</h3>
+<div class="callout callout-warning"><p><strong>CRITICAL RULE:</strong> Engineers must not write code for proposed features until Dr. Doronin reviews and marks the scenario as <code>Status: [APPROVED]</code>.</p></div>
+<hr class="guide-divider" />
+<h2 id="3-test-suites-verification-workflows"><a href="#3-test-suites-verification-workflows" class="heading-anchor">#</a>3. Test Suites &amp; Verification Workflows</h2>
+<h3 id="backend-verification-biblion-api"><a href="#backend-verification-biblion-api" class="heading-anchor">#</a>Backend Verification (<code>biblion-api</code>)</h3>
+<ul>
+<li><strong>Framework</strong>: RSpec, RuboCop, Brakeman (security scanner).</li>
+<li>Run test suite:</li>
+</ul>
+<p>  ```bash</p>
+<p>  cd /Users/sdoronin/workspace/biblion/biblion-api</p>
+<p>  bundle exec rspec</p>
+<p>  ```</p>
+<ul>
+<li>Run security and style scans:</li>
+</ul>
+<p>  ```bash</p>
+<p>  bundle exec brakeman -q</p>
+<p>  bundle exec rubocop</p>
+<p>  ```</p>
+<h3 id="frontend-verification-biblion-app"><a href="#frontend-verification-biblion-app" class="heading-anchor">#</a>Frontend Verification (<code>biblion-app</code>)</h3>
+<ul>
+<li><strong>Framework</strong>: Angular CLI, Jasmine, Karma.</li>
+<li>Run unit tests:</li>
+</ul>
+<p>  ```bash</p>
+<p>  cd /Users/sdoronin/workspace/biblion/biblion-app</p>
+<p>  npm test -- --watch=false --browsers=ChromeHeadless</p>
+<p>  ```</p>
+<ul>
+<li>Production build audit:</li>
+</ul>
+<p>  ```bash</p>
+<p>  npm run build</p>
+<p>  ```</p>
+<hr class="guide-divider" />
+<h2 id="4-markdown-specification-linting"><a href="#4-markdown-specification-linting" class="heading-anchor">#</a>4. Markdown Specification Linting</h2>
+<p>All <code>.md</code> spec files in <code>biblion-specs/</code> must pass formatting rules defined in <code>.markdownlint.json</code>:</p>
+<div class="code-container">
+<div class="code-header"><span class="code-lang">bash</span><button class="copy-code-btn" onclick="copyCode(this)">Copy</button></div>
+<pre><code class="language-bash">npx markdownlint-cli &quot;biblion-specs/**/*.md&quot;</code></pre>
+</div>
+        </article>
+        <footer class="page-footer">
+          <p>Maintained by <strong>Biblion Evangelist</strong> &middot; Biosys Technologies &middot; <a href="../index.html">Documentation Home</a></p>
+        </footer>
+      </main>
+
+      <!-- Right Table of Contents (Desktop) -->
+      <aside class="toc-aside">
+        <nav class="toc-nav"><h4>On This Page</h4><ul>
+<li class="toc-h2"><a href="#1-sdd-framework-overview">1. SDD Framework Overview</a></li>
+<li class="toc-h2"><a href="#2-implemented-vs-proposed-scenarios">2. Implemented vs. Proposed Scenarios</a></li>
+<li class="toc-h3"><a href="#approval-gate">Approval Gate</a></li>
+<li class="toc-h2"><a href="#3-test-suites-verification-workflows">3. Test Suites &amp; Verification Workflows</a></li>
+<li class="toc-h3"><a href="#backend-verification-biblion-api">Backend Verification (`biblion-api`)</a></li>
+<li class="toc-h3"><a href="#frontend-verification-biblion-app">Frontend Verification (`biblion-app`)</a></li>
+<li class="toc-h2"><a href="#4-markdown-specification-linting">4. Markdown Specification Linting</a></li>
+</ul></nav>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    function copyCode(btn) {
+      const container = btn.closest('.code-container');
+      const code = container.querySelector('code').innerText;
+      navigator.clipboard.writeText(code).then(() => {
+        btn.innerText = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.innerText = 'Copy';
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    }
+
+    function filterNavigation() {
+      const q = document.getElementById('guide-filter').value.toLowerCase();
+      const items = document.querySelectorAll('.nav-list li');
+      items.forEach(li => {
+        const text = li.innerText.toLowerCase();
+        li.style.display = text.includes(q) ? '' : 'none';
+      });
+    }
+
+    const toggleBtn = document.getElementById('menu-toggle');
+    const sidebar = document.getElementById('sidebar');
+    if (toggleBtn && sidebar) {
+      toggleBtn.addEventListener('click', () => {
+        sidebar.classList.toggle('open');
+      });
+    }
+  </script>
+</body>
+</html>

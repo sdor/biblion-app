@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Biblion Account &amp; Sign-In Guide - Biblion Guides</title>
+  <link rel="stylesheet" href="../guides.css">
+  <link rel="icon" href="../favicon.ico" type="image/x-icon">
+</head>
+<body>
+  <div class="site-wrapper">
+    <!-- Top Navbar -->
+    <header class="top-bar">
+      <div class="top-bar-left">
+        <button id="menu-toggle" class="btn-icon" aria-label="Toggle navigation">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <a href="../index.html" class="brand-link">
+          <div class="brand-icon-box">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          </div>
+          <span class="brand-name">Biblion Documentation</span>
+        </a>
+      </div>
+      <div class="top-bar-right">
+        <a href="/" class="btn-back-app">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+          <span>Biblion App</span>
+        </a>
+      </div>
+    </header>
+
+    <div class="body-layout">
+      <!-- Left Sidebar Navigation -->
+      <aside class="sidebar" id="sidebar">
+        <div class="search-box">
+          <input type="text" id="guide-filter" placeholder="Filter guides..." aria-label="Filter guides" onkeyup="filterNavigation()">
+        </div>
+        <div class="nav-group"><div class="nav-group-title">Overview</div><ul class="nav-list">
+<li><a href="../index.html">Documentation Portal</a></li>
+</ul></div>
+<div class="nav-group"><div class="nav-group-title">User & Researcher Manuals</div><ul class="nav-list">
+<li><a href="../external/user-guide.html">Word Add-in User Guide</a></li>
+<li><a href="../external/pubmed-search-and-citations.html">PubMed Search & Citations</a></li>
+<li><a href="../external/ai-query-rewriter.html">AI Query Rewriter</a></li>
+<li><a href="../external/citation-styles.html">Citation Styles & Bibliographies</a></li>
+<li><a href="../external/live-references.html">Live References (Word)</a></li>
+<li><a href="../external/library-and-sync.html">Library, Offline Sync & Export</a></li>
+<li><a href="../external/account-and-sign-in.html" class="active">Account & Sign-In</a></li>
+<li><a href="../external/billing-and-subscriptions.html">Billing & Subscriptions</a></li>
+<li><a href="../external/standalone-web-mode.html">Using Biblion in a Browser</a></li>
+</ul></div>
+<div class="nav-group"><div class="nav-group-title">Internal Engineering Guides</div><ul class="nav-list">
+<li><a href="../internal/developer-onboarding.html">Developer Onboarding</a></li>
+<li><a href="../internal/api-architecture.html">Rails API Architecture</a></li>
+<li><a href="../internal/office-integration.html">Angular Word Integration</a></li>
+<li><a href="../internal/sdd-and-qa-guide.html">SDD & QA Framework</a></li>
+<li><a href="../internal/security-and-hygiene.html">Security & Secret Hygiene</a></li>
+<li><a href="../internal/deployment-runbook.html">Droplet Deployment Runbook</a></li>
+</ul></div>
+      </aside>
+
+      <!-- Main Article Container -->
+      <main class="content-area">
+        <article class="markdown-body">
+          <h1 id="biblion-account-sign-in-guide"><a href="#biblion-account-sign-in-guide" class="heading-anchor">#</a>Biblion Account &amp; Sign-In Guide</h1>
+<p><strong>Product:</strong> Biblion Citation Assistant</p>
+<p><strong>Audience:</strong> Academic Researchers, Scientists &amp; Medical Writers</p>
+<p><strong>Maintained by:</strong> Documentation Writer</p>
+<hr class="guide-divider" />
+<h2 id="1-why-create-a-biblion-account"><a href="#1-why-create-a-biblion-account" class="heading-anchor">#</a>1. Why Create a Biblion Account?</h2>
+<p>You can search PubMed and copy citations without an account. A free Biblion account unlocks the features that make Biblion a long-term research companion:</p>
+<ul>
+<li><strong>Cloud sync</strong>: your saved library, collections, tags and notes follow you between Word, your browser and other computers.</li>
+<li><strong>30-day free trial</strong>: every new account starts with a free trial of the full feature set.</li>
+<li><strong>AI Query Rewriter</strong>: turn plain-language questions into precise PubMed searches (see the <a href="ai-query-rewriter.html">AI Query Rewriter guide</a>).</li>
+</ul>
+<hr class="guide-divider" />
+<h2 id="2-create-an-account"><a href="#2-create-an-account" class="heading-anchor">#</a>2. Create an Account</h2>
+<ol>
+<li>Click <strong>Sign In</strong> in the top-right corner of Biblion.</li>
+<li>In the dialog titled <strong>Sign in to Biblion Cloud</strong>, open the <strong>Create Account</strong> tab. The heading changes to <strong>Join Biblion Cloud</strong>.</li>
+<li>Enter your <strong>name</strong>, <strong>email</strong> and a <strong>password</strong> (at least 8 characters).</li>
+<li><em>(Optional)</em> Tick the AI setup checkbox to choose an AI provider and paste your key now. You can also do this later. See the <a href="ai-query-rewriter.html">AI Query Rewriter guide</a>.</li>
+<li>Click <strong>Create Account</strong>.</li>
+</ol>
+<p>The dialog closes, your name appears in the header, and your menu shows a <strong>Free Trial</strong> badge with the days remaining.</p>
+<figure class="guide-figure"><img src="../images/11_auth_modal.png" alt="Biblion sign-in and account dialog" class="guide-image" loading="lazy" /><figcaption>Biblion sign-in and account dialog</figcaption></figure>
+<hr class="guide-divider" />
+<h2 id="3-sign-in"><a href="#3-sign-in" class="heading-anchor">#</a>3. Sign In</h2>
+<ol>
+<li>Click <strong>Sign In</strong>.</li>
+<li>Enter your email and password, then submit.</li>
+<li>Click your name in the header to open the account menu. It contains:</li>
+</ol>
+<ul>
+<li><strong>Subscription &amp; Billing</strong></li>
+<li><strong>Edit Account</strong></li>
+<li><strong>AI Settings</strong> (see the AI guide)</li>
+<li><strong>Sign Out</strong></li>
+</ul>
+<p>Your library syncs automatically as soon as you are signed in.</p>
+<hr class="guide-divider" />
+<h2 id="4-forgot-your-password"><a href="#4-forgot-your-password" class="heading-anchor">#</a>4. Forgot Your Password?</h2>
+<ol>
+<li>In the sign-in dialog, click <strong>Forgot password?</strong></li>
+<li>Enter your account email and submit.</li>
+<li>Biblion shows a note asking you to check your inbox.</li>
+<li>Open the email and click the reset link. Biblion opens a <strong>Reset Password</strong> dialog automatically.</li>
+<li>Enter and confirm your new password, then submit. You are signed in immediately.</li>
+</ol>
+<p>Use <strong>Back</strong> in the dialog to return to the sign-in form at any time.</p>
+<hr class="guide-divider" />
+<h2 id="5-edit-your-account"><a href="#5-edit-your-account" class="heading-anchor">#</a>5. Edit Your Account</h2>
+<ol>
+<li>Click your name, then <strong>Edit Account</strong>.</li>
+<li>Change your name (and other editable details).</li>
+<li>Enter your <strong>current password</strong> to confirm the change, then submit.</li>
+</ol>
+<p>Your new name appears in the header straight away.</p>
+<hr class="guide-divider" />
+<h2 id="6-sign-out-especially-on-shared-computers"><a href="#6-sign-out-especially-on-shared-computers" class="heading-anchor">#</a>6. Sign Out (Especially on Shared Computers)</h2>
+<p>Click your name, then <strong>Sign Out</strong>. Biblion will:</p>
+<ul>
+<li>end your session and remove your sign-in token from this browser,</li>
+<li>remove AI provider keys held in the browser, and</li>
+<li>clear the local copy of your library from this device.</li>
+</ul>
+<p>Your data stays safe in your cloud account and returns the next time you sign in. This makes Sign Out the right choice on lab, library or conference computers.</p>
+<div class="callout"><p><strong>Tip:</strong> If you use Biblion without signing in, your local library is also cleared when the session ends. Sign in if you want your references kept.</p></div>
+<hr class="guide-divider" />
+<h2 id="7-quick-reference"><a href="#7-quick-reference" class="heading-anchor">#</a>7. Quick Reference</h2>
+<div class="table-responsive"><table>
+<thead><tr><th>I want to...</th><th>Do this</th></tr></thead>
+<tbody>
+<tr><td>Start using cloud features</td><td><strong>Sign In</strong> → <strong>Create Account</strong></td></tr>
+<tr><td>Recover access</td><td><strong>Sign In</strong> → <strong>Forgot password?</strong></td></tr>
+<tr><td>Change my name</td><td>Account menu → <strong>Edit Account</strong></td></tr>
+<tr><td>Check trial days / billing</td><td>Account menu → <strong>Subscription &amp; Billing</strong></td></tr>
+<tr><td>Protect my data on a shared PC</td><td>Account menu → <strong>Sign Out</strong></td></tr>
+</tbody></table></div>
+<p>Next: <a href="billing-and-subscriptions.html">Subscription &amp; Billing</a></p>
+        </article>
+        <footer class="page-footer">
+          <p>Maintained by <strong>Biblion Evangelist</strong> &middot; Biosys Technologies &middot; <a href="../index.html">Documentation Home</a></p>
+        </footer>
+      </main>
+
+      <!-- Right Table of Contents (Desktop) -->
+      <aside class="toc-aside">
+        <nav class="toc-nav"><h4>On This Page</h4><ul>
+<li class="toc-h2"><a href="#1-why-create-a-biblion-account">1. Why Create a Biblion Account?</a></li>
+<li class="toc-h2"><a href="#2-create-an-account">2. Create an Account</a></li>
+<li class="toc-h2"><a href="#3-sign-in">3. Sign In</a></li>
+<li class="toc-h2"><a href="#4-forgot-your-password">4. Forgot Your Password?</a></li>
+<li class="toc-h2"><a href="#5-edit-your-account">5. Edit Your Account</a></li>
+<li class="toc-h2"><a href="#6-sign-out-especially-on-shared-computers">6. Sign Out (Especially on Shared Computers)</a></li>
+<li class="toc-h2"><a href="#7-quick-reference">7. Quick Reference</a></li>
+</ul></nav>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    function copyCode(btn) {
+      const container = btn.closest('.code-container');
+      const code = container.querySelector('code').innerText;
+      navigator.clipboard.writeText(code).then(() => {
+        btn.innerText = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.innerText = 'Copy';
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    }
+
+    function filterNavigation() {
+      const q = document.getElementById('guide-filter').value.toLowerCase();
+      const items = document.querySelectorAll('.nav-list li');
+      items.forEach(li => {
+        const text = li.innerText.toLowerCase();
+        li.style.display = text.includes(q) ? '' : 'none';
+      });
+    }
+
+    const toggleBtn = document.getElementById('menu-toggle');
+    const sidebar = document.getElementById('sidebar');
+    if (toggleBtn && sidebar) {
+      toggleBtn.addEventListener('click', () => {
+        sidebar.classList.toggle('open');
+      });
+    }
+  </script>
+</body>
+</html>

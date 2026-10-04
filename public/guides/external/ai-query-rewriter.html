@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Query Rewriter: Turn Plain-Language Questions into PubMed Searches - Biblion Guides</title>
+  <link rel="stylesheet" href="../guides.css">
+  <link rel="icon" href="../favicon.ico" type="image/x-icon">
+</head>
+<body>
+  <div class="site-wrapper">
+    <!-- Top Navbar -->
+    <header class="top-bar">
+      <div class="top-bar-left">
+        <button id="menu-toggle" class="btn-icon" aria-label="Toggle navigation">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <a href="../index.html" class="brand-link">
+          <div class="brand-icon-box">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          </div>
+          <span class="brand-name">Biblion Documentation</span>
+        </a>
+      </div>
+      <div class="top-bar-right">
+        <a href="/" class="btn-back-app">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+          <span>Biblion App</span>
+        </a>
+      </div>
+    </header>
+
+    <div class="body-layout">
+      <!-- Left Sidebar Navigation -->
+      <aside class="sidebar" id="sidebar">
+        <div class="search-box">
+          <input type="text" id="guide-filter" placeholder="Filter guides..." aria-label="Filter guides" onkeyup="filterNavigation()">
+        </div>
+        <div class="nav-group"><div class="nav-group-title">Overview</div><ul class="nav-list">
+<li><a href="../index.html">Documentation Portal</a></li>
+</ul></div>
+<div class="nav-group"><div class="nav-group-title">User & Researcher Manuals</div><ul class="nav-list">
+<li><a href="../external/user-guide.html">Word Add-in User Guide</a></li>
+<li><a href="../external/pubmed-search-and-citations.html">PubMed Search & Citations</a></li>
+<li><a href="../external/ai-query-rewriter.html" class="active">AI Query Rewriter</a></li>
+<li><a href="../external/citation-styles.html">Citation Styles & Bibliographies</a></li>
+<li><a href="../external/live-references.html">Live References (Word)</a></li>
+<li><a href="../external/library-and-sync.html">Library, Offline Sync & Export</a></li>
+<li><a href="../external/account-and-sign-in.html">Account & Sign-In</a></li>
+<li><a href="../external/billing-and-subscriptions.html">Billing & Subscriptions</a></li>
+<li><a href="../external/standalone-web-mode.html">Using Biblion in a Browser</a></li>
+</ul></div>
+<div class="nav-group"><div class="nav-group-title">Internal Engineering Guides</div><ul class="nav-list">
+<li><a href="../internal/developer-onboarding.html">Developer Onboarding</a></li>
+<li><a href="../internal/api-architecture.html">Rails API Architecture</a></li>
+<li><a href="../internal/office-integration.html">Angular Word Integration</a></li>
+<li><a href="../internal/sdd-and-qa-guide.html">SDD & QA Framework</a></li>
+<li><a href="../internal/security-and-hygiene.html">Security & Secret Hygiene</a></li>
+<li><a href="../internal/deployment-runbook.html">Droplet Deployment Runbook</a></li>
+</ul></div>
+      </aside>
+
+      <!-- Main Article Container -->
+      <main class="content-area">
+        <article class="markdown-body">
+          <h1 id="ai-query-rewriter-turn-plain-language-questions-into-pubmed-searches"><a href="#ai-query-rewriter-turn-plain-language-questions-into-pubmed-searches" class="heading-anchor">#</a>AI Query Rewriter: Turn Plain-Language Questions into PubMed Searches</h1>
+<p><strong>Product:</strong> Biblion Citation Assistant (AI feature)</p>
+<p><strong>Audience:</strong> Academic Researchers, Clinicians &amp; Bioinformaticians</p>
+<p><strong>Requires:</strong> A Biblion account with an active trial or subscription, and your own API key from an AI provider</p>
+<p><strong>Maintained by:</strong> Documentation Writer</p>
+<hr class="guide-divider" />
+<h2 id="1-what-it-does-and-why-you-would-use-it"><a href="#1-what-it-does-and-why-you-would-use-it" class="heading-anchor">#</a>1. What It Does and Why You Would Use It</h2>
+<p>Good PubMed searches need boolean logic, MeSH headings and field tags such as <code>[Title/Abstract]</code>. The <strong>AI Query Rewriter</strong> converts a plain-language description into a well-formed PubMed query, and shows it to you <em>before</em> anything is searched.</p>
+<p><em>Example</em></p>
+<div class="table-responsive"><table>
+<thead><tr><th>You type</th><th>Biblion proposes</th></tr></thead>
+<tbody>
+<tr><td><code>p53 mutation in non-small cell lung cancer</code></td><td><code>(&quot;genes, p53&quot;[MeSH Terms] OR &quot;p53 mutation&quot;[Title/Abstract]) AND (&quot;carcinoma, non-small-cell lung&quot;[MeSH Terms] OR &quot;non-small cell lung cancer&quot;[Title/Abstract])</code></td></tr>
+</tbody></table></div>
+<p><strong>Value to you:</strong> better recall (synonyms and MeSH terms you might forget), fewer irrelevant hits, and a reusable query you can read, edit and learn from. You stay in control: nothing is searched until you click apply.</p>
+<hr class="guide-divider" />
+<h2 id="2-bring-your-own-key-byok"><a href="#2-bring-your-own-key-byok" class="heading-anchor">#</a>2. Bring Your Own Key (BYOK)</h2>
+<p>Biblion does not run the AI model for you. You connect your own account with one of these providers:</p>
+<ul>
+<li><strong>OpenRouter</strong> (access to many models with one key)</li>
+<li><strong>OpenAI</strong></li>
+<li><strong>Anthropic</strong></li>
+<li><strong>Gemini</strong></li>
+</ul>
+<p>You pay your provider directly for usage, usually a tiny amount per query. Your key is never displayed in full again; Biblion only shows a masked hint such as <code>sk-or-...1234</code>.</p>
+<hr class="guide-divider" />
+<h2 id="3-set-up-one-time"><a href="#3-set-up-one-time" class="heading-anchor">#</a>3. Set Up (One Time)</h2>
+<ol>
+<li>Sign in to Biblion (<a href="account-and-sign-in.html">Account &amp; Sign-In</a>).</li>
+<li>Click your name in the header, then <strong>AI Settings</strong>.</li>
+<li>In <strong>AI Query Rewriter Settings</strong>, choose your <strong>provider</strong>.</li>
+<li>Enter the <strong>model</strong> name (for OpenRouter, for example <code>anthropic/claude-3.5-sonnet</code>).</li>
+<li>Paste your <strong>API key</strong>.</li>
+<li>Click <strong>Save Settings</strong>. A green message confirms <em>Settings saved successfully</em>. Close the dialog.</li>
+</ol>
+<figure class="guide-figure"><img src="../images/ai_01-ai-settings-modal.png" alt="AI Query Rewriter Settings dialog" class="guide-image" loading="lazy" /><figcaption>AI Query Rewriter Settings dialog</figcaption></figure>
+<div class="callout"><p><strong>Setting up while registering:</strong> the <em>Create Account</em> form has an optional AI section where you can choose a provider and paste a key right away.</p></div>
+<div class="callout"><p></p></div>
+<div class="callout"><p><figure class="guide-figure"><img src="../images/ai_07-registration-ai-setup.png" alt="Create Account form with optional AI setup" class="guide-image" loading="lazy" /><figcaption>Create Account form with optional AI setup</figcaption></figure></p></div>
+<hr class="guide-divider" />
+<h2 id="4-rewrite-and-search"><a href="#4-rewrite-and-search" class="heading-anchor">#</a>4. Rewrite and Search</h2>
+<ol>
+<li>On the <strong>Search</strong> page, type your question in the search box.</li>
+<li>Click the <strong>AI Rewrite</strong> button next to the search box.</li>
+<li>A preview dialog opens showing:</li>
+</ol>
+<ul>
+<li>your <strong>original text</strong>,</li>
+<li>the <strong>rewritten query</strong> in an editable box, and</li>
+<li>a <strong>Valid Syntax</strong> badge confirming balanced parentheses and valid field tags.</li>
+</ul>
+<ol>
+<li>Edit the query if you like.</li>
+<li>Click <strong>Apply &amp; Search PubMed</strong>. The search box is filled with the new query and results appear.</li>
+</ol>
+<figure class="guide-figure"><img src="../images/ai_02-ai-query-diff-modal.png" alt="Preview of the AI-rewritten query" class="guide-image" loading="lazy" /><figcaption>Preview of the AI-rewritten query</figcaption></figure>
+<figure class="guide-figure"><img src="../images/ai_03-ai-query-search-results.png" alt="Search results from the rewritten query" class="guide-image" loading="lazy" /><figcaption>Search results from the rewritten query</figcaption></figure>
+<hr class="guide-divider" />
+<h2 id="5-when-the-rewritten-query-finds-nothing"><a href="#5-when-the-rewritten-query-finds-nothing" class="heading-anchor">#</a>5. When the Rewritten Query Finds Nothing</h2>
+<p>An AI-written query can occasionally be too strict. If it returns zero results, Biblion shows an <strong>Automatic Term Mapping Fallback</strong> card explaining that the strict boolean query returned 0 hits. Click the fallback button to run your <em>original</em> text through PubMed&#x27;s own Automatic Term Mapping instead. The search box returns to your original wording and results are shown.</p>
+<figure class="guide-figure"><img src="../images/ai_04-ai-query-atm-fallback.png" alt="Zero-hit fallback card" class="guide-image" loading="lazy" /><figcaption>Zero-hit fallback card</figcaption></figure>
+<figure class="guide-figure"><img src="../images/ai_05-atm-fallback-results.png" alt="Results after the fallback" class="guide-image" loading="lazy" /><figcaption>Results after the fallback</figcaption></figure>
+<hr class="guide-divider" />
+<h2 id="6-troubleshooting"><a href="#6-troubleshooting" class="heading-anchor">#</a>6. Troubleshooting</h2>
+<div class="table-responsive"><table>
+<thead><tr><th>Message</th><th>What it means</th><th>What to do</th></tr></thead>
+<tbody>
+<tr><td><strong>Upstream Quota Exhaustion (402)</strong></td><td>Your AI provider says your balance or credits are used up.</td><td>Top up your provider account, then try again. Your search text is kept. Click <strong>Configure AI Settings</strong> to review your setup.</td></tr>
+<tr><td>Invalid key / unauthorized</td><td>The provider rejected your key.</td><td>Re-enter the key in <strong>AI Settings</strong>.</td></tr>
+<tr><td>Timeout</td><td>The provider took longer than 15 seconds.</td><td>Try again.</td></tr>
+<tr><td>AI button unavailable</td><td>AI features are part of the paid plan; your trial or subscription may have ended.</td><td>Check <strong>Subscription &amp; Billing</strong>.</td></tr>
+</tbody></table></div>
+<figure class="guide-figure"><img src="../images/ai_06-upstream-quota-402-error.png" alt="Quota error message" class="guide-image" loading="lazy" /><figcaption>Quota error message</figcaption></figure>
+<hr class="guide-divider" />
+<h2 id="7-privacy-security"><a href="#7-privacy-security" class="heading-anchor">#</a>7. Privacy &amp; Security</h2>
+<ul>
+<li>Your query text is sent to the <strong>provider you chose</strong>, under that provider&#x27;s terms. Don&#x27;t include confidential manuscript text in a query.</li>
+<li>Biblion keeps your key out of its logs and never shows it in full.</li>
+<li>Keys saved to your account are stored encrypted.</li>
+<li><strong>Sign Out</strong> clears your sign-in and AI keys from the browser, which protects you on shared computers.</li>
+</ul>
+<figure class="guide-figure"><img src="../images/ai_08-logout-security-cleared.png" alt="Signed-out state after logout" class="guide-image" loading="lazy" /><figcaption>Signed-out state after logout</figcaption></figure>
+<p>Related: <a href="pubmed-search-and-citations.html">Searching PubMed</a>, <a href="billing-and-subscriptions.html">Subscription &amp; Billing</a></p>
+        </article>
+        <footer class="page-footer">
+          <p>Maintained by <strong>Biblion Evangelist</strong> &middot; Biosys Technologies &middot; <a href="../index.html">Documentation Home</a></p>
+        </footer>
+      </main>
+
+      <!-- Right Table of Contents (Desktop) -->
+      <aside class="toc-aside">
+        <nav class="toc-nav"><h4>On This Page</h4><ul>
+<li class="toc-h2"><a href="#1-what-it-does-and-why-you-would-use-it">1. What It Does and Why You Would Use It</a></li>
+<li class="toc-h2"><a href="#2-bring-your-own-key-byok">2. Bring Your Own Key (BYOK)</a></li>
+<li class="toc-h2"><a href="#3-set-up-one-time">3. Set Up (One Time)</a></li>
+<li class="toc-h2"><a href="#4-rewrite-and-search">4. Rewrite and Search</a></li>
+<li class="toc-h2"><a href="#5-when-the-rewritten-query-finds-nothing">5. When the Rewritten Query Finds Nothing</a></li>
+<li class="toc-h2"><a href="#6-troubleshooting">6. Troubleshooting</a></li>
+<li class="toc-h2"><a href="#7-privacy-security">7. Privacy &amp; Security</a></li>
+</ul></nav>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    function copyCode(btn) {
+      const container = btn.closest('.code-container');
+      const code = container.querySelector('code').innerText;
+      navigator.clipboard.writeText(code).then(() => {
+        btn.innerText = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.innerText = 'Copy';
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    }
+
+    function filterNavigation() {
+      const q = document.getElementById('guide-filter').value.toLowerCase();
+      const items = document.querySelectorAll('.nav-list li');
+      items.forEach(li => {
+        const text = li.innerText.toLowerCase();
+        li.style.display = text.includes(q) ? '' : 'none';
+      });
+    }
+
+    const toggleBtn = document.getElementById('menu-toggle');
+    const sidebar = document.getElementById('sidebar');
+    if (toggleBtn && sidebar) {
+      toggleBtn.addEventListener('click', () => {
+        sidebar.classList.toggle('open');
+      });
+    }
+  </script>
+</body>
+</html>

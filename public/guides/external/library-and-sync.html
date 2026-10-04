@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Library: Collections, Notes, Export &amp; Cloud Sync - Biblion Guides</title>
+  <link rel="stylesheet" href="../guides.css">
+  <link rel="icon" href="../favicon.ico" type="image/x-icon">
+</head>
+<body>
+  <div class="site-wrapper">
+    <!-- Top Navbar -->
+    <header class="top-bar">
+      <div class="top-bar-left">
+        <button id="menu-toggle" class="btn-icon" aria-label="Toggle navigation">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <a href="../index.html" class="brand-link">
+          <div class="brand-icon-box">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          </div>
+          <span class="brand-name">Biblion Documentation</span>
+        </a>
+      </div>
+      <div class="top-bar-right">
+        <a href="/" class="btn-back-app">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+          <span>Biblion App</span>
+        </a>
+      </div>
+    </header>
+
+    <div class="body-layout">
+      <!-- Left Sidebar Navigation -->
+      <aside class="sidebar" id="sidebar">
+        <div class="search-box">
+          <input type="text" id="guide-filter" placeholder="Filter guides..." aria-label="Filter guides" onkeyup="filterNavigation()">
+        </div>
+        <div class="nav-group"><div class="nav-group-title">Overview</div><ul class="nav-list">
+<li><a href="../index.html">Documentation Portal</a></li>
+</ul></div>
+<div class="nav-group"><div class="nav-group-title">User & Researcher Manuals</div><ul class="nav-list">
+<li><a href="../external/user-guide.html">Word Add-in User Guide</a></li>
+<li><a href="../external/pubmed-search-and-citations.html">PubMed Search & Citations</a></li>
+<li><a href="../external/ai-query-rewriter.html">AI Query Rewriter</a></li>
+<li><a href="../external/citation-styles.html">Citation Styles & Bibliographies</a></li>
+<li><a href="../external/live-references.html">Live References (Word)</a></li>
+<li><a href="../external/library-and-sync.html" class="active">Library, Offline Sync & Export</a></li>
+<li><a href="../external/account-and-sign-in.html">Account & Sign-In</a></li>
+<li><a href="../external/billing-and-subscriptions.html">Billing & Subscriptions</a></li>
+<li><a href="../external/standalone-web-mode.html">Using Biblion in a Browser</a></li>
+</ul></div>
+<div class="nav-group"><div class="nav-group-title">Internal Engineering Guides</div><ul class="nav-list">
+<li><a href="../internal/developer-onboarding.html">Developer Onboarding</a></li>
+<li><a href="../internal/api-architecture.html">Rails API Architecture</a></li>
+<li><a href="../internal/office-integration.html">Angular Word Integration</a></li>
+<li><a href="../internal/sdd-and-qa-guide.html">SDD & QA Framework</a></li>
+<li><a href="../internal/security-and-hygiene.html">Security & Secret Hygiene</a></li>
+<li><a href="../internal/deployment-runbook.html">Droplet Deployment Runbook</a></li>
+</ul></div>
+      </aside>
+
+      <!-- Main Article Container -->
+      <main class="content-area">
+        <article class="markdown-body">
+          <h1 id="my-library-collections-notes-export-cloud-sync"><a href="#my-library-collections-notes-export-cloud-sync" class="heading-anchor">#</a>My Library: Collections, Notes, Export &amp; Cloud Sync</h1>
+<p><strong>Product:</strong> Biblion Citation Assistant</p>
+<p><strong>Audience:</strong> Academic Researchers &amp; Reference Librarians</p>
+<p><strong>Maintained by:</strong> Documentation Writer</p>
+<hr class="guide-divider" />
+<h2 id="1-what-it-does-and-why-it-helps"><a href="#1-what-it-does-and-why-it-helps" class="heading-anchor">#</a>1. What It Does and Why It Helps</h2>
+<p><strong>My Library</strong> is your personal reference collection. Save the papers you find, organise them for each project, keep your own notes, and export them for other tools. It works offline, and when you are signed in it syncs to the cloud so every device has the same library.</p>
+<figure class="guide-figure"><img src="../images/07_my_library.png" alt="My Library with collections" class="guide-image" loading="lazy" /><figcaption>My Library with collections</figcaption></figure>
+<hr class="guide-divider" />
+<h2 id="2-save-and-remove-articles"><a href="#2-save-and-remove-articles" class="heading-anchor">#</a>2. Save and Remove Articles</h2>
+<ol>
+<li>On any article card, click <strong>Save to Library</strong>. The button becomes <strong>Saved in Library</strong> and the counter next to <strong>My Library</strong> increases.</li>
+<li>Open <strong>My Library</strong>. The header reads <strong>My Local Bibliography</strong> with a count such as <em>1 Saved Articles</em>.</li>
+<li>To remove an article, click <strong>Saved in Library</strong> again on its card. It is also removed from any collection.</li>
+</ol>
+<p>A new library shows <strong>Your Library is Empty</strong> until you save something.</p>
+<hr class="guide-divider" />
+<h2 id="3-collections"><a href="#3-collections" class="heading-anchor">#</a>3. Collections</h2>
+<p>Use collections to group papers by project (for example &quot;R01 Grant Proposal&quot; or &quot;Review Paper - Kinases&quot;).</p>
+<ol>
+<li>In My Library, click <strong>+ New Collection</strong>.</li>
+<li>Enter a name (and, optionally, a colour), then click <strong>Save Collection</strong>.</li>
+<li>The collection appears as a chip showing its article count, e.g. <em>Genomics Review 2026 (0)</em>.</li>
+<li>On an article, tick the collection&#x27;s checkbox to add it. The count updates to <em>(1)</em>.</li>
+<li>Click a collection chip to show only its articles; click again to clear the filter.</li>
+</ol>
+<p>Good to know: one article can belong to several collections. Deleting a collection removes only the folder; your articles remain in the library.</p>
+<hr class="guide-divider" />
+<h2 id="4-tags-notes-and-favorites"><a href="#4-tags-notes-and-favorites" class="heading-anchor">#</a>4. Tags, Notes and Favorites</h2>
+<ul>
+<li><strong>Tags</strong>: click <strong>Edit tags</strong>, enter labels separated by commas (e.g. <code>CRISPR, Precision</code>), then <strong>Save Tags</strong>. They appear as <code>#CRISPR</code>, <code>#Precision</code>.</li>
+<li><strong>Notes</strong>: click the notes box, type your private note (e.g. <em>Focus on figure 3 for Western blot analysis</em>), then <strong>Save Notes</strong>.</li>
+<li><strong>Favorites</strong>: click <strong>☆ Favorite</strong> to star a paper (it turns to <strong>★ Favorite</strong>). Use the favorites chip to show only starred papers.</li>
+</ul>
+<h3 id="find-things-fast"><a href="#find-things-fast" class="heading-anchor">#</a>Find things fast</h3>
+<p>Search your library by title, author, journal, PMID or your notes. Filter by collection, tag or favorites, and sort by date saved, title, author or year.</p>
+<hr class="guide-divider" />
+<h2 id="5-export-and-import"><a href="#5-export-and-import" class="heading-anchor">#</a>5. Export and Import</h2>
+<ol>
+<li>Click <strong>Export Bibliography</strong>. The <strong>Export Local Bibliography</strong> window opens.</li>
+<li>Choose a format tab:</li>
+</ol>
+<ul>
+<li><strong>BibTeX</strong> (<code>.bib</code>): for LaTeX and Overleaf. Keys look like <code>Smith2020_31452510</code>.</li>
+<li><strong>RIS</strong> (<code>.ris</code>): for Zotero, Mendeley and EndNote.</li>
+<li><strong>JSON</strong>: a full backup with articles <em>and</em> collections.</li>
+</ul>
+<ol>
+<li>Download the file (e.g. <code>biblion-library.bib</code>).</li>
+</ol>
+<p>To restore a backup, choose <strong>Import Backup</strong> and select a Biblion <code>.json</code> file. A message confirms how many articles and collections were restored.</p>
+<div class="callout"><p>Importing <code>.ris</code> or <code>.bib</code> files is not available yet; use the JSON backup to move a library.</p></div>
+<hr class="guide-divider" />
+<h2 id="6-offline-use"><a href="#6-offline-use" class="heading-anchor">#</a>6. Offline Use</h2>
+<p>Your library is stored on your device, so you can read, search and edit it with no internet. If you save an article while offline, it is kept locally and Biblion shows <em>Failed to synchronize with cloud.</em> until the connection returns; nothing is lost.</p>
+<hr class="guide-divider" />
+<h2 id="7-cloud-sync"><a href="#7-cloud-sync" class="heading-anchor">#</a>7. Cloud Sync</h2>
+<p>When you are signed in with an active trial or subscription, Biblion syncs automatically:</p>
+<ul>
+<li>when you sign in,</li>
+<li>right after you save, delete or edit something, and</li>
+<li>when you return to Biblion after more than 20 seconds away, so edits from another device appear without any action.</li>
+</ul>
+<p>A small spinner in the header shows that a sync is running. If you edit an article while a sync is in progress, your newest edit wins and is sent in the next sync.</p>
+<figure class="guide-figure"><img src="../images/guide_library_sync.png" alt="Cloud sync" class="guide-image" loading="lazy" /><figcaption>Cloud sync</figcaption></figure>
+<div class="callout"><p><strong>Shared computers:</strong> use <strong>Sign Out</strong> when finished. It clears the local copy; your cloud library is safe. Without signing in, the local library is cleared at the end of the session.</p></div>
+<p>Related: <a href="account-and-sign-in.html">Account &amp; Sign-In</a>, <a href="billing-and-subscriptions.html">Subscription &amp; Billing</a></p>
+        </article>
+        <footer class="page-footer">
+          <p>Maintained by <strong>Biblion Evangelist</strong> &middot; Biosys Technologies &middot; <a href="../index.html">Documentation Home</a></p>
+        </footer>
+      </main>
+
+      <!-- Right Table of Contents (Desktop) -->
+      <aside class="toc-aside">
+        <nav class="toc-nav"><h4>On This Page</h4><ul>
+<li class="toc-h2"><a href="#1-what-it-does-and-why-it-helps">1. What It Does and Why It Helps</a></li>
+<li class="toc-h2"><a href="#2-save-and-remove-articles">2. Save and Remove Articles</a></li>
+<li class="toc-h2"><a href="#3-collections">3. Collections</a></li>
+<li class="toc-h2"><a href="#4-tags-notes-and-favorites">4. Tags, Notes and Favorites</a></li>
+<li class="toc-h3"><a href="#find-things-fast">Find things fast</a></li>
+<li class="toc-h2"><a href="#5-export-and-import">5. Export and Import</a></li>
+<li class="toc-h2"><a href="#6-offline-use">6. Offline Use</a></li>
+<li class="toc-h2"><a href="#7-cloud-sync">7. Cloud Sync</a></li>
+</ul></nav>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    function copyCode(btn) {
+      const container = btn.closest('.code-container');
+      const code = container.querySelector('code').innerText;
+      navigator.clipboard.writeText(code).then(() => {
+        btn.innerText = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.innerText = 'Copy';
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    }
+
+    function filterNavigation() {
+      const q = document.getElementById('guide-filter').value.toLowerCase();
+      const items = document.querySelectorAll('.nav-list li');
+      items.forEach(li => {
+        const text = li.innerText.toLowerCase();
+        li.style.display = text.includes(q) ? '' : 'none';
+      });
+    }
+
+    const toggleBtn = document.getElementById('menu-toggle');
+    const sidebar = document.getElementById('sidebar');
+    if (toggleBtn && sidebar) {
+      toggleBtn.addEventListener('click', () => {
+        sidebar.classList.toggle('open');
+      });
+    }
+  </script>
+</body>
+</html>

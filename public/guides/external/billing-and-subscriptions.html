@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Subscription &amp; Billing - Biblion Guides</title>
+  <link rel="stylesheet" href="../guides.css">
+  <link rel="icon" href="../favicon.ico" type="image/x-icon">
+</head>
+<body>
+  <div class="site-wrapper">
+    <!-- Top Navbar -->
+    <header class="top-bar">
+      <div class="top-bar-left">
+        <button id="menu-toggle" class="btn-icon" aria-label="Toggle navigation">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <a href="../index.html" class="brand-link">
+          <div class="brand-icon-box">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          </div>
+          <span class="brand-name">Biblion Documentation</span>
+        </a>
+      </div>
+      <div class="top-bar-right">
+        <a href="/" class="btn-back-app">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+          <span>Biblion App</span>
+        </a>
+      </div>
+    </header>
+
+    <div class="body-layout">
+      <!-- Left Sidebar Navigation -->
+      <aside class="sidebar" id="sidebar">
+        <div class="search-box">
+          <input type="text" id="guide-filter" placeholder="Filter guides..." aria-label="Filter guides" onkeyup="filterNavigation()">
+        </div>
+        <div class="nav-group"><div class="nav-group-title">Overview</div><ul class="nav-list">
+<li><a href="../index.html">Documentation Portal</a></li>
+</ul></div>
+<div class="nav-group"><div class="nav-group-title">User & Researcher Manuals</div><ul class="nav-list">
+<li><a href="../external/user-guide.html">Word Add-in User Guide</a></li>
+<li><a href="../external/pubmed-search-and-citations.html">PubMed Search & Citations</a></li>
+<li><a href="../external/ai-query-rewriter.html">AI Query Rewriter</a></li>
+<li><a href="../external/citation-styles.html">Citation Styles & Bibliographies</a></li>
+<li><a href="../external/live-references.html">Live References (Word)</a></li>
+<li><a href="../external/library-and-sync.html">Library, Offline Sync & Export</a></li>
+<li><a href="../external/account-and-sign-in.html">Account & Sign-In</a></li>
+<li><a href="../external/billing-and-subscriptions.html" class="active">Billing & Subscriptions</a></li>
+<li><a href="../external/standalone-web-mode.html">Using Biblion in a Browser</a></li>
+</ul></div>
+<div class="nav-group"><div class="nav-group-title">Internal Engineering Guides</div><ul class="nav-list">
+<li><a href="../internal/developer-onboarding.html">Developer Onboarding</a></li>
+<li><a href="../internal/api-architecture.html">Rails API Architecture</a></li>
+<li><a href="../internal/office-integration.html">Angular Word Integration</a></li>
+<li><a href="../internal/sdd-and-qa-guide.html">SDD & QA Framework</a></li>
+<li><a href="../internal/security-and-hygiene.html">Security & Secret Hygiene</a></li>
+<li><a href="../internal/deployment-runbook.html">Droplet Deployment Runbook</a></li>
+</ul></div>
+      </aside>
+
+      <!-- Main Article Container -->
+      <main class="content-area">
+        <article class="markdown-body">
+          <h1 id="subscription-billing"><a href="#subscription-billing" class="heading-anchor">#</a>Subscription &amp; Billing</h1>
+<p><strong>Product:</strong> Biblion Citation Assistant</p>
+<p><strong>Audience:</strong> Subscribers and Individual Researchers</p>
+<p><strong>Maintained by:</strong> Documentation Writer</p>
+<hr class="guide-divider" />
+<h2 id="1-how-it-works"><a href="#1-how-it-works" class="heading-anchor">#</a>1. How It Works</h2>
+<p>Every new account starts with a <strong>30-day free trial</strong>. To keep cloud sync and AI features after the trial, subscribe to <strong>Pro</strong>. Payments are handled by <strong>Lemon Squeezy</strong>, which acts as the seller. Biblion never sees or stores your card number.</p>
+<figure class="guide-figure"><img src="../images/guide_billing_subscriptions.png" alt="Subscription overview" class="guide-image" loading="lazy" /><figcaption>Subscription overview</figcaption></figure>
+<h3 id="your-subscription-status"><a href="#your-subscription-status" class="heading-anchor">#</a>Your subscription status</h3>
+<p>Your status is shown in the account menu (click your name) and in the <strong>Subscription &amp; Billing</strong> window:</p>
+<div class="table-responsive"><table>
+<thead><tr><th>Status</th><th>What it means</th></tr></thead>
+<tbody>
+<tr><td><strong>Free Trial Active</strong></td><td>Full access; the window shows the days remaining.</td></tr>
+<tr><td><strong>Active</strong></td><td>Paid subscription; shows the card brand and last four digits on file.</td></tr>
+<tr><td><strong>Cancelled</strong></td><td>You cancelled but keep full access until the end of the paid period.</td></tr>
+<tr><td><strong>Expired - Grace Period</strong></td><td>Access to cloud features has stopped, but your cloud library is still safe for a limited time.</td></tr>
+<tr><td><strong>Data Erased</strong></td><td>The grace period ended; the cloud copy of your library was deleted.</td></tr>
+</tbody></table></div>
+<hr class="guide-divider" />
+<h2 id="2-upgrade-to-pro"><a href="#2-upgrade-to-pro" class="heading-anchor">#</a>2. Upgrade to Pro</h2>
+<ol>
+<li>Click your name → <strong>Subscription &amp; Billing</strong>.</li>
+<li>Click <strong>Upgrade to Pro</strong>.</li>
+<li>Lemon Squeezy&#x27;s secure checkout opens in a new browser tab. Your name and email are pre-filled and the purchase is linked to your Biblion account automatically.</li>
+<li>Complete payment. Return to Biblion; your status updates.</li>
+</ol>
+<hr class="guide-divider" />
+<h2 id="3-cancel-or-resume"><a href="#3-cancel-or-resume" class="heading-anchor">#</a>3. Cancel or Resume</h2>
+<p><strong>Cancel:</strong> open <strong>Subscription &amp; Billing</strong>, click <strong>Cancel Subscription</strong>, and confirm. You will see <em>Subscription successfully cancelled</em>. You keep full access until the end of the period you have already paid for. Payments are non-refundable.</p>
+<p><strong>Resume:</strong> changed your mind? Before the period ends, open the same window and click <strong>Resume Subscription</strong>. Auto-renewal is restored and you will see <em>Subscription successfully resumed</em>.</p>
+<figure class="guide-figure"><img src="../images/09_subscription_active_modal.png" alt="Subscription window for an active plan" class="guide-image" loading="lazy" /><figcaption>Subscription window for an active plan</figcaption></figure>
+<hr class="guide-divider" />
+<h2 id="4-update-payment-details-or-get-invoices"><a href="#4-update-payment-details-or-get-invoices" class="heading-anchor">#</a>4. Update Payment Details or Get Invoices</h2>
+<p>Use the customer billing portal link in the <strong>Subscription &amp; Billing</strong> window. It opens Lemon Squeezy&#x27;s secure portal in a new tab, where you can update your card and download receipts.</p>
+<hr class="guide-divider" />
+<h2 id="5-if-your-subscription-lapses"><a href="#5-if-your-subscription-lapses" class="heading-anchor">#</a>5. If Your Subscription Lapses</h2>
+<ol>
+<li><strong>Grace period</strong>: a banner appears at the top of Biblion, for example <em>14 days left</em> before your cloud library is permanently deleted. Click the banner&#x27;s button to open the subscription window and renew.</li>
+<li><strong>After the grace period</strong>: the cloud copy of your library is erased. A <strong>Library Data Erased</strong> banner explains this and offers one-click resubscription.</li>
+</ol>
+<div class="callout"><p><strong>Tip:</strong> export a backup from <a href="library-and-sync.html">My Library</a> (Export → JSON) before you cancel, to keep a copy of your references and collections.</p></div>
+<hr class="guide-divider" />
+<h2 id="6-privacy-security"><a href="#6-privacy-security" class="heading-anchor">#</a>6. Privacy &amp; Security</h2>
+<ul>
+<li>Card details are entered only on Lemon Squeezy&#x27;s checkout and portal.</li>
+<li>Signing out clears your session and local library from the device; see <a href="account-and-sign-in.html">Account &amp; Sign-In</a>.</li>
+</ul>
+<p>For plan or billing questions, see the contact details on the <strong>About &amp; Support</strong> page.</p>
+        </article>
+        <footer class="page-footer">
+          <p>Maintained by <strong>Biblion Evangelist</strong> &middot; Biosys Technologies &middot; <a href="../index.html">Documentation Home</a></p>
+        </footer>
+      </main>
+
+      <!-- Right Table of Contents (Desktop) -->
+      <aside class="toc-aside">
+        <nav class="toc-nav"><h4>On This Page</h4><ul>
+<li class="toc-h2"><a href="#1-how-it-works">1. How It Works</a></li>
+<li class="toc-h3"><a href="#your-subscription-status">Your subscription status</a></li>
+<li class="toc-h2"><a href="#2-upgrade-to-pro">2. Upgrade to Pro</a></li>
+<li class="toc-h2"><a href="#3-cancel-or-resume">3. Cancel or Resume</a></li>
+<li class="toc-h2"><a href="#4-update-payment-details-or-get-invoices">4. Update Payment Details or Get Invoices</a></li>
+<li class="toc-h2"><a href="#5-if-your-subscription-lapses">5. If Your Subscription Lapses</a></li>
+<li class="toc-h2"><a href="#6-privacy-security">6. Privacy &amp; Security</a></li>
+</ul></nav>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    function copyCode(btn) {
+      const container = btn.closest('.code-container');
+      const code = container.querySelector('code').innerText;
+      navigator.clipboard.writeText(code).then(() => {
+        btn.innerText = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.innerText = 'Copy';
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    }
+
+    function filterNavigation() {
+      const q = document.getElementById('guide-filter').value.toLowerCase();
+      const items = document.querySelectorAll('.nav-list li');
+      items.forEach(li => {
+        const text = li.innerText.toLowerCase();
+        li.style.display = text.includes(q) ? '' : 'none';
+      });
+    }
+
+    const toggleBtn = document.getElementById('menu-toggle');
+    const sidebar = document.getElementById('sidebar');
+    if (toggleBtn && sidebar) {
+      toggleBtn.addEventListener('click', () => {
+        sidebar.classList.toggle('open');
+      });
+    }
+  </script>
+</body>
+</html>
