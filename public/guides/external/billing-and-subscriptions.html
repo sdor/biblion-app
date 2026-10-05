@@ -37,7 +37,7 @@
           <input type="text" id="guide-filter" placeholder="Filter guides..." aria-label="Filter guides" onkeyup="filterNavigation()">
         </div>
         <div class="nav-group"><div class="nav-group-title">Overview</div><ul class="nav-list">
-<li><a href="../index.html">Documentation Portal</a></li>
+<li><a href="../index.html">Overview: Web & Add-in Modes</a></li>
 </ul></div>
 <div class="nav-group"><div class="nav-group-title">User & Researcher Manuals</div><ul class="nav-list">
 <li><a href="../external/user-guide.html">Word Add-in User Guide</a></li>
@@ -50,14 +50,6 @@
 <li><a href="../external/billing-and-subscriptions.html" class="active">Billing & Subscriptions</a></li>
 <li><a href="../external/standalone-web-mode.html">Using Biblion in a Browser</a></li>
 </ul></div>
-<div class="nav-group"><div class="nav-group-title">Internal Engineering Guides</div><ul class="nav-list">
-<li><a href="../internal/developer-onboarding.html">Developer Onboarding</a></li>
-<li><a href="../internal/api-architecture.html">Rails API Architecture</a></li>
-<li><a href="../internal/office-integration.html">Angular Word Integration</a></li>
-<li><a href="../internal/sdd-and-qa-guide.html">SDD & QA Framework</a></li>
-<li><a href="../internal/security-and-hygiene.html">Security & Secret Hygiene</a></li>
-<li><a href="../internal/deployment-runbook.html">Droplet Deployment Runbook</a></li>
-</ul></div>
       </aside>
 
       <!-- Main Article Container -->
@@ -69,42 +61,50 @@
 <p><strong>Maintained by:</strong> Documentation Writer</p>
 <hr class="guide-divider" />
 <h2 id="1-how-it-works"><a href="#1-how-it-works" class="heading-anchor">#</a>1. How It Works</h2>
-<p>Every new account starts with a <strong>30-day free trial</strong>. To keep cloud sync and AI features after the trial, subscribe to <strong>Pro</strong>. Payments are handled by <strong>Lemon Squeezy</strong>, which acts as the seller. Biblion never sees or stores your card number.</p>
-<figure class="guide-figure"><img src="../images/guide_billing_subscriptions.png" alt="Subscription overview" class="guide-image" loading="lazy" /><figcaption>Subscription overview</figcaption></figure>
+<p>Biblion offers two tiers of service:</p>
+<ul>
+<li><strong>Free Tier</strong>: Users may use basic reference management, local library storage, and Word citation formatting for free.</li>
+<li><strong>Pro Tier</strong>: Cloud synchronization across multiple devices, automatic backup, and advanced AI features require a recurring subscription currently priced at <strong>$15/month</strong>.</li>
+</ul>
+<p>When you sign up (create an account), you are automatically granted a <strong>15-day free trial</strong> of Pro without needing a credit card upfront. Payments are handled securely by <strong>Lemon Squeezy</strong>, which acts as the merchant of record. Biblion never sees or stores your payment card details.</p>
+<figure class="guide-figure"><img src="../images/08_subscription_trial_modal.png" alt="Subscription Trial and Billing Details" class="guide-image" loading="lazy" /><figcaption>Subscription Trial and Billing Details</figcaption></figure>
 <h3 id="your-subscription-status"><a href="#your-subscription-status" class="heading-anchor">#</a>Your subscription status</h3>
 <p>Your status is shown in the account menu (click your name) and in the <strong>Subscription &amp; Billing</strong> window:</p>
 <div class="table-responsive"><table>
 <thead><tr><th>Status</th><th>What it means</th></tr></thead>
 <tbody>
-<tr><td><strong>Free Trial Active</strong></td><td>Full access; the window shows the days remaining.</td></tr>
-<tr><td><strong>Active</strong></td><td>Paid subscription; shows the card brand and last four digits on file.</td></tr>
-<tr><td><strong>Cancelled</strong></td><td>You cancelled but keep full access until the end of the paid period.</td></tr>
-<tr><td><strong>Expired - Grace Period</strong></td><td>Access to cloud features has stopped, but your cloud library is still safe for a limited time.</td></tr>
-<tr><td><strong>Data Erased</strong></td><td>The grace period ended; the cloud copy of your library was deleted.</td></tr>
+<tr><td><strong>Free Trial Active</strong></td><td>Full access to Pro features; displays the days remaining (15 days total).</td></tr>
+<tr><td><strong>Active</strong></td><td>Paid Pro subscription ($15/month); shows card brand, last four digits, and next renewal date.</td></tr>
+<tr><td><strong>Cancelled</strong></td><td>If cancelled during trial, trial access ends immediately. If cancelled on a paid plan, access remains active until the end of the paid billing period.</td></tr>
+<tr><td><strong>Expired - Grace Period</strong></td><td>Pro cloud sync is paused, but cloud data is safely preserved for a 30-day countdown.</td></tr>
+<tr><td><strong>Data Erased</strong></td><td>The 30-day grace period elapsed without renewal; all cloud data has been permanently purged.</td></tr>
 </tbody></table></div>
 <hr class="guide-divider" />
 <h2 id="2-upgrade-to-pro"><a href="#2-upgrade-to-pro" class="heading-anchor">#</a>2. Upgrade to Pro</h2>
 <ol>
 <li>Click your name → <strong>Subscription &amp; Billing</strong>.</li>
-<li>Click <strong>Upgrade to Pro</strong>.</li>
+<li>Click <strong>Upgrade to Pro</strong> ($15/month).</li>
 <li>Lemon Squeezy&#x27;s secure checkout opens in a new browser tab. Your name and email are pre-filled and the purchase is linked to your Biblion account automatically.</li>
-<li>Complete payment. Return to Biblion; your status updates.</li>
+<li>Complete payment. Return to Biblion; your status updates to <strong>Active</strong> immediately.</li>
 </ol>
 <hr class="guide-divider" />
 <h2 id="3-cancel-or-resume"><a href="#3-cancel-or-resume" class="heading-anchor">#</a>3. Cancel or Resume</h2>
-<p><strong>Cancel:</strong> open <strong>Subscription &amp; Billing</strong>, click <strong>Cancel Subscription</strong>, and confirm. You will see <em>Subscription successfully cancelled</em>. You keep full access until the end of the period you have already paid for. Payments are non-refundable.</p>
-<p><strong>Resume:</strong> changed your mind? Before the period ends, open the same window and click <strong>Resume Subscription</strong>. Auto-renewal is restored and you will see <em>Subscription successfully resumed</em>.</p>
+<ul>
+<li><strong>Cancelling a Free Trial</strong>: If you choose to cancel your free trial, trial access ends immediately. The 30-day grace period timer begins at once.</li>
+<li><strong>Cancelling a Paid Subscription</strong>: Open <strong>Subscription &amp; Billing</strong>, click <strong>Cancel Subscription</strong>, and confirm. Automatic renewal is stopped. You retain full access for the remainder of the billing period you have already paid for. Payments are strictly <strong>non-refundable</strong>.</li>
+<li><strong>Resuming a Paid Subscription</strong>: Changed your mind? Before your paid period ends, open the same window and click <strong>Resume Subscription</strong>. Auto-renewal is restored with no interruption to your service.</li>
+</ul>
 <figure class="guide-figure"><img src="../images/09_subscription_active_modal.png" alt="Subscription window for an active plan" class="guide-image" loading="lazy" /><figcaption>Subscription window for an active plan</figcaption></figure>
 <hr class="guide-divider" />
 <h2 id="4-update-payment-details-or-get-invoices"><a href="#4-update-payment-details-or-get-invoices" class="heading-anchor">#</a>4. Update Payment Details or Get Invoices</h2>
 <p>Use the customer billing portal link in the <strong>Subscription &amp; Billing</strong> window. It opens Lemon Squeezy&#x27;s secure portal in a new tab, where you can update your card and download receipts.</p>
 <hr class="guide-divider" />
-<h2 id="5-if-your-subscription-lapses"><a href="#5-if-your-subscription-lapses" class="heading-anchor">#</a>5. If Your Subscription Lapses</h2>
+<h2 id="5-if-your-subscription-lapses-data-retention"><a href="#5-if-your-subscription-lapses-data-retention" class="heading-anchor">#</a>5. If Your Subscription Lapses &amp; Data Retention</h2>
 <ol>
-<li><strong>Grace period</strong>: a banner appears at the top of Biblion, for example <em>14 days left</em> before your cloud library is permanently deleted. Click the banner&#x27;s button to open the subscription window and renew.</li>
-<li><strong>After the grace period</strong>: the cloud copy of your library is erased. A <strong>Library Data Erased</strong> banner explains this and offers one-click resubscription.</li>
+<li><strong>30-Day Grace Period</strong>: If you do not renew or if you cancel, your account enters a <strong>30-day grace period</strong>. Cloud sync is temporarily paused, but your existing cloud articles and collections are protected. A warning banner at the top of Biblion alerts you to the exact days remaining.</li>
+<li><strong>Automated Cloud Data Erasure</strong>: If you do not renew your subscription during the 30-day period, <strong>all cloud articles, collections, and library data are permanently erased</strong> by the automated purge system.</li>
 </ol>
-<div class="callout"><p><strong>Tip:</strong> export a backup from <a href="library-and-sync.html">My Library</a> (Export → JSON) before you cancel, to keep a copy of your references and collections.</p></div>
+<div class="callout"><p><strong>Tip:</strong> Export a local backup from <a href="library-and-sync.html">My Library</a> (Export → JSON) at any time to preserve an offline copy of your references and collections.</p></div>
 <hr class="guide-divider" />
 <h2 id="6-privacy-security"><a href="#6-privacy-security" class="heading-anchor">#</a>6. Privacy &amp; Security</h2>
 <ul>
@@ -126,7 +126,7 @@
 <li class="toc-h2"><a href="#2-upgrade-to-pro">2. Upgrade to Pro</a></li>
 <li class="toc-h2"><a href="#3-cancel-or-resume">3. Cancel or Resume</a></li>
 <li class="toc-h2"><a href="#4-update-payment-details-or-get-invoices">4. Update Payment Details or Get Invoices</a></li>
-<li class="toc-h2"><a href="#5-if-your-subscription-lapses">5. If Your Subscription Lapses</a></li>
+<li class="toc-h2"><a href="#5-if-your-subscription-lapses-data-retention">5. If Your Subscription Lapses &amp; Data Retention</a></li>
 <li class="toc-h2"><a href="#6-privacy-security">6. Privacy &amp; Security</a></li>
 </ul></nav>
       </aside>

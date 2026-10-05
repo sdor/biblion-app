@@ -37,9 +37,10 @@ export class SubscriptionModalComponent implements OnInit {
   cancelSubscription(): void {
     let confirmed = true;
     try {
-      confirmed = confirm(
-        'Are you sure you want to cancel your subscription? Automatic renewal will be stopped, but you will retain full access for the remainder of your billing period. Please note that the remainder of your subscription is non-refundable.'
-      );
+      const message = this.subscriptionService.isOnTrial()
+        ? 'Are you sure you want to cancel your free trial? Your trial access will end immediately. You will have a 30-day grace period to subscribe before cloud data is permanently erased.'
+        : 'Are you sure you want to cancel your subscription? Automatic renewal will be stopped, but you will retain full access for the remainder of your billing period. Please note that payments are non-refundable.';
+      confirmed = confirm(message);
     } catch {
       // In Office.js taskpanes, window.confirm throws "Function window.confirm is not supported."
       confirmed = true;

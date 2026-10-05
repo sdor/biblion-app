@@ -26,7 +26,6 @@ async function configureAiViaUi(
   await page.locator('#aiKeyInput').fill(apiKey);
   await modal.locator('.btn-save').click();
   await expect(modal.locator('.alert-success')).toBeVisible();
-  await modal.locator('.close-btn').click();
   await expect(modal).not.toBeVisible();
 }
 
@@ -307,7 +306,7 @@ test.describe('AI PubMed Query Rewriter & BYOK E2E Scenarios', () => {
             subscription: {
               status: 'on_trial',
               active: true,
-              days_remaining: 30
+              days_remaining: 14
             }
           }
         })

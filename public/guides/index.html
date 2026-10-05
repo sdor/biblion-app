@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Biblion Guides &amp; Documentation - Biblion Guides</title>
+  <title>Biblion Platform Overview: Web &amp; Add-in Modes - Biblion Guides</title>
   <link rel="stylesheet" href="./guides.css">
   <link rel="icon" href="./favicon.ico" type="image/x-icon">
 </head>
@@ -37,7 +37,7 @@
           <input type="text" id="guide-filter" placeholder="Filter guides..." aria-label="Filter guides" onkeyup="filterNavigation()">
         </div>
         <div class="nav-group"><div class="nav-group-title">Overview</div><ul class="nav-list">
-<li><a href="./index.html" class="active">Documentation Portal</a></li>
+<li><a href="./index.html" class="active">Overview: Web & Add-in Modes</a></li>
 </ul></div>
 <div class="nav-group"><div class="nav-group-title">User & Researcher Manuals</div><ul class="nav-list">
 <li><a href="./external/user-guide.html">Word Add-in User Guide</a></li>
@@ -50,86 +50,110 @@
 <li><a href="./external/billing-and-subscriptions.html">Billing & Subscriptions</a></li>
 <li><a href="./external/standalone-web-mode.html">Using Biblion in a Browser</a></li>
 </ul></div>
-<div class="nav-group"><div class="nav-group-title">Internal Engineering Guides</div><ul class="nav-list">
-<li><a href="./internal/developer-onboarding.html">Developer Onboarding</a></li>
-<li><a href="./internal/api-architecture.html">Rails API Architecture</a></li>
-<li><a href="./internal/office-integration.html">Angular Word Integration</a></li>
-<li><a href="./internal/sdd-and-qa-guide.html">SDD & QA Framework</a></li>
-<li><a href="./internal/security-and-hygiene.html">Security & Secret Hygiene</a></li>
-<li><a href="./internal/deployment-runbook.html">Droplet Deployment Runbook</a></li>
-</ul></div>
       </aside>
 
       <!-- Main Article Container -->
       <main class="content-area">
         <article class="markdown-body">
-          <h1 id="biblion-guides-documentation"><a href="#biblion-guides-documentation" class="heading-anchor">#</a>Biblion Guides &amp; Documentation</h1>
-<p><strong>Managed by:</strong> Biblion Developers Group</p>
-<p><strong>Lead Bot:</strong> Biblion Evangelist</p>
+          <h1 id="biblion-platform-overview-web-add-in-modes"><a href="#biblion-platform-overview-web-add-in-modes" class="heading-anchor">#</a>Biblion Platform Overview: Web &amp; Add-in Modes</h1>
+<p><strong>Product:</strong> Biblion Biomedical Literature &amp; Citation Assistant  </p>
+<p><strong>Audience:</strong> Academic Researchers, Biomedical Scientists, Medical Writers &amp; Clinicians  </p>
+<p><strong>Maintained by:</strong> Documentation Writer  </p>
 <hr class="guide-divider" />
-<h2 id="mission-scope"><a href="#mission-scope" class="heading-anchor">#</a>📌 Mission &amp; Scope</h2>
-<p>Biblion Evangelist is tasked with producing, maintaining, and updating both internal technical guides and external user-facing documentation for the Biblion platform (Angular Word Add-in + Rails API).</p>
-<figure class="guide-figure"><img src="images/guide_portal.png" alt="Biblion Documentation Portal Overview" class="guide-image" loading="lazy" /><figcaption>Biblion Documentation Portal Overview</figcaption></figure>
+<h2 id="1-what-is-biblion"><a href="#1-what-is-biblion" class="heading-anchor">#</a>1. What Is Biblion?</h2>
+<p><strong>Biblion</strong> is a unified biomedical literature discovery and citation management platform. It connects researchers directly to the National Center for Biotechnology Information (NCBI) <strong>PubMed / MEDLINE</strong> database containing over 36 million citations, integrating advanced search, local and cloud-synced library curation, AI-assisted query reformulation, and automated manuscript referencing into a single seamless tool.</p>
+<p>Biblion operates in two complementary functional modes designed to support researchers at every stage of the writing lifecycle:</p>
+<ol>
+<li><strong>Standalone Web Mode (&quot;Web&quot;)</strong>: A full-featured web application running in any modern browser for literature discovery, exploratory research, and library organization.</li>
+<li><strong>Microsoft Word Add-in Mode (&quot;AddIn&quot;)</strong>: An interactive Office.js taskpane embedded directly into Microsoft Word for in-text citation insertion, live cursor tracking, and automated bibliography generation.</li>
+</ol>
+<p>Biblion automatically detects its runtime environment upon initialization and adapts its user interface, features, and citation tools to provide the optimal experience.</p>
 <hr class="guide-divider" />
-<h2 id="documentation-roadmap-milestones"><a href="#documentation-roadmap-milestones" class="heading-anchor">#</a>🗺️ Documentation Roadmap &amp; Milestones</h2>
-<h3 id="milestone-1-foundation-onboarding-completed"><a href="#milestone-1-foundation-onboarding-completed" class="heading-anchor">#</a>Milestone 1: Foundation &amp; Onboarding (Completed)</h3>
+<h2 id="2-standalone-web-mode-web"><a href="#2-standalone-web-mode-web" class="heading-anchor">#</a>2. Standalone Web Mode (&quot;Web&quot;)</h2>
+<figure class="guide-figure"><img src="./images/11_web_mode_overview.png" alt="Biblion Standalone Web Mode" class="guide-image" loading="lazy" /><figcaption>Biblion Standalone Web Mode</figcaption></figure>
+<h3 id="overview-purpose"><a href="#overview-purpose" class="heading-anchor">#</a>Overview &amp; Purpose</h3>
+<p>Standalone Web Mode allows researchers to access the full power of Biblion directly in standard web browsers (Google Chrome, Mozilla Firefox, Apple Safari, Microsoft Edge) on desktops, laptops, or tablets without opening Microsoft Word.</p>
+<h3 id="key-web-mode-capabilities"><a href="#key-web-mode-capabilities" class="heading-anchor">#</a>Key Web Mode Capabilities</h3>
 <ul>
-<li>[x] Establish documentation directory structure (<code>guides/internal/</code> and <code>guides/external/</code>)</li>
-<li>[x] Create Internal Developer Onboarding &amp; Architecture Guide</li>
-<li>[x] Create External User Quickstart &amp; Microsoft Word Add-in Guide</li>
-<li>[x] Review with Dr. Doronin</li>
+<li><strong>Direct PubMed / MEDLINE Literature Discovery:</strong> Execute keyword, author, and journal searches with real-time feedback, query suggestions, and curated example topics.</li>
+<li><strong>Interactive Abstract Inspection:</strong> Flip any search result card with the <strong>Abstract</strong> button to review the full study abstract, publication metadata, journal citation, and MeSH indexing terms without navigating away.</li>
+<li><strong>AI PubMed Query Rewriter:</strong> Formulate complex, high-precision Boolean search strings using state-of-the-art LLMs via Bring-Your-Own-Key (BYOK) providers (OpenRouter, OpenAI, Groq), complete with visual diff inspection and zero-hit fallback to Automatic Term Mapping (ATM).</li>
+<li><strong>My Library &amp; Offline Curation:</strong> Store papers locally using client-side IndexedDB. Organize articles into custom collections, assign color-coded tags, write research notes, and star key references.</li>
+<li><strong>Clipboard Citation Copying:</strong> In Web Mode, each article card features a dedicated <strong>Copy Citation</strong> button. Clicking it instantly formats the citation (in APA 7th style by default) and copies both the in-text reference and full bibliography entry to the system clipboard, ready to paste into Google Docs, Overleaf / LaTeX, Markdown, Notion, or email drafts.</li>
+<li><strong>Multi-Format Export:</strong> Export library collections directly to standard academic formats including <strong>BibTeX</strong> (<code>.bib</code>), <strong>RIS</strong> (<code>.ris</code>), and structured <strong>JSON</strong>.</li>
+<li><strong>Cloud Synchronization &amp; Account Services:</strong> Sign in to sync your library across devices via the encrypted Biblion Cloud API, manage your 15-day free trial, and access subscription billing.</li>
 </ul>
-<h3 id="milestone-2-technical-deep-dives-internal-completed"><a href="#milestone-2-technical-deep-dives-internal-completed" class="heading-anchor">#</a>Milestone 2: Technical Deep-Dives (Internal - Completed)</h3>
+<h3 id="when-to-use-web-mode"><a href="#when-to-use-web-mode" class="heading-anchor">#</a>When to Use Web Mode</h3>
 <ul>
-<li>[x] Rails API &amp; Authentication Guide (<code>guides/internal/api-architecture.md</code>)</li>
-<li>[x] Angular Office.js Word Integration Guide (<code>guides/internal/office-integration.md</code>)</li>
-<li>[x] DigitalOcean Deployment &amp; Operation Runbook (<code>guides/internal/deployment-runbook.md</code>)</li>
-</ul>
-<h3 id="milestone-3-researcher-web-facing-manuals-external-completed"><a href="#milestone-3-researcher-web-facing-manuals-external-completed" class="heading-anchor">#</a>Milestone 3: Researcher &amp; Web-Facing Manuals (External - Completed)</h3>
-<ul>
-<li>[x] Comprehensive PubMed Search &amp; Citation Guide (<code>guides/external/pubmed-search-and-citations.md</code>)</li>
-<li>[x] Library Management, Offline Sync &amp; Export Guide (<code>guides/external/library-and-sync.md</code>)</li>
-<li>[x] Account, Licensing &amp; Subscription Management (<code>guides/external/billing-and-subscriptions.md</code>)</li>
-</ul>
-<h3 id="milestone-4-web-pages-angular-integration-completed"><a href="#milestone-4-web-pages-angular-integration-completed" class="heading-anchor">#</a>Milestone 4: Web Pages &amp; Angular Integration (Completed)</h3>
-<ul>
-<li>[x] Static HTML documentation generator (<code>scripts/build_guides.py</code>)</li>
-<li>[x] Responsive layout with live sidebar filter, code copy, and on-page TOC</li>
-<li>[x] Static asset bundle deployed into Angular public folder (<code>biblion-app/public/guides/</code>)</li>
-<li>[x] In-app navigation links added to About &amp; Support page and User Profile menu</li>
-</ul>
-<h3 id="milestone-5-screenshots-incorporation-completed"><a href="#milestone-5-screenshots-incorporation-completed" class="heading-anchor">#</a>Milestone 5: Screenshots Incorporation (Completed)</h3>
-<ul>
-<li>[x] Curate and optimize UI screenshots across guides (<code>guides/images/</code>)</li>
-<li>[x] Support responsive Markdown image tags (<code><figure class="guide-figure"><img src="src" alt="alt" class="guide-image" loading="lazy" /><figcaption>alt</figcaption></figure></code>) in site generator</li>
-<li>[x] Integrate Word taskpane, PubMed search, library sync, and billing snapshots</li>
-<li>[x] Recompile web pages and rebuild Angular production assets</li>
+<li>Conducting preliminary literature reconnaissance and exploratory reading.</li>
+<li>Organizing research libraries, tagging papers, and compiling notes outside of drafting sessions.</li>
+<li>Drafting manuscripts in alternative editors such as Google Docs, Overleaf / LaTeX, Scrivener, or Markdown.</li>
+<li>Accessing your research library from shared laboratory workstations, mobile devices, or computers without Microsoft Office installed.</li>
 </ul>
 <hr class="guide-divider" />
-<h2 id="guide-directory-layout"><a href="#guide-directory-layout" class="heading-anchor">#</a>📁 Guide Directory Layout</h2>
-<div class="code-container">
-<div class="code-header"><span class="code-lang">code</span><button class="copy-code-btn" onclick="copyCode(this)">Copy</button></div>
-<pre><code class="language-">guides/
-├── README.md                           # Master roadmap and milestone tracking
-├── html/                               # Standalone compiled HTML web pages
-├── internal/                           # Technical documentation for engineers
-│   ├── api-architecture.md
-│   ├── deployment-runbook.md
-│   ├── developer-onboarding.md
-│   └── office-integration.md
-└── external/                           # Researcher-facing documentation
-    ├── billing-and-subscriptions.md
-    ├── library-and-sync.md
-    ├── pubmed-search-and-citations.md
-    └── user-guide.md</code></pre>
-</div>
-<h2 id="building-web-pages"><a href="#building-web-pages" class="heading-anchor">#</a>🔨 Building Web Pages</h2>
-<p>To recompile Markdown guides into HTML web pages at any time:</p>
-<div class="code-container">
-<div class="code-header"><span class="code-lang">bash</span><button class="copy-code-btn" onclick="copyCode(this)">Copy</button></div>
-<pre><code class="language-bash">python3 scripts/build_guides.py</code></pre>
-</div>
-<p>Output is automatically placed in <code>guides/html/</code> and <code>biblion-app/public/guides/</code>.</p>
+<h2 id="3-microsoft-word-add-in-mode-addin"><a href="#3-microsoft-word-add-in-mode-addin" class="heading-anchor">#</a>3. Microsoft Word Add-in Mode (&quot;AddIn&quot;)</h2>
+<figure class="guide-figure"><img src="./images/12_addin_mode_overview.png" alt="Biblion Microsoft Word Add-in Taskpane" class="guide-image" loading="lazy" /><figcaption>Biblion Microsoft Word Add-in Taskpane</figcaption></figure>
+<h3 id="overview-purpose"><a href="#overview-purpose" class="heading-anchor">#</a>Overview &amp; Purpose</h3>
+<p>Microsoft Word Add-in Mode embeds Biblion directly into Microsoft Word (Office 365, Word Desktop on Windows and macOS, and Word on the Web) as a persistent, responsive 380px taskpane. Built on Microsoft&#x27;s modern Office.js API, AddIn Mode transforms Word into an integrated scientific authoring environment.</p>
+<h3 id="dedicated-add-in-capabilities"><a href="#dedicated-add-in-capabilities" class="heading-anchor">#</a>Dedicated Add-in Capabilities</h3>
+<p>When running inside Word, Biblion unlocks specialized manuscript authoring tools that interact directly with the open document:</p>
+<ul>
+<li><strong>Direct In-Text Citation Insertion:</strong> In Word mode, the search cards dynamically surface an <strong>Insert Citation</strong> button. Placing your document cursor anywhere in your manuscript and clicking <strong>Insert Citation</strong> writes real Word content controls and field codes directly into the text with instant visual feedback.</li>
+<li><strong>Dynamic Citation Style Selector:</strong> A persistent style trigger in the taskpane header provides instant switching between major biomedical and scientific citation styles:</li>
+<li><strong>APA (7th Edition)</strong>: Author-date format <code>(Doudna &amp; Charpentier, 2014)</code></li>
+<li><strong>IEEE</strong>: Numbered bracket format <code>[1]</code></li>
+<li><strong>Vancouver</strong>: Numbered superscript format <code>¹</code></li>
+<li><strong>Harvard</strong>: Author-date format <code>(Doudna and Charpentier, 2014)</code></li>
+<li><strong>Chicago (17th Edition)</strong>: Author-date format <code>(Doudna and Charpentier 2014)</code></li>
+<li><strong>Nature</strong>: Numbered superscript with journal styling</li>
+<li><strong>MLA (9th Edition)</strong>: Author-page format</li>
+</ul>
+<figure class="guide-figure"><img src="./images/04_citation_styles.png" alt="Citation Style Selector and Preview in Word Mode" class="guide-image" loading="lazy" /><figcaption>Citation Style Selector and Preview in Word Mode</figcaption></figure>
+<p>  Selecting any style automatically and synchronously reformats all existing in-text citations and the end-of-document reference list throughout the entire Word document.</p>
+<ul>
+<li><strong>Live References Cursor Tracker:</strong> The taskpane navigation displays a dedicated <strong>Live References</strong> tab (<code>cursor-nav-item</code>). As you navigate your document, Biblion continuously inspects the paragraph and sentence surrounding your active cursor, displaying exactly which references are cited at that position and offering instant actions to inspect abstracts, edit styles, or jump between citations.</li>
+<li><strong>Automated Bibliography Generation:</strong> Biblion maintains a synchronized, publication-ready <strong>References</strong> section at the conclusion of your manuscript, keeping numbers and entries alphabetical or sequential according to the selected journal rules.</li>
+</ul>
+<h3 id="when-to-use-add-in-mode"><a href="#when-to-use-add-in-mode" class="heading-anchor">#</a>When to Use Add-in Mode</h3>
+<ul>
+<li>Actively writing, revising, and formatting scientific manuscripts, grant proposals, and review articles in Microsoft Word.</li>
+<li>Citing references directly at the insertion point with a single click.</li>
+<li>Reformatting an entire manuscript&#x27;s citation style to comply with journal submission guidelines (e.g., converting from APA to Vancouver or IEEE).</li>
+<li>Reviewing co-authored drafts to verify what citations are linked to specific sentences and paragraphs.</li>
+</ul>
+<hr class="guide-divider" />
+<h2 id="4-feature-matrix-web-mode-vs-addin-mode"><a href="#4-feature-matrix-web-mode-vs-addin-mode" class="heading-anchor">#</a>4. Feature Matrix: Web Mode vs. AddIn Mode</h2>
+<div class="table-responsive"><table>
+<thead><tr><th>Feature / Capability</th><th>Standalone Web Mode (&quot;Web&quot;)</th><th>Microsoft Word Add-in Mode (&quot;AddIn&quot;)</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td><strong>Host Environment</strong></td><td>Any modern Web Browser</td><td>Microsoft Word (Desktop &amp; Web)</td><td>Auto-detected via Office.js <code>onReady</code></td></tr>
+<tr><td><strong>PubMed / MEDLINE Search</strong></td><td>Yes</td><td>Yes</td><td>Over 36M biomedical citations</td></tr>
+<tr><td><strong>Abstract Flip Card View</strong></td><td>Yes</td><td>Yes</td><td>Abstract text, authors, DOI, MeSH terms</td></tr>
+<tr><td><strong>AI Query Rewriter &amp; BYOK</strong></td><td>Yes</td><td>Yes</td><td>OpenRouter, OpenAI, Groq support</td></tr>
+<tr><td><strong>My Library &amp; Collections</strong></td><td>Yes</td><td>Yes</td><td>Offline IndexedDB storage</td></tr>
+<tr><td><strong>Tags &amp; Research Notes</strong></td><td>Yes</td><td>Yes</td><td>Custom color tags and annotations</td></tr>
+<tr><td><strong>BibTeX, RIS, JSON Export</strong></td><td>Yes</td><td>Yes</td><td>Standard bibliographic export</td></tr>
+<tr><td><strong>Cloud Sync &amp; Free Trial</strong></td><td>Yes</td><td>Yes</td><td>Encrypted cross-device sync</td></tr>
+<tr><td><strong>Citation Action on Cards</strong></td><td><strong>Copy Citation</strong></td><td><strong>Insert Citation</strong></td><td>Clipboard copy vs. direct document injection</td></tr>
+<tr><td><strong>Citation Style Selector</strong></td><td>Hidden (defaults to APA)</td><td><strong>Active in Header</strong></td><td>7 major academic styles</td></tr>
+<tr><td><strong>Live References Tracker</strong></td><td>Hidden</td><td><strong>Active in Nav</strong></td><td>Real-time sentence/cursor analysis</td></tr>
+<tr><td><strong>Document Bibliography</strong></td><td>Manual paste</td><td><strong>Automatic in Word</strong></td><td>Synchronized reference list</td></tr>
+<tr><td><strong>Window Adaptability</strong></td><td>Responsive (Desktop to Mobile)</td><td>Fixed Taskpane (320px - 380px)</td><td>Optimized for narrow taskpanes</td></tr>
+</tbody></table></div>
+<hr class="guide-divider" />
+<h2 id="5-getting-started-user-manuals"><a href="#5-getting-started-user-manuals" class="heading-anchor">#</a>5. Getting Started &amp; User Manuals</h2>
+<p>Explore our comprehensive, step-by-step guides to master every feature of Biblion:</p>
+<ul>
+<li><strong><a href="external/user-guide.html">Word Add-in User Guide</a>:</strong> Complete walkthrough of installing the taskpane, inserting citations, and managing bibliographies.</li>
+<li><strong><a href="external/pubmed-search-and-citations.html">PubMed Search &amp; Citations Guide</a>:</strong> How to construct searches, inspect abstracts, and manage search results.</li>
+<li><strong><a href="external/ai-query-rewriter.html">AI Query Rewriter Guide</a>:</strong> Utilizing LLMs to expand biomedical queries with MeSH terms and handle zero-hit fallbacks.</li>
+<li><strong><a href="external/citation-styles.html">Citation Styles &amp; Bibliographies Guide</a>:</strong> In-depth guide to supported styles, bracket conventions, and automated reference lists.</li>
+<li><strong><a href="external/live-references.html">Live References Guide</a>:</strong> Tracking cursor citations in real time inside Microsoft Word.</li>
+<li><strong><a href="external/library-and-sync.html">Library, Offline Sync &amp; Export Guide</a>:</strong> Managing collections, working offline, cloud synchronization, and exporting BibTeX/RIS files.</li>
+<li><strong><a href="external/account-and-sign-in.html">Account &amp; Sign-In Guide</a>:</strong> Creating an account, password management, and security on shared computers.</li>
+<li><strong><a href="external/billing-and-subscriptions.html">Billing &amp; Subscriptions Guide</a>:</strong> 15-day free trial details, Lemon Squeezy checkout, grace periods, and data retention.</li>
+<li><strong><a href="external/standalone-web-mode.html">Using Biblion in a Browser Guide</a>:</strong> Guide dedicated to maximizing productivity in standalone web mode.</li>
+</ul>
         </article>
         <footer class="page-footer">
           <p>Maintained by <strong>Biblion Evangelist</strong> &middot; Biosys Technologies &middot; <a href="./index.html">Documentation Home</a></p>
@@ -139,15 +163,17 @@
       <!-- Right Table of Contents (Desktop) -->
       <aside class="toc-aside">
         <nav class="toc-nav"><h4>On This Page</h4><ul>
-<li class="toc-h2"><a href="#mission-scope">📌 Mission &amp; Scope</a></li>
-<li class="toc-h2"><a href="#documentation-roadmap-milestones">🗺️ Documentation Roadmap &amp; Milestones</a></li>
-<li class="toc-h3"><a href="#milestone-1-foundation-onboarding-completed">Milestone 1: Foundation &amp; Onboarding (Completed)</a></li>
-<li class="toc-h3"><a href="#milestone-2-technical-deep-dives-internal-completed">Milestone 2: Technical Deep-Dives (Internal - Completed)</a></li>
-<li class="toc-h3"><a href="#milestone-3-researcher-web-facing-manuals-external-completed">Milestone 3: Researcher &amp; Web-Facing Manuals (External - Completed)</a></li>
-<li class="toc-h3"><a href="#milestone-4-web-pages-angular-integration-completed">Milestone 4: Web Pages &amp; Angular Integration (Completed)</a></li>
-<li class="toc-h3"><a href="#milestone-5-screenshots-incorporation-completed">Milestone 5: Screenshots Incorporation (Completed)</a></li>
-<li class="toc-h2"><a href="#guide-directory-layout">📁 Guide Directory Layout</a></li>
-<li class="toc-h2"><a href="#building-web-pages">🔨 Building Web Pages</a></li>
+<li class="toc-h2"><a href="#1-what-is-biblion">1. What Is Biblion?</a></li>
+<li class="toc-h2"><a href="#2-standalone-web-mode-web">2. Standalone Web Mode (&quot;Web&quot;)</a></li>
+<li class="toc-h3"><a href="#overview-purpose">Overview &amp; Purpose</a></li>
+<li class="toc-h3"><a href="#key-web-mode-capabilities">Key Web Mode Capabilities</a></li>
+<li class="toc-h3"><a href="#when-to-use-web-mode">When to Use Web Mode</a></li>
+<li class="toc-h2"><a href="#3-microsoft-word-add-in-mode-addin">3. Microsoft Word Add-in Mode (&quot;AddIn&quot;)</a></li>
+<li class="toc-h3"><a href="#overview-purpose">Overview &amp; Purpose</a></li>
+<li class="toc-h3"><a href="#dedicated-add-in-capabilities">Dedicated Add-in Capabilities</a></li>
+<li class="toc-h3"><a href="#when-to-use-add-in-mode">When to Use Add-in Mode</a></li>
+<li class="toc-h2"><a href="#4-feature-matrix-web-mode-vs-addin-mode">4. Feature Matrix: Web Mode vs. AddIn Mode</a></li>
+<li class="toc-h2"><a href="#5-getting-started-user-manuals">5. Getting Started &amp; User Manuals</a></li>
 </ul></nav>
       </aside>
     </div>

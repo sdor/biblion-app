@@ -15,7 +15,7 @@ test.describe('Subscription & Billing Management', () => {
     await expect(modal).toBeVisible();
     await expect(modal.locator('.modal-title')).toHaveText('Subscription & Billing');
     await expect(modal.locator('.badge-trial')).toHaveText('Free Trial Active');
-    await expect(modal.locator('.price-amount')).toHaveText('$9.99');
+    await expect(modal.locator('.price-amount')).toHaveText('$15');
     await expect(modal.locator('.detail-value.highlight')).toContainText('25 days remaining');
 
     // Action buttons visible for trial
