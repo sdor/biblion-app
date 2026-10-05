@@ -102,10 +102,10 @@ describe('WordCitationService', () => {
   describe('insertCitationAndBibliography in non-Word fallback mode', () => {
     it('should fallback to clipboard copy when not in Word host', async () => {
       const writeTextMock = vi.fn().mockResolvedValue(undefined);
-      Object.assign(navigator, {
-        clipboard: {
-          writeText: writeTextMock
-        }
+      Object.defineProperty(navigator, 'clipboard', {
+        value: { writeText: writeTextMock },
+        configurable: true,
+        writable: true
       });
 
       styleService.setStyle('apa');

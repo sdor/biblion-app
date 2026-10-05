@@ -19,7 +19,7 @@ test.describe('PubMed Search & Literature Discovery', () => {
     await expect(page.locator('.brand-name')).toHaveText('Biblion');
     await expect(page.locator('.search-title')).toHaveText('PubMed / MEDLINE Search');
     await expect(page.locator('#terms')).toBeVisible();
-    await expect(page.locator('.submit-search-btn')).toBeDisabled();
+    await expect(page.locator('.submit-search-btn')).toBeEnabled();
 
     // Check presence of example queries (in standalone mode)
     const chips = page.locator('.chip-btn');

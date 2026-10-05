@@ -136,7 +136,7 @@
         </button>
         <button
           type="button"
-          class="btn-primary"
+          class="btn-save btn-primary"
           (click)="save()"
           [disabled]="isSaving() || (!apiKey().trim() && !activeMaskedKey())">
           {{ isSaving() ? 'Saving...' : 'Save Settings' }}

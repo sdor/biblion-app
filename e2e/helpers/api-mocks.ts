@@ -261,6 +261,50 @@ export async function mockBiblionApi(page: Page, options: MockUserOptions = {}) 
     });
   });
 
+  // Handle AI Credentials API: /api/v1/profile/ai_credentials
+  const mockAiCredentials: any[] = [];
+  await page.route(/.*\/api\/v1\/profile\/ai_credentials(\/.*)?/, async (route) => {
+    const method = route.request().method();
+    if (method === 'GET') {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ ai_credentials: mockAiCredentials }),
+      });
+    } else if (method === 'POST') {
+      const body = route.request().postDataJSON() || {};
+      const credData = body.ai_credential || body;
+      const newCred = {
+        id: mockAiCredentials.length + 1,
+        provider: credData.provider || 'openrouter',
+        model: credData.model || 'anthropic/claude-3.5-sonnet',
+        masked_key: 'sk-ant-api03...test',
+        key_hint: '...test',
+        is_active: credData.is_active !== false,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      mockAiCredentials.push(newCred);
+      await route.fulfill({
+        status: 201,
+        contentType: 'application/json',
+        body: JSON.stringify({ ai_credential: newCred }),
+      });
+    } else if (method === 'DELETE') {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ message: 'Credential removed' }),
+      });
+    } else {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ message: 'OK' }),
+      });
+    }
+  });
+
   return {
     getCurrentUser: () => currentUser,
     setCurrentUser: (user: any) => {

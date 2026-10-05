@@ -78,21 +78,17 @@ test.describe('AI PubMed Query Rewriter & BYOK E2E Scenarios', () => {
     await saveBtn.click();
 
     // Verify success banner
-    await expect(modal.locator('.alert-success')).toHaveText(/Settings saved successfully/);
+    await expect(modal.locator('.alert-success')).toHaveText(/Settings saved successfully|AI credentials saved/);
 
     // Close modal
     await modal.locator('.close-btn').click();
     await expect(modal).not.toBeVisible();
 
-    // Verify localStorage persistence
+    // Verify secure persistence (credentials stored on backend, plaintext wiped from localStorage)
     const storedSettings = await page.evaluate(() => {
       return localStorage.getItem('biblion_ai_byok_settings');
     });
-    expect(storedSettings).not.toBeNull();
-    const parsed = JSON.parse(storedSettings!);
-    expect(parsed.provider).toBe('openrouter');
-    expect(parsed.apiKey).toBe(MOCK_OPENROUTER_KEY);
-    expect(parsed.model).toBe(MOCK_OPENROUTER_MODEL);
+    expect(storedSettings).toBeNull();
   });
 
   test('Scenario 2: Successful AI Query Rewrite via OpenRouter and Diff Preview Modal', async ({ page }) => {
@@ -135,9 +131,9 @@ test.describe('AI PubMed Query Rewriter & BYOK E2E Scenarios', () => {
     await expect(diffModal).toBeVisible();
     await expect(diffModal.locator('.query-preview-text')).toHaveText(rawSearchText);
 
-    // Verify proxy request received correct headers
-    expect(capturedHeaders['x-ai-provider']).toBe('openrouter');
-    expect(capturedHeaders['x-ai-key']).toBe(MOCK_OPENROUTER_KEY);
+    // Verify proxy request received correct headers (encrypted backend credentials omit plaintext keys)
+    expect(capturedHeaders['x-ai-provider']).toBeUndefined();
+    expect(capturedHeaders['x-ai-key']).toBeUndefined();
     expect(capturedHeaders['x-ai-model']).toBe(MOCK_OPENROUTER_MODEL);
     expect(capturedBody.query).toBe(rawSearchText);
 
