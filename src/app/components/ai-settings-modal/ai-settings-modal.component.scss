@@ -254,10 +254,42 @@
     }
   }
 
+  .label-with-badge {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+
+    .form-label {
+      margin-bottom: 0;
+    }
+
+    .badge-configured {
+      font-size: 0.75rem;
+      background: #eff6ff;
+      color: #2563eb;
+      border: 1px solid #bfdbfe;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-family: monospace;
+      font-weight: 500;
+    }
+  }
+
   .alert-success {
     background: #ecfdf5;
     border: 1px solid #a7f3d0;
     color: #065f46;
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+
+  .alert-danger {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #991b1b;
     padding: 10px 14px;
     border-radius: 6px;
     font-size: 0.85rem;

@@ -11,7 +11,8 @@ export interface UserAiCredential {
   provider: AIProvider;
   model: string;
   is_active: boolean;
-  key_hint: string;
+  key_hint?: string;
+  masked_key?: string;
   created_at: string;
   updated_at: string;
 }

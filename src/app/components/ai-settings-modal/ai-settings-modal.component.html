@@ -29,7 +29,7 @@
           <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
         </svg>
         <div class="banner-text">
-          <strong>Privacy &amp; Security Guaranteed:</strong> Your API keys are stored only in your local browser storage and sent ephemerally in transit memory. Keys are never saved in databases or logs.
+          <strong>Encrypted &amp; Synchronized Security:</strong> Your API keys are stored encrypted at rest on the backend and synchronized across your Word Add-in and web sessions. Plaintext keys are never stored on shared computers, logged, or exposed in API responses.
         </div>
       </div>
 
@@ -75,7 +75,12 @@
 
       <!-- API Key Input -->
       <div class="form-group">
-        <label for="aiKeyInput" class="form-label">API Key</label>
+        <div class="label-with-badge">
+          <label for="aiKeyInput" class="form-label">API Key</label>
+          @if (activeMaskedKey()) {
+            <span class="badge-configured">Active: {{ activeMaskedKey() }}</span>
+          }
+        </div>
         <div class="key-input-wrapper">
           <input
             id="aiKeyInput"
@@ -83,7 +88,7 @@
             class="form-control key-input"
             [ngModel]="apiKey()"
             (ngModelChange)="apiKey.set($event)"
-            placeholder="Enter your API key"
+            [placeholder]="activeMaskedKey() ? 'Key saved in encrypted storage (enter new key to replace)' : 'Enter your API key'"
             autocomplete="off"
             spellcheck="false" />
           <button
@@ -108,7 +113,12 @@
 
       @if (saveSuccess()) {
         <div class="alert-success">
-          Settings saved successfully!
+          AI credentials saved securely to your account!
+        </div>
+      }
+      @if (errorMessage()) {
+        <div class="alert-danger">
+          {{ errorMessage() }}
         </div>
       }
     </div>
@@ -126,10 +136,10 @@
         </button>
         <button
           type="button"
-          class="btn-save"
-          [disabled]="!apiKey().trim()"
-          (click)="save()">
-          Save Settings
+          class="btn-primary"
+          (click)="save()"
+          [disabled]="isSaving() || (!apiKey().trim() && !activeMaskedKey())">
+          {{ isSaving() ? 'Saving...' : 'Save Settings' }}
         </button>
       </div>
     </div>

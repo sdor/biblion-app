@@ -89,9 +89,15 @@ test.describe('Authentication & Account Lifecycle', () => {
 
     // Dropdown options
     await userProfileBtn.click();
+    const dropdown = page.locator('.user-dropdown-menu');
+    await expect(dropdown).toBeVisible();
     await expect(page.locator('.dropdown-item.subscription-item')).toContainText('Subscription & Billing');
     await expect(page.locator('.dropdown-item.edit-item')).toContainText('Edit Account');
     await expect(page.locator('.dropdown-item.signout-item')).toContainText('Sign Out');
+
+    // Dismiss by clicking outside
+    await page.locator('.brand-name').click();
+    await expect(dropdown).not.toBeVisible();
   });
 
   test('should edit account settings via user menu', async ({ page }) => {

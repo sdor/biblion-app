@@ -1,5 +1,6 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
 import { AISettings, AIProvider, DEFAULT_AI_MODELS } from '../models/ai-settings.model';
+import { AiCredentialsService } from './ai-credentials.service';
 
 export const AI_SETTINGS_STORAGE_KEY = 'biblion_ai_byok_settings';
 
@@ -7,15 +8,24 @@ export const AI_SETTINGS_STORAGE_KEY = 'biblion_ai_byok_settings';
   providedIn: 'root'
 })
 export class AiSettingsService {
+  private aiCredentialsService = inject(AiCredentialsService, { optional: true });
+
   readonly settings = signal<AISettings | null>(this.getInitialSettings());
   readonly isModalOpen = signal<boolean>(false);
 
   readonly isConfigured = computed<boolean>(() => {
+    if (this.aiCredentialsService?.hasActiveCredential()) {
+      return true;
+    }
     const s = this.settings();
     return !!(s && s.apiKey && s.apiKey.trim().length > 0);
   });
 
   readonly currentProvider = computed<AIProvider>(() => {
+    const dbActive = this.aiCredentialsService?.activeCredential();
+    if (dbActive) {
+      return dbActive.provider;
+    }
     return this.settings()?.provider || 'openrouter';
   });
 
@@ -35,8 +45,8 @@ export class AiSettingsService {
     };
     this.settings.set(normalized);
     try {
-      if (typeof localStorage !== 'undefined' && localStorage) {
-        localStorage.setItem(AI_SETTINGS_STORAGE_KEY, JSON.stringify(normalized));
+      if (typeof window !== 'undefined' && window.localStorage) {
+        window.localStorage.setItem(AI_SETTINGS_STORAGE_KEY, JSON.stringify(normalized));
       }
     } catch (e) {
       console.error('Failed to save AI settings to localStorage', e);
@@ -46,8 +56,8 @@ export class AiSettingsService {
   clearSettings(): void {
     this.settings.set(null);
     try {
-      if (typeof localStorage !== 'undefined' && localStorage) {
-        localStorage.removeItem(AI_SETTINGS_STORAGE_KEY);
+      if (typeof window !== 'undefined' && window.localStorage) {
+        window.localStorage.removeItem(AI_SETTINGS_STORAGE_KEY);
       }
     } catch (e) {
       console.error('Failed to remove AI settings from localStorage', e);
@@ -56,8 +66,8 @@ export class AiSettingsService {
 
   private getInitialSettings(): AISettings | null {
     try {
-      if (typeof localStorage !== 'undefined' && localStorage) {
-        const raw = localStorage.getItem(AI_SETTINGS_STORAGE_KEY);
+      if (typeof window !== 'undefined' && window.localStorage) {
+        const raw = window.localStorage.getItem(AI_SETTINGS_STORAGE_KEY);
         if (raw) {
           const parsed = JSON.parse(raw);
           if (parsed && parsed.provider && parsed.apiKey) {

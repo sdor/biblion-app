@@ -157,4 +157,84 @@ describe('App', () => {
     expect(compiled.querySelector('.grace-banner')).toBeTruthy();
     expect(compiled.querySelector('.grace-banner')?.textContent).toContain('22 days left');
   });
+
+  it('should guard openAiSettings when user lacks active subscription or trial', async () => {
+    const fixture = TestBed.createComponent(App);
+    const app = fixture.componentInstance;
+    app.authService.token.set('valid-token');
+    app.authService.currentUser.set({
+      id: 1,
+      email_address: 'test@example.com',
+      subscription: {
+        status: 'expired',
+        active: false,
+        on_trial: false
+      } as any
+    });
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(app.hasAiSettingsAccess()).toBe(false);
+    app.openAiSettings();
+    fixture.detectChanges();
+
+    expect(app.aiSettingsService.isModalOpen()).toBe(false);
+
+    // Now give active subscription
+    app.authService.currentUser.set({
+      id: 1,
+      email_address: 'test@example.com',
+      subscription: {
+        status: 'active',
+        active: true,
+        on_trial: false
+      } as any
+    });
+    fixture.detectChanges();
+
+    expect(app.hasAiSettingsAccess()).toBe(true);
+    app.openAiSettings();
+    fixture.detectChanges();
+
+    expect(app.aiSettingsService.isModalOpen()).toBe(true);
+  });
+
+  it('should toggle user menu and close on outside click or escape', async () => {
+    const fixture = TestBed.createComponent(App);
+    const app = fixture.componentInstance;
+    app.authService.currentUser.set({
+      id: 1,
+      email_address: 'test@example.com'
+    } as any);
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(app.isUserMenuOpen()).toBe(false);
+
+    // Open menu
+    app.toggleUserMenu();
+    fixture.detectChanges();
+    expect(app.isUserMenuOpen()).toBe(true);
+
+    // Click inside wrapper should not close
+    const menuWrapper = fixture.nativeElement.querySelector('.user-menu-wrapper');
+    expect(menuWrapper).toBeTruthy();
+    document.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    // Note: dispatching on document directly without target in wrapper closes it
+    expect(app.isUserMenuOpen()).toBe(false);
+
+    // Open again
+    app.toggleUserMenu();
+    expect(app.isUserMenuOpen()).toBe(true);
+
+    // Click inside wrapper
+    const eventInside = new MouseEvent('click', { bubbles: true });
+    Object.defineProperty(eventInside, 'target', { value: menuWrapper });
+    app.onDocumentClick(eventInside);
+    expect(app.isUserMenuOpen()).toBe(true);
+
+    // Press Escape
+    app.onEscapePress();
+    expect(app.isUserMenuOpen()).toBe(false);
+  });
 });

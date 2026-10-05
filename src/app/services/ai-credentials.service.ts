@@ -1,6 +1,6 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap, catchError, throwError, of } from 'rxjs';
+import { Observable, tap, catchError, throwError, of, map } from 'rxjs';
 import { UserAiCredential, CreateAiCredentialPayload } from '../models/ai-settings.model';
 import { AuthService } from './auth.service';
 
@@ -33,9 +33,10 @@ export class AiCredentialsService {
     this.isLoading.set(true);
     this.error.set(null);
 
-    return this.http.get<UserAiCredential[]>('/api/v1/profile/ai_credentials', {
+    return this.http.get<{ ai_credentials: UserAiCredential[] } | UserAiCredential[]>('/api/v1/profile/ai_credentials', {
       headers: this.authService.getAuthHeaders()
     }).pipe(
+      map((res: any) => (Array.isArray(res) ? res : res?.ai_credentials || []) as UserAiCredential[]),
       tap((creds) => {
         this.credentials.set(creds || []);
         this.isLoading.set(false);
@@ -53,9 +54,11 @@ export class AiCredentialsService {
     this.isLoading.set(true);
     this.error.set(null);
 
-    return this.http.post<UserAiCredential>('/api/v1/profile/ai_credentials', payload, {
+    const body = { ai_credential: payload };
+    return this.http.post<{ ai_credential: UserAiCredential } | UserAiCredential>('/api/v1/profile/ai_credentials', body, {
       headers: this.authService.getAuthHeaders()
     }).pipe(
+      map((res: any) => (res?.ai_credential || res) as UserAiCredential),
       tap((newCred) => {
         this.isLoading.set(false);
         if (newCred.is_active) {
@@ -78,9 +81,11 @@ export class AiCredentialsService {
     this.isLoading.set(true);
     this.error.set(null);
 
-    return this.http.put<UserAiCredential>(`/api/v1/profile/ai_credentials/${id}/activate`, {}, {
+    const body = { ai_credential: { is_active: true } };
+    return this.http.patch<{ ai_credential: UserAiCredential } | UserAiCredential>(`/api/v1/profile/ai_credentials/${id}`, body, {
       headers: this.authService.getAuthHeaders()
     }).pipe(
+      map((res: any) => (res?.ai_credential || res) as UserAiCredential),
       tap((activated) => {
         this.isLoading.set(false);
         const updated = this.credentials().map(c => ({

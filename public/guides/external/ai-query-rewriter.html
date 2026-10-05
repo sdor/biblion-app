@@ -58,7 +58,7 @@
           <h1 id="ai-query-rewriter-turn-plain-language-questions-into-pubmed-searches"><a href="#ai-query-rewriter-turn-plain-language-questions-into-pubmed-searches" class="heading-anchor">#</a>AI Query Rewriter: Turn Plain-Language Questions into PubMed Searches</h1>
 <p><strong>Product:</strong> Biblion Citation Assistant (AI feature)</p>
 <p><strong>Audience:</strong> Academic Researchers, Clinicians &amp; Bioinformaticians</p>
-<p><strong>Requires:</strong> An OpenAI-compatible API key (your own). The feature is off by default.</p>
+<p><strong>Requires:</strong> An API key from a supported provider (OpenRouter, OpenAI, Anthropic, or Google Gemini). The feature is off by default.</p>
 <p><strong>Maintained by:</strong> Documentation Writer</p>
 <hr class="guide-divider" />
 <h2 id="1-what-it-does-and-why-you-would-use-it"><a href="#1-what-it-does-and-why-you-would-use-it" class="heading-anchor">#</a>1. What It Does and Why You Would Use It</h2>
@@ -72,18 +72,31 @@
 <p><strong>Value to you:</strong> better recall (synonyms and MeSH terms you might forget), fewer irrelevant hits, and a reusable query you can read, edit and learn from. You stay in control: nothing is searched until you click apply.</p>
 <hr class="guide-divider" />
 <h2 id="2-bring-your-own-key-byok"><a href="#2-bring-your-own-key-byok" class="heading-anchor">#</a>2. Bring Your Own Key (BYOK)</h2>
-<p>The rewriting runs <strong>entirely in your browser</strong>, from your browser straight to the AI provider. Biblion&#x27;s servers never see, handle or log your API key. You need a key from an <strong>OpenAI-compatible</strong> provider — OpenAI itself, OpenRouter, a local vLLM server, and others all work, since you can point Biblion at a custom endpoint URL.</p>
-<p>You pay your provider directly for usage, usually a tiny amount per query. The key is stored only in your browser session and is <strong>wiped when you sign out</strong>.</p>
+<p>Biblion executes AI query rewrites through its backend rewriter service, which proxies requests upstream to your configured AI provider (OpenRouter, OpenAI, Anthropic, or Google Gemini). Your API keys are stored encrypted at rest on the backend and bound to your authenticated account.</p>
+<p>This design provides several key benefits:</p>
+<ul>
+<li><strong>Automatic Synchronization:</strong> Enter your API key once, and it is immediately available across both your desktop Word Add-in and standalone web browser.</li>
+<li><strong>Shared Workstation Protection:</strong> Keys are never stored in browser <code>localStorage</code>. When you sign out or another user logs into the same computer, your credentials remain secure and completely inaccessible to other accounts.</li>
+<li><strong>Direct Usage Pricing:</strong> You pay your AI provider directly for model usage, usually a fraction of a cent per query.</li>
+</ul>
 <hr class="guide-divider" />
 <h2 id="3-set-up-one-time"><a href="#3-set-up-one-time" class="heading-anchor">#</a>3. Set Up (One Time)</h2>
 <ol>
-<li>Open <strong>AI Settings</strong> (BYOK). In the account menu (click your name) it is listed as <strong>AI Settings (BYOK)</strong>.</li>
-<li>In the <strong>AI Query Rewriter Settings</strong> dialog, tick <strong>Enable AI Query Rewriter</strong>.</li>
-<li>Paste your key into the <strong>OpenAI-Compatible API Key</strong> field (it is masked, placeholder <code>sk-...</code>).</li>
-<li><em>(Optional)</em> Under <strong>Custom API Endpoint URL</strong>, change the endpoint if your provider is not OpenAI. The default is <code>https://api.openai.com/v1/chat/completions</code>.</li>
+<li>Open <strong>AI Settings</strong> (BYOK). In the account menu (click your name), select <strong>AI Settings (BYOK)</strong>.</li>
+<li>In the <strong>AI Query Rewriter Settings</strong> dialog, select your preferred <strong>AI Provider</strong>:</li>
+</ol>
+<ul>
+<li><strong>OpenRouter (Recommended)</strong>: Single API key for Claude 3.5 Sonnet, DeepSeek, Llama 3, and 100+ models.</li>
+<li><strong>OpenAI</strong>: Direct OpenAI API key (GPT-4o, GPT-4o mini).</li>
+<li><strong>Anthropic</strong>: Direct Anthropic API key (Claude 3.5 Sonnet, Claude 3.5 Haiku).</li>
+<li><strong>Google Gemini</strong>: Direct Google AI Studio API key (Gemini 2.5 Flash, Pro).</li>
+</ul>
+<ol>
+<li><em>(Optional)</em> Adjust the <strong>Model Identifier</strong> if you want to use a custom model variant instead of the provider&#x27;s default.</li>
+<li>Paste your key into the <strong>API Key</strong> field (masked input, placeholder adapts to your provider). Use the eye icon to verify what you pasted.</li>
 <li>Click <strong>Save Settings</strong>.</li>
 </ol>
-<p>The API key and endpoint fields stay disabled until the toggle is on.</p>
+<p>Your credentials are encrypted at rest and saved to your account. When configured, an <strong>Active: <code>&lt;masked_key&gt;</code></strong> badge confirms your active key.</p>
 <figure class="guide-figure"><img src="../images/ai_01-ai-settings-modal.png" alt="AI Query Rewriter Settings dialog" class="guide-image" loading="lazy" /><figcaption>AI Query Rewriter Settings dialog</figcaption></figure>
 <div class="callout"><p><strong>Setting up while registering:</strong> the <em>Create Account</em> form has an optional section, <strong>Configure AI Query Rewriter (BYOK, Optional)</strong>, where you can enable the feature and paste a key right away.</p></div>
 <div class="callout"><p></p></div>
@@ -120,16 +133,18 @@
 <thead><tr><th>Message</th><th>What it means</th><th>What to do</th></tr></thead>
 <tbody>
 <tr><td><strong>Upstream Quota Exhaustion (402):</strong></td><td>Your AI provider says your balance or credits are used up.</td><td>Top up your provider account, then try again. Click <strong>Configure AI Settings</strong> to review your setup.</td></tr>
-<tr><td><strong>AI Query Rewriter Notice:</strong></td><td>A general problem with the request (invalid key, unreachable endpoint, timeout).</td><td>Re-check the key and endpoint in <strong>AI Settings</strong>.</td></tr>
-<tr><td>No AI API key configured</td><td>You clicked <strong>AI Rewrite</strong> before setting a key.</td><td>Open <strong>AI Settings</strong>, tick the toggle and paste your key.</td></tr>
+<tr><td><strong>AI Query Rewriter Notice:</strong></td><td>A general problem with the request (invalid key, unreachable upstream provider, timeout).</td><td>Re-check your key and provider selection in <strong>AI Settings</strong>.</td></tr>
+<tr><td>No AI API key configured</td><td>You clicked <strong>AI Rewrite</strong> before setting a key.</td><td>Open <strong>AI Settings</strong>, select your provider, and paste your API key.</td></tr>
 </tbody></table></div>
 <figure class="guide-figure"><img src="../images/ai_06-upstream-quota-402-error.png" alt="Quota error message" class="guide-image" loading="lazy" /><figcaption>Quota error message</figcaption></figure>
 <hr class="guide-divider" />
 <h2 id="7-privacy-security"><a href="#7-privacy-security" class="heading-anchor">#</a>7. Privacy &amp; Security</h2>
 <ul>
-<li>Your query text is sent from your browser to the <strong>endpoint you configured</strong>, under that provider&#x27;s terms. Don&#x27;t include confidential manuscript text in a query.</li>
-<li>Biblion&#x27;s backend never receives or logs your API key.</li>
-<li>The key lives only in your browser session, and <strong>Sign Out</strong> wipes it from memory.</li>
+<li><strong>Encrypted at Rest:</strong> API keys are stored encrypted in the backend database using Rails Active Record encryption (<code>user_ai_credentials</code>) and bound strictly to your authenticated account.</li>
+<li><strong>Cross-Session Synchronization:</strong> You only need to configure your key once; it synchronizes seamlessly between the desktop Word Add-in and standalone web browser.</li>
+<li><strong>Shared Workstation Isolation:</strong> Plaintext keys are never stored in browser <code>localStorage</code>. When you sign out or another user logs into the same computer, your credentials remain secure and completely inaccessible to other accounts.</li>
+<li><strong>Filtered &amp; Ephemeral Processing:</strong> AI query reformulations execute on the backend, which proxies upstream to your selected provider. API keys are filtered from server logs, never exposed in API responses (only <code>masked_key</code> is returned), and ephemeral in transit memory during requests.</li>
+<li><strong>Provider Privacy:</strong> Queries sent upstream to your provider (OpenRouter, OpenAI, Anthropic, or Gemini) fall under your provider&#x27;s API data usage terms. Never include confidential or unreleased manuscript data in a query.</li>
 </ul>
 <figure class="guide-figure"><img src="../images/ai_08-logout-security-cleared.png" alt="Signed-out state after logout" class="guide-image" loading="lazy" /><figcaption>Signed-out state after logout</figcaption></figure>
 <p>Related: <a href="pubmed-search-and-citations.html">Searching PubMed</a>, <a href="account-and-sign-in.html">Account &amp; Sign-In</a></p>

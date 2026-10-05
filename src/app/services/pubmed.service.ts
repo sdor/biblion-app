@@ -91,15 +91,34 @@ export class PubmedService {
   }
 
   /**
+   * Reset search state to pristine
+   */
+  clear(): void {
+    this.currentTerm.set('');
+    this.articles.set([]);
+    this.searchResult.set(null);
+    this.errorMessage.set(null);
+    this.hasSearched.set(false);
+    this.pageIndex.set(0);
+    this._state = {
+      req: {
+        db: 'pubmed',
+        term: '',
+        retstart: 0,
+        retmax: this.pageSize()
+      },
+      items: [],
+      pageIndex: 0
+    };
+  }
+
+  /**
    * Combined Search and Fetch workflow
    */
   executeSearch(term: string, pageIndex: number = 0, pageSize: number = DEFAULT_RETMAX): Observable<PubmedArticle[]> {
     const cleanTerm = term.trim();
     if (!cleanTerm) {
-      this.articles.set([]);
-      this.searchResult.set(null);
-      this.errorMessage.set(null);
-      this.hasSearched.set(false);
+      this.clear();
       return of([]);
     }
 

@@ -36,7 +36,7 @@
     </div>
 
     <!-- Search Form -->
-    <form id="pubmed-search-form" class="search-form" (ngSubmit)="onSearchSubmit()">
+    <form id="pubmed-search-form" class="search-form" (ngSubmit)="onSearchSubmit()" novalidate>
       <div class="input-group">
         <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="11" cy="11" r="8"></circle>
@@ -51,8 +51,7 @@
           [ngModel]="searchTerm()"
           (ngModelChange)="searchTerm.set($event)"
           name="term"
-          autocomplete="off"
-          required />
+          autocomplete="off" />
 
         @if (searchTerm()) {
           <button
@@ -73,7 +72,7 @@
           class="ai-enhance-btn"
           (click)="onEnhanceQuery()"
           [disabled]="!searchTerm().trim() || isRewriting() || pubmedService.isLoading()"
-          title="Enhance Query with AI (BYOK)"
+          title="AI Rewrite: Converts natural language into PubMed boolean syntax &amp; MeSH terms (BYOK)"
           aria-label="Enhance Query with AI">
           @if (isRewriting()) {
             <span class="btn-spinner"></span>
@@ -91,7 +90,7 @@
           class="submit-search-btn"
           [title]="pubmedService.isLoading() ? 'Searching...' : 'Search PubMed'"
           [attr.aria-label]="pubmedService.isLoading() ? 'Searching...' : 'Search PubMed'"
-          [disabled]="!searchTerm().trim() || pubmedService.isLoading()">
+          [disabled]="pubmedService.isLoading()">
           @if (pubmedService.isLoading()) {
             <span class="btn-spinner"></span>
             <span class="btn-text">Searching...</span>
@@ -105,19 +104,155 @@
         </button>
       </div>
 
-      <!-- Quick sample queries -->
-      @if (!isWord) {
-        <div class="sample-queries">
-          <span class="sample-label">Examples:</span>
-          <div class="query-chips">
-            @for (query of sampleQueries; track query) {
+      <!-- Search extras: Sample queries and What is AI Rewrite? -->
+      <div class="search-form-extras">
+        @if (!isWord) {
+          <div class="sample-queries">
+            <span class="sample-label">Examples:</span>
+            <div class="query-chips">
+              @for (query of sampleQueries; track query) {
+                <button
+                  type="button"
+                  class="chip-btn"
+                  (click)="setSampleQuery(query)">
+                  {{ query }}
+                </button>
+              }
+            </div>
+          </div>
+        }
+
+        <button
+          type="button"
+          class="ai-info-toggle-btn"
+          (click)="toggleAiInfo()"
+          [attr.aria-expanded]="showAiInfo()"
+          title="Learn what AI Rewrite is and how it works">
+          <svg class="ai-info-icon-small" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
+          <span>What is AI Rewrite?</span>
+          <svg class="chevron-icon" [class.open]="showAiInfo()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Expandable AI Rewrite Information Box -->
+      @if (showAiInfo()) {
+        <div class="ai-info-card" role="region" aria-label="What is AI Rewrite">
+          <div class="ai-info-card-header">
+            <div class="ai-info-card-title-group">
+              <div class="ai-info-badge-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path>
+                </svg>
+              </div>
+              <div>
+                <div class="ai-info-title-row">
+                  <h4 class="ai-info-title">What is AI Rewrite?</h4>
+                  <span class="pro-tag">Pro Feature</span>
+                </div>
+                <p class="ai-info-tagline">Transform natural language into optimized PubMed NCBI search syntax</p>
+              </div>
+            </div>
+            <button
+              type="button"
+              class="ai-info-close-btn"
+              (click)="showAiInfo.set(false)"
+              aria-label="Close AI rewrite explanation">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+
+          <div class="ai-info-card-body">
+            <p class="ai-info-summary">
+              <strong>AI Rewrite</strong> is a <strong>Pro feature requiring an active subscription or free trial</strong>. It converts everyday free-form search terms (e.g. <em>"gene editing in cancer"</em>) into professional, syntactically valid PubMed boolean queries tailored for NCBI Entrez E-utilities.
+            </p>
+
+            <div class="ai-info-grid">
+              <div class="ai-info-feature">
+                <div class="feature-icon">⭐</div>
+                <div class="feature-content">
+                  <strong>Pro Feature &bull; Subscription Required</strong>
+                  <p>Included with Biblion Pro and active trials. Without an active subscription or when the trial period ends, AI features and settings are locked.</p>
+                </div>
+              </div>
+
+              <div class="ai-info-feature">
+                <div class="feature-icon">🏷️</div>
+                <div class="feature-content">
+                  <strong>MeSH &amp; Field Tags</strong>
+                  <p>Translates clinical concepts into official Medical Subject Headings (<code>[MeSH Terms]</code>) and Title/Abstract tags (<code>[tiab]</code>).</p>
+                </div>
+              </div>
+
+              <div class="ai-info-feature">
+                <div class="feature-icon">🔀</div>
+                <div class="feature-content">
+                  <strong>Boolean Grouping</strong>
+                  <p>Structures logical <code>AND</code>, <code>OR</code>, and <code>NOT</code> expressions with strictly balanced parentheses.</p>
+                </div>
+              </div>
+
+              <div class="ai-info-feature">
+                <div class="feature-icon">🔐</div>
+                <div class="feature-content">
+                  <strong>Bring Your Own Key (BYOK)</strong>
+                  <p>Connects securely to OpenAI, Claude, Gemini, or OpenRouter using your own API key saved only in your local browser.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="ai-info-example">
+              <span class="example-label">Example:</span>
+              <div class="example-flow">
+                <span class="example-before">"crispr treating cancer"</span>
+                <span class="example-arrow">➔</span>
+                <span class="example-after">("Clustered Regularly Interspaced Short Palindromic Repeats"[MeSH] OR "CRISPR-Cas Systems"[tiab]) AND ("Neoplasms"[MeSH] OR "cancer"[tiab])</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="ai-info-card-footer">
+            <div class="footer-actions-left">
               <button
                 type="button"
-                class="chip-btn"
-                (click)="setSampleQuery(query)">
-                {{ query }}
+                class="btn-configure-ai"
+                [disabled]="!hasProAccess()"
+                [title]="aiSettingsDisabledReason()"
+                (click)="openAiSettings()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="3"></circle>
+                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                </svg>
+                Configure AI Settings
               </button>
-            }
+
+              @if (!hasProAccess()) {
+                @if (!authService.isAuthenticated()) {
+                  <button type="button" class="btn-sub-action" (click)="authService.openAuthModal('login')">
+                    Sign In to Unlock Pro
+                  </button>
+                } @else {
+                  <button type="button" class="btn-sub-action" (click)="subscriptionService.openSubscriptionModal()">
+                    Subscribe to Unlock Pro
+                  </button>
+                }
+              }
+            </div>
+
+            <button
+              type="button"
+              class="btn-dismiss-ai-info"
+              (click)="showAiInfo.set(false)">
+              Got it
+            </button>
           </div>
         </div>
       }
@@ -136,7 +271,12 @@
           <span>{{ rewriterError() }}</span>
         </div>
         @if (isQuotaError() || !aiSettingsService.isConfigured()) {
-          <button type="button" class="btn-settings-link" (click)="aiSettingsService.openSettingsModal()">
+          <button
+            type="button"
+            class="btn-settings-link"
+            [disabled]="!hasProAccess()"
+            [title]="aiSettingsDisabledReason()"
+            (click)="openAiSettings()">
             Configure AI Settings
           </button>
         }
@@ -290,6 +430,15 @@
             <div class="guide-icon-box">🔍</div>
             <h4>E-utilities Integration</h4>
             <p>Live querying of NCBI Entrez E-utilities (<code>esearch</code> and <code>efetch</code>) with JSON and XML parsing.</p>
+          </div>
+
+          <div class="guide-card ai-guide-card">
+            <div class="card-badge-row">
+              <div class="guide-icon-box">🪄</div>
+              <span class="pro-tag">Pro Feature</span>
+            </div>
+            <h4>AI Query Rewrite</h4>
+            <p>Converts free-form language into expert PubMed syntax with MeSH terms (<code>[MeSH Terms]</code>) and boolean operators (<code>AND</code>, <code>OR</code>, <code>NOT</code>). <em>Requires active subscription or free trial.</em></p>
           </div>
 
           @if (isWord) {

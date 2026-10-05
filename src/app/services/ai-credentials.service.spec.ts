@@ -97,7 +97,15 @@ describe('AiCredentialsService', () => {
 
     const req = httpMock.expectOne('/api/v1/profile/ai_credentials');
     expect(req.request.method).toBe('POST');
-    req.flush(newCred);
+    expect(req.request.body).toEqual({
+      ai_credential: {
+        provider: 'openai',
+        api_key: 'sk-full-key',
+        model: 'gpt-4o-mini',
+        is_active: true
+      }
+    });
+    req.flush({ ai_credential: newCred });
   });
 
   it('should activate a credential and deactivate others', () => {
@@ -110,9 +118,10 @@ describe('AiCredentialsService', () => {
       expect(service.credentials().find(c => c.id === 1)?.is_active).toBe(false);
     });
 
-    const req = httpMock.expectOne('/api/v1/profile/ai_credentials/2/activate');
-    expect(req.request.method).toBe('PUT');
-    req.flush({ ...mockCredentials[1], is_active: true });
+    const req = httpMock.expectOne('/api/v1/profile/ai_credentials/2');
+    expect(req.request.method).toBe('PATCH');
+    expect(req.request.body).toEqual({ ai_credential: { is_active: true } });
+    req.flush({ ai_credential: { ...mockCredentials[1], is_active: true } });
   });
 
   it('should delete a credential', () => {

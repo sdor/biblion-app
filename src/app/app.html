@@ -49,7 +49,7 @@
                 <button
                   type="button"
                   class="btn-user-profile"
-                  (click)="toggleUserMenu()"
+                  (click)="toggleUserMenu($event)"
                   [class.active]="isUserMenuOpen()"
                   title="View account details"
                   aria-label="User account details">
@@ -131,6 +131,8 @@
                       type="button"
                       class="dropdown-item ai-item"
                       role="menuitem"
+                      [disabled]="!hasAiSettingsAccess()"
+                      [title]="!hasAiSettingsAccess() ? 'Active subscription or free trial required to configure AI Settings' : 'Configure AI Settings (BYOK)'"
                       (click)="openAiSettings()">
                       <svg class="item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path>

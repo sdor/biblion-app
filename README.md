@@ -448,7 +448,7 @@ Since Word on Windows uses the Microsoft Edge WebView2 control:
 | `npm run unsideload:cli` | All | Stops `office-addin-debugging` session and unregisters manifest |
 | `npm run build` | All | Compiles production artifacts to `dist/biblion-app` |
 | `npm run watch` | All | Compiles and watches for changes in development mode |
-| `npm test` | All | Runs unit test suite via Vitest |
+| `npm test` | All | Runs unit test suite via Vitest (requires `NODE_OPTIONS='--no-experimental-webstorage'` on Node v26) |
 
 ---
 

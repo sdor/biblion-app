@@ -3,6 +3,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { PubmedRewriterService, RewriterError } from './pubmed-rewriter.service';
 import { AiSettingsService } from './ai-settings.service';
+import { AiCredentialsService } from './ai-credentials.service';
 import { AuthService } from './auth.service';
 import { QueryRewriteResponse } from '../models/ai-settings.model';
 
@@ -10,6 +11,7 @@ describe('PubmedRewriterService', () => {
   let service: PubmedRewriterService;
   let httpMock: HttpTestingController;
   let aiSettingsService: AiSettingsService;
+  let aiCredentialsService: AiCredentialsService;
   let authService: AuthService;
 
   beforeEach(() => {
@@ -19,6 +21,7 @@ describe('PubmedRewriterService', () => {
         provideHttpClientTesting(),
         PubmedRewriterService,
         AiSettingsService,
+        AiCredentialsService,
         AuthService
       ]
     });
@@ -26,6 +29,7 @@ describe('PubmedRewriterService', () => {
     service = TestBed.inject(PubmedRewriterService);
     httpMock = TestBed.inject(HttpTestingController);
     aiSettingsService = TestBed.inject(AiSettingsService);
+    aiCredentialsService = TestBed.inject(AiCredentialsService);
     authService = TestBed.inject(AuthService);
 
     aiSettingsService.saveSettings({
@@ -120,6 +124,7 @@ describe('PubmedRewriterService', () => {
 
   it('should fail client-side if no API key is configured', () => {
     aiSettingsService.clearSettings();
+    aiCredentialsService.clear();
 
     let errorResult: RewriterError | undefined;
     service.rewriteQuery('crispr').subscribe({
@@ -132,5 +137,30 @@ describe('PubmedRewriterService', () => {
     expect(errorResult?.status).toBe(401);
     expect(errorResult?.isAuthError).toBe(true);
     expect(errorResult?.message).toContain('No AI API key configured');
+  });
+
+  it('should omit X-AI-Provider and X-AI-Key when user has active DB credential', () => {
+    aiSettingsService.clearSettings();
+    aiCredentialsService.credentials.set([{
+      id: 10,
+      provider: 'openai',
+      model: 'gpt-4o-mini',
+      is_active: true,
+      key_hint: 'sk-...9999',
+      created_at: '',
+      updated_at: ''
+    }]);
+    authService.token.set('user-jwt-token');
+
+    service.rewriteQuery('immunotherapy melanoma').subscribe();
+
+    const req = httpMock.expectOne(`${authService.apiUrl}/api/v1/pubmed/queries/rewrite`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.headers.has('X-AI-Provider')).toBe(false);
+    expect(req.request.headers.has('X-AI-Key')).toBe(false);
+    expect(req.request.headers.get('X-AI-Model')).toBe('gpt-4o-mini');
+    expect(req.request.headers.get('Authorization')).toBe('Bearer user-jwt-token');
+    expect(req.request.body).toEqual({ query: 'immunotherapy melanoma' });
+    req.flush({ rewritten_query: 'melanoma immunotherapy', syntax_valid: true });
   });
 });

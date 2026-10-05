@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, computed, inject } from '@angular/core';
+import { Component, OnInit, signal, computed, inject, HostListener } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { CitationStyleSelectorComponent } from './components/citation-style-selector/citation-style-selector.component';
@@ -102,7 +102,14 @@ export class App implements OnInit {
     this.subscriptionService.closeSubscriptionModal();
   }
 
+  readonly hasAiSettingsAccess = computed(() => {
+    return this.authService.isAuthenticated() && (this.subscriptionService.isActive() || this.subscriptionService.isOnTrial());
+  });
+
   openAiSettings(): void {
+    if (!this.hasAiSettingsAccess()) {
+      return;
+    }
     this.aiSettingsService.openSettingsModal();
     this.isUserMenuOpen.set(false);
   }
@@ -115,12 +122,31 @@ export class App implements OnInit {
     this.authService.closeAuthModal();
   }
 
-  toggleUserMenu(): void {
+  toggleUserMenu(event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
     this.isUserMenuOpen.update((val) => !val);
   }
 
   closeUserMenu(): void {
     this.isUserMenuOpen.set(false);
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    if (!this.isUserMenuOpen()) return;
+    const target = event.target as Element | null;
+    if (!target || typeof target.closest !== 'function' || !target.closest('.user-menu-wrapper')) {
+      this.closeUserMenu();
+    }
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscapePress(): void {
+    if (this.isUserMenuOpen()) {
+      this.closeUserMenu();
+    }
   }
 
   signOut(): void {

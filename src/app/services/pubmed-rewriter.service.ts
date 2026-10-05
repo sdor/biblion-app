@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http
 import { Observable, tap, catchError, throwError } from 'rxjs';
 import { AISettings, QueryRewriteRequest, QueryRewriteResponse } from '../models/ai-settings.model';
 import { AiSettingsService } from './ai-settings.service';
+import { AiCredentialsService } from './ai-credentials.service';
 import { AuthService } from './auth.service';
 
 export interface RewriterError {
@@ -18,6 +19,7 @@ export interface RewriterError {
 export class PubmedRewriterService {
   private http = inject(HttpClient);
   private aiSettingsService = inject(AiSettingsService);
+  private aiCredentialsService = inject(AiCredentialsService);
   private authService = inject(AuthService);
 
   readonly isRewriting = signal<boolean>(false);
@@ -30,8 +32,13 @@ export class PubmedRewriterService {
       return throwError(() => ({ status: 400, message: 'Search query cannot be empty.' }));
     }
 
-    const settings = customSettings || this.aiSettingsService.settings();
-    if (!settings || !settings.apiKey) {
+    const customKey = customSettings?.apiKey?.trim();
+    const activeDbCred = this.aiCredentialsService.activeCredential();
+    const localSettings = this.aiSettingsService.settings();
+    const localKey = localSettings?.apiKey?.trim();
+
+    const hasCredential = !!customKey || !!activeDbCred || !!localKey;
+    if (!hasCredential) {
       const err: RewriterError = {
         status: 401,
         message: 'No AI API key configured. Please configure your provider key in AI Settings.',
@@ -45,19 +52,35 @@ export class PubmedRewriterService {
     this.lastError.set(null);
 
     let headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'X-AI-Provider': settings.provider,
-      'X-AI-Key': settings.apiKey
+      'Content-Type': 'application/json'
     });
 
-    if (settings.model) {
-      headers = headers.set('X-AI-Model', settings.model);
-    }
-
-    // Add user auth token if available
     const token = this.authService.token();
     if (token) {
       headers = headers.set('Authorization', `Bearer ${token}`);
+    }
+
+    let activeProviderName = 'AI';
+    if (customKey) {
+      headers = headers.set('X-AI-Provider', customSettings!.provider);
+      headers = headers.set('X-AI-Key', customKey);
+      if (customSettings!.model) {
+        headers = headers.set('X-AI-Model', customSettings!.model);
+      }
+      activeProviderName = customSettings!.provider;
+    } else if (activeDbCred) {
+      // Backend automatically resolves encrypted credentials when X-AI-Provider / X-AI-Key are omitted!
+      if (activeDbCred.model) {
+        headers = headers.set('X-AI-Model', activeDbCred.model);
+      }
+      activeProviderName = activeDbCred.provider;
+    } else if (localKey) {
+      headers = headers.set('X-AI-Provider', localSettings!.provider);
+      headers = headers.set('X-AI-Key', localKey);
+      if (localSettings!.model) {
+        headers = headers.set('X-AI-Model', localSettings!.model);
+      }
+      activeProviderName = localSettings!.provider;
     }
 
     const payload: QueryRewriteRequest = { query: cleanQuery };
@@ -70,18 +93,18 @@ export class PubmedRewriterService {
       }),
       catchError((error: HttpErrorResponse) => {
         this.isRewriting.set(false);
-        const parsed = this.handleHttpError(error, settings);
+        const parsed = this.handleHttpError(error, activeProviderName);
         this.lastError.set(parsed);
         return throwError(() => parsed);
       })
     );
   }
 
-  private handleHttpError(error: HttpErrorResponse, settings: AISettings): RewriterError {
+  private handleHttpError(error: HttpErrorResponse, provider: string): RewriterError {
     if (error.status === 402) {
       return {
         status: 402,
-        message: error.error?.error || `Insufficient credits with ${settings.provider}. Please check your account balance.`,
+        message: error.error?.error || `Insufficient credits with ${provider}. Please check your account balance.`,
         isQuotaExhausted: true
       };
     }
@@ -89,22 +112,33 @@ export class PubmedRewriterService {
     if (error.status === 401) {
       return {
         status: 401,
-        message: error.error?.error || `Authentication failed with ${settings.provider}. Please check your API key.`,
+        message: error.error?.error || `Authentication failed with ${provider}. Please check your API key.`,
         isAuthError: true
       };
+    }
+
+    if (error.status === 422) {
+      const msg = error.error?.error || error.error?.message || '';
+      if (msg.toLowerCase().includes('no ai provider credentials') || msg.toLowerCase().includes('missing required headers')) {
+        return {
+          status: 401,
+          message: 'No AI credentials found. Please configure your provider key in AI Settings.',
+          isAuthError: true
+        };
+      }
     }
 
     if (error.status === 429) {
       return {
         status: 429,
-        message: `Rate limit exceeded for ${settings.provider}. Please wait a moment and try again.`
+        message: `Rate limit exceeded for ${provider}. Please wait a moment and try again.`
       };
     }
 
     if (error.status === 504) {
       return {
         status: 504,
-        message: `Upstream AI provider (${settings.provider}) timed out after 15 seconds. Please try again.`
+        message: `Upstream AI provider (${provider}) timed out after 15 seconds. Please try again.`
       };
     }
 

@@ -44,13 +44,26 @@ export class PubmedSearchComponent implements OnInit {
   readonly rewrittenQueryCandidate = signal<string>('');
   readonly isLastSearchRewritten = signal<boolean>(false);
   readonly lastAtmFallbackQuery = signal<string>('');
+  readonly showAiInfo = signal<boolean>(false);
+
+  readonly hasProAccess = computed(() => {
+    return this.authService.isAuthenticated() && (this.subscriptionService.isActive() || this.subscriptionService.isOnTrial());
+  });
+
+  readonly aiSettingsDisabledReason = computed(() => {
+    if (!this.authService.isAuthenticated()) {
+      return 'Sign in required to configure AI Settings (Pro feature).';
+    }
+    if (!this.subscriptionService.isActive() && !this.subscriptionService.isOnTrial()) {
+      return 'Active subscription or free trial required to configure AI Settings (Pro feature).';
+    }
+    return 'Configure AI Settings';
+  });
 
   readonly sampleQueries = [
     'CRISPR-Cas9 gene editing',
     'mRNA vaccines oncology',
-    'Alzheimer amyloid tau pathology',
-    'CAR-T cell therapy leukemia',
-    'Artificial intelligence in radiology'
+    'Alzheimer amyloid tau pathology'
   ];
 
   readonly totalFound = computed(() => {
@@ -86,7 +99,10 @@ export class PubmedSearchComponent implements OnInit {
 
   onSearchSubmit() {
     const term = this.searchTerm().trim();
-    if (!term) return;
+    if (!term) {
+      this.clearSearch();
+      return;
+    }
     if (term !== this.rewrittenQueryCandidate()) {
       this.isLastSearchRewritten.set(false);
     }
@@ -172,9 +188,26 @@ export class PubmedSearchComponent implements OnInit {
     this.pubmedService.executeSearch(query, 0, this.selectedPageSize()).subscribe();
   }
 
+  toggleAiInfo() {
+    this.showAiInfo.update(v => !v);
+  }
+
+  openAiSettings() {
+    if (!this.authService.isAuthenticated()) {
+      this.authService.openAuthModal('login');
+      return;
+    }
+    if (!this.subscriptionService.isActive() && !this.subscriptionService.isOnTrial()) {
+      this.subscriptionService.openSubscriptionModal();
+      return;
+    }
+    this.aiSettingsService.openSettingsModal();
+  }
+
   clearSearch() {
     this.searchTerm.set('');
     this.isLastSearchRewritten.set(false);
+    this.lastAtmFallbackQuery.set('');
     this.rewriterError.set(null);
     this.isQuotaError.set(false);
     this.pubmedService.executeSearch('', 0, this.selectedPageSize()).subscribe();
